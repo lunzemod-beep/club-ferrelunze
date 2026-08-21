@@ -292,7 +292,7 @@
     <div id="toast"></div>
 
     <script>
-        // NUEVA URL ACTUALIZADA Y SEGURA DE APPS SCRIPT
+        // ÚLTIMA URL OFICIAL Y SEGURA DE APPS SCRIPT
         const API_URL = 'https://script.google.com/macros/s/AKfycbxHNI6fbVLbuIWKbn9CjKDqRqIcmbzF23Ou1NXbzpNmX3U78khoXg-GFM8-I0qXFxcR7g/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
@@ -303,7 +303,7 @@
 
         // --- SISTEMA DE INACTIVIDAD (AUTO-LOGOUT ADMIN - 10 MINUTOS) ---
         let inactivityTimer = null;
-        const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
+        const INACTIVITY_LIMIT = 10 * 60 * 1000;
 
         function resetInactivityTimer() {
             if (!sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) return;
@@ -320,6 +320,7 @@
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
+            if(!toast) { alert(msg); return; }
             toast.textContent = msg;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 4500);
@@ -362,14 +363,21 @@
 
         async function sincronizarPremios() {
             try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'obtener_catalogo' }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ tipo: 'obtener_catalogo' }) 
+                });
                 const data = await res.json();
                 if(data.status === "success") {
                     rewardsList = data.premios || [];
                     if(activeClient) renderClientRewards();
                     if(sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) renderAdminRewards();
+                } else {
+                    console.error("Error al sincronizar premios:", data.message);
                 }
-            } catch(e) { console.error("Error cargando premios", e); }
+            } catch(e) { 
+                console.error("Excepción en sincronizarPremios:", e); 
+            }
         }
 
         function showRegisterForm() { resetForms(); document.getElementById('client-login-view').classList.add('hidden'); document.getElementById('client-register-view').classList.remove('hidden'); }
@@ -383,7 +391,10 @@
 
             try {
                 btn.disabled = true; btn.innerText = "Verificando...";
-                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'login_verificar', cedula: cedula, password: pin, pin: pin, accion: 'login' }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ tipo: 'login_verificar', cedula: cedula, password: pin, pin: pin, accion: 'login' }) 
+                });
                 const data = await response.json();
 
                 if (data.status === "success") {
@@ -394,18 +405,37 @@
                     document.getElementById('client-login-view').classList.add('hidden');
                     document.getElementById('client-dashboard-view').classList.remove('hidden');
                     renderClientDashboard();
-                } else { showToast('❌ ' + (data.message || 'Credenciales incorrectas')); }
-            } catch (error) { showToast('❌ Error de conexión.'); } finally { btn.disabled = false; btn.innerText = "Ingresar"; }
+                } else { 
+                    showToast('❌ ' + (data.message || 'Credenciales incorrectas')); 
+                }
+            } catch (error) { 
+                showToast('❌ Error de conexión con el servidor.'); 
+                console.error(error);
+            } finally { 
+                btn.disabled = false; btn.innerText = "Ingresar"; 
+            }
         }
 
         async function handleClientRegister(e) {
             e.preventDefault();
-            const payload = { tipo: 'registro', nombre: document.getElementById('reg-name').value.trim(), cedula: document.getElementById('reg-cedula').value.trim(), telefono: document.getElementById('reg-phone').value.trim(), email: document.getElementById('reg-email').value.trim(), direccion: document.getElementById('reg-address').value.trim(), password: document.getElementById('reg-pin').value.trim() };
+            const payload = { 
+                tipo: 'registro', 
+                nombre: document.getElementById('reg-name').value.trim(), 
+                cedula: document.getElementById('reg-cedula').value.trim(), 
+                telefono: document.getElementById('reg-phone').value.trim(), 
+                email: document.getElementById('reg-email').value.trim(), 
+                direccion: document.getElementById('reg-address').value.trim(), 
+                password: document.getElementById('reg-pin').value.trim() 
+            };
             if (payload.password.length !== 4) { showToast('El PIN debe ser de 4 dígitos'); return; }
 
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { showToast('¡Registro exitoso!'); showLoginForm(); } else { showToast('❌ ' + data.message); }
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await response.json();
+                if (data.status === "success") { showToast('¡Registro exitoso!'); showLoginForm(); } else { showToast('❌ ' + data.message); }
+            } catch(err) {
+                showToast('❌ Error de red al registrar.');
+            }
         }
 
         async function handleClientChangePin(e) {
@@ -413,10 +443,14 @@
             const nuevoPin = document.getElementById('client-new-pin').value.trim();
             if (nuevoPin.length !== 4) { showToast('El PIN debe ser de 4 dígitos'); return; }
 
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'cambiar_password', cedula: activeClient.cedula, nuevoPassword: nuevoPin }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { showToast('✅ ¡PIN actualizado con éxito!'); document.getElementById('client-new-pin').value = ''; }
-            else { showToast('❌ ' + (data.message || 'Error al cambiar PIN')); }
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'cambiar_password', cedula: activeClient.cedula, nuevoPassword: nuevoPin }) });
+                const data = await response.json();
+                if (data.status === "success") { showToast('✅ ¡PIN actualizado con éxito!'); document.getElementById('client-new-pin').value = ''; }
+                else { showToast('❌ ' + (data.message || 'Error al cambiar PIN')); }
+            } catch(err) {
+                showToast('❌ Error de red al cambiar PIN.');
+            }
         }
 
         function logoutClient() { activeClient = null; resetForms(); switchRole('client'); }
@@ -480,30 +514,45 @@
 
         async function handleAdminLogin(e) {
             e.preventDefault();
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'login_admin', password: document.getElementById('admin-pass-input').value }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { 
-                sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token); 
-                rewardsList = data.premios || rewardsList;
-                switchRole('admin'); 
-            } else { showToast('❌ ' + data.message); }
+            const passVal = document.getElementById('admin-pass-input').value;
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ tipo: 'login_admin', password: passVal }) 
+                });
+                const data = await response.json();
+                if (data.status === "success") { 
+                    sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token); 
+                    rewardsList = data.premios || rewardsList;
+                    switchRole('admin'); 
+                } else { 
+                    showToast('❌ ' + (data.message || 'Contraseña incorrecta')); 
+                }
+            } catch (err) {
+                showToast('❌ Error de red al intentar conectar con el admin.');
+                console.error(err);
+            }
         }
 
         async function loadAdminLevelStats() {
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN") }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") {
-                allClientsCache = data.clientes || [];
-                rewardsList = data.premios || rewardsList;
-                let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
-                allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
-                document.getElementById('stat-bronce').textContent = stats.bronce;
-                document.getElementById('stat-plata').textContent = stats.plata;
-                document.getElementById('stat-oro').textContent = stats.oro;
-                document.getElementById('stat-diamante').textContent = stats.diamante;
-                renderAdminRewards();
-            } else {
-                logoutAdmin();
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN") }) });
+                const data = await response.json();
+                if (data.status === "success") {
+                    allClientsCache = data.clientes || [];
+                    rewardsList = data.premios || rewardsList;
+                    let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
+                    allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
+                    document.getElementById('stat-bronce').textContent = stats.bronce;
+                    document.getElementById('stat-plata').textContent = stats.plata;
+                    document.getElementById('stat-oro').textContent = stats.oro;
+                    document.getElementById('stat-diamante').textContent = stats.diamante;
+                    renderAdminRewards();
+                } else {
+                    logoutAdmin();
+                }
+            } catch(e) {
+                console.error("Error cargando stats de admin", e);
             }
         }
 
@@ -517,14 +566,18 @@
 
         async function handleAdminSearchClient(e) {
             e.preventDefault();
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'consultar_cliente', cedula: document.getElementById('admin-search-cedula').value.trim() }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") {
-                queriedAdminClient = { cedula: document.getElementById('admin-search-cedula').value.trim(), nombre: data.nombre, puntos: data.puntos };
-                document.getElementById('info-client-name').textContent = data.nombre;
-                document.getElementById('info-client-points').textContent = `${data.puntos} pts`;
-                document.getElementById('admin-client-info-box').classList.remove('hidden');
-            } else { showToast('❌ ' + data.message); }
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'consultar_cliente', cedula: document.getElementById('admin-search-cedula').value.trim() }) });
+                const data = await response.json();
+                if (data.status === "success") {
+                    queriedAdminClient = { cedula: document.getElementById('admin-search-cedula').value.trim(), nombre: data.nombre, puntos: data.puntos };
+                    document.getElementById('info-client-name').textContent = data.nombre;
+                    document.getElementById('info-client-points').textContent = `${data.puntos} pts`;
+                    document.getElementById('admin-client-info-box').classList.remove('hidden');
+                } else { showToast('❌ ' + data.message); }
+            } catch(err) {
+                showToast('❌ Error de red al buscar cliente.');
+            }
         }
 
         async function handleAdminAdjustPoints(e) {
@@ -532,32 +585,45 @@
             const nuevosPts = parseInt(document.getElementById('adjust-amount').value);
             const motivo = document.getElementById('adjust-reason').value.trim();
 
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'corregir_puntos', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: queriedAdminClient.cedula, nuevosPuntos: nuevosPts, motivo: motivo }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { 
-                showToast('✅ Puntos corregidos con motivo registrado'); 
-                document.getElementById('adjust-amount').value = ''; 
-                document.getElementById('adjust-reason').value = ''; 
-                document.getElementById('admin-client-info-box').classList.add('hidden');
-                loadAdminLevelStats(); 
-            } else {
-                showToast('❌ ' + data.message);
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'corregir_puntos', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: queriedAdminClient.cedula, nuevosPuntos: nuevosPts, motivo: motivo }) });
+                const data = await response.json();
+                if (data.status === "success") { 
+                    showToast('✅ Puntos corregidos con motivo registrado'); 
+                    document.getElementById('adjust-amount').value = ''; 
+                    document.getElementById('adjust-reason').value = ''; 
+                    document.getElementById('admin-client-info-box').classList.add('hidden');
+                    loadAdminLevelStats(); 
+                } else {
+                    showToast('❌ ' + data.message);
+                }
+            } catch(err) {
+                showToast('❌ Error de red al ajustar puntos.');
             }
         }
 
         async function handleAdminResetClientPin() {
             if (!queriedAdminClient) return;
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'generar_codigo_temp', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: queriedAdminClient.cedula }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { alert(`✅ Código temporal generado:\n\n${data.codigo}`); } else { showToast('❌ ' + data.message); }
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'generar_codigo_temp', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: queriedAdminClient.cedula }) });
+                const data = await response.json();
+                if (data.status === "success") { alert(`✅ Código temporal generado:\n\n${data.codigo}`); } else { showToast('❌ ' + data.message); }
+            } catch(err) {
+                showToast('❌ Error al generar PIN temporal.');
+            }
         }
 
         async function handleAdminAddSale(e) {
             e.preventDefault();
             const amountInput = parseInt(document.getElementById('admin-sale-amount').value);
-            const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'venta', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: document.getElementById('admin-sale-cedula').value.trim(), puntosGanados: Math.floor(amountInput / 10000), monto: amountInput }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await response.json();
-            if (data.status === "success") { showToast(`✅ Venta acreditada. Saldo: ${data.nuevosPuntos} pts`); document.getElementById('admin-sale-cedula').value = ''; document.getElementById('admin-sale-amount').value = ''; loadAdminLevelStats(); }
+            try {
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'venta', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: document.getElementById('admin-sale-cedula').value.trim(), puntosGanados: Math.floor(amountInput / 10000), monto: amountInput }) });
+                const data = await response.json();
+                if (data.status === "success") { showToast(`✅ Venta acreditada. Saldo: ${data.nuevosPuntos} pts`); document.getElementById('admin-sale-cedula').value = ''; document.getElementById('admin-sale-amount').value = ''; loadAdminLevelStats(); }
+                else { showToast('❌ ' + data.message); }
+            } catch(err) {
+                showToast('❌ Error de red al acreditar venta.');
+            }
         }
 
         async function handleAdminAddReward(e) {
@@ -566,23 +632,33 @@
             const puntos = parseInt(document.getElementById('reward-cost-input').value);
             const descripcion = document.getElementById('reward-desc-input').value.trim();
 
-            const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'guardar_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), titulo, puntos, descripcion, estado: 'draft' }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await res.json();
-            if(data.status === "success") {
-                rewardsList = data.premios || rewardsList;
-                showToast('Premio guardado como BORRADOR en Google Sheets');
-                document.getElementById('reward-title-input').value = ''; document.getElementById('reward-cost-input').value = ''; document.getElementById('reward-desc-input').value = '';
-                renderAdminRewards();
-            } else { showToast('❌ Error guardando premio'); }
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'guardar_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), titulo, puntos, descripcion, estado: 'draft' }) });
+                const data = await res.json();
+                if(data.status === "success") {
+                    rewardsList = data.premios || rewardsList;
+                    showToast('Premio guardado como BORRADOR en Google Sheets');
+                    document.getElementById('reward-title-input').value = ''; document.getElementById('reward-cost-input').value = ''; document.getElementById('reward-desc-input').value = '';
+                    renderAdminRewards();
+                } else { showToast('❌ Error guardando premio'); }
+            } catch(err) {
+                showToast('❌ Error de red al guardar premio.');
+            }
         }
 
         async function cambiarEstadoPremio(idPremio, accion) {
-            const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }), headers: { "Content-Type": "text/plain;charset=utf-8" } });
-            const data = await res.json();
-            if(data.status === "success") {
-                rewardsList = data.premios || rewardsList;
-                renderAdminRewards();
-                showToast(accion === 'publicar' ? '¡Premio publicado con éxito!' : 'Premio eliminado');
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }) });
+                const data = await res.json();
+                if(data.status === "success") {
+                    rewardsList = data.premios || rewardsList;
+                    renderAdminRewards();
+                    showToast(accion === 'publicar' ? '¡Premio publicado con éxito!' : 'Premio eliminado');
+                } else {
+                    showToast('❌ ' + data.message);
+                }
+            } catch(err) {
+                showToast('❌ Error de red al actualizar estado del premio.');
             }
         }
 
