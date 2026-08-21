@@ -113,7 +113,7 @@
     </header>
 
     <main>
-        <!-- ==================== CLIENTE: LOGIN ==================== -->
+        <!-- CLIENTE: LOGIN -->
         <div id="client-login-view" class="login-card">
             <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
             <h2>Portal de Clientes Ferrelunze</h2>
@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <!-- ==================== CLIENTE: REGISTRO ==================== -->
+        <!-- CLIENTE: REGISTRO -->
         <div id="client-register-view" class="login-card hidden">
             <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
             <h2>Registro de Nuevo Cliente</h2>
@@ -156,7 +156,7 @@
             </form>
         </div>
 
-        <!-- ==================== CLIENTE: DASHBOARD ==================== -->
+        <!-- CLIENTE: DASHBOARD -->
         <div id="client-dashboard-view" class="hidden">
             <div class="vip-card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -201,7 +201,7 @@
             </div>
         </div>
 
-        <!-- ==================== ADMIN: LOGIN ==================== -->
+        <!-- ADMIN: LOGIN -->
         <div id="admin-login-view" class="login-card hidden">
             <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
             <h2>Acceso Administrador</h2>
@@ -212,14 +212,14 @@
             </form>
         </div>
 
-        <!-- ==================== ADMIN: DASHBOARD ==================== -->
+        <!-- ADMIN: DASHBOARD -->
         <div id="admin-dashboard-view" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3 style="margin: 0;">Panel de Control - Administrador</h3>
                 <button onclick="logoutAdmin()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.8rem;">Cerrar Sesión 🚪</button>
             </div>
 
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes pertenecientes a esa categoría.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes pertenecientes a esa categoría. <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
             
             <div class="stats-grid">
                 <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size: 0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
@@ -292,14 +292,31 @@
     <div id="toast"></div>
 
     <script>
-        // NUEVA URL ACTUALIZADA Y SEGURA DE APPS SCRIPT CON PARÁMETRO DE ORIGEN
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyC21dusp5La3wfiqw3jKiFL6ZQ6HZqctFZ7zMLAQU5g-l36e7I93wVJeb1_ASD-WPySg/exec';
+        // NUEVA URL ACTUALIZADA Y SEGURA DE APPS SCRIPT
+        const API_URL = 'https://script.google.com/macros/s/AKfycby2ftMl8MdfQNoLiyo5rhj_8f8JteevounQ-f6pmYW7ofdtEUYUIjEPZr1kZrILVl47VA/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
         let queriedAdminClient = null;
         let allClientsCache = [];
         let rewardsList = [];
+
+        // --- SISTEMA DE INACTIVIDAD (AUTO-LOGOUT ADMIN - 10 MINUTOS) ---
+        let inactivityTimer = null;
+        const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutos
+
+        function resetInactivityTimer() {
+            if (!sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) return;
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                logoutAdmin();
+                showToast("🔒 Sesión de administrador cerrada por inactividad.");
+            }, INACTIVITY_LIMIT);
+        }
+
+        ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evento => {
+            window.addEventListener(evento, resetInactivityTimer);
+        });
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -336,6 +353,7 @@
                 if (sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) {
                     document.getElementById('admin-dashboard-view').classList.remove('hidden');
                     loadAdminLevelStats();
+                    resetInactivityTimer();
                 } else {
                     document.getElementById('admin-login-view').classList.remove('hidden');
                 }
@@ -405,6 +423,7 @@
 
         function logoutAdmin() {
             sessionStorage.removeItem("FERRELUNZE_ADMIN_TOKEN");
+            clearTimeout(inactivityTimer);
             resetForms();
             switchRole('admin');
             showToast('Sesión de administrador cerrada.');
