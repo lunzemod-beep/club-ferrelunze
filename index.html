@@ -244,7 +244,30 @@
                 </form>
             </div>
 
-            <!-- CONSULTA Y CORRECCIÓN DE PUNTOS CON HISTORIAL -->
+            <!-- DASHBOARD GENERAL DE PREMIOS CANJEADOS (GLOBAL) -->
+            <div class="box-card" style="border-left: 5px solid var(--accent);">
+                <h3>🏆 Dashboard Global de Premios Canjeados por Clientes</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Listado general de todos los premios solicitados y su estado actual de entrega en el local.</p>
+                <div style="overflow-x: auto; max-height: 220px;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cédula</th>
+                                <th>Cliente</th>
+                                <th>Premio</th>
+                                <th>Código</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-global-canjes-tbody">
+                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Cargando registros...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CONSULTA Y CORRECCIÓN DE PUNTOS CON HISTORIAL Y CANJES DEL CLIENTE -->
             <div class="box-card" style="border-left: 5px solid #d97706;">
                 <h3>🔍 Consulta, Corrección e Historial de Cliente</h3>
                 <form onsubmit="handleAdminSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 16px;">
@@ -256,10 +279,21 @@
                     <h4 id="info-client-name" style="font-size: 1.1rem;">-</h4>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Saldo actual: <strong id="info-client-points" style="color:var(--primary);">0 pts</strong></p>
 
-                    <!-- HISTORIAL DEL CLIENTE VISIBLE PARA EL ADMIN -->
+                    <!-- HISTORIAL DE MOVIMIENTOS -->
                     <div style="margin-top: 14px;">
-                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Historial de Movimientos y Canjes del Cliente:</h5>
-                        <ul id="admin-client-history-list" style="list-style: none; max-height: 150px; overflow-y: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4;"></ul>
+                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Historial de Movimientos de Puntos:</h5>
+                        <ul id="admin-client-history-list" style="list-style: none; max-height: 120px; overflow-y: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4;"></ul>
+                    </div>
+
+                    <!-- CANJES ESPECÍFICOS DE ESTE CLIENTE -->
+                    <div style="margin-top: 14px;">
+                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Premios Canjeados por este Cliente:</h5>
+                        <div style="overflow-x: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4; max-height: 120px;">
+                            <table class="custom-table" style="margin-top:0;">
+                                <thead><tr><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
+                                <tbody id="admin-client-canjes-tbody"><tr><td colspan="3">Sin canjes</td></tr></tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #dcd2c4;">
@@ -310,15 +344,15 @@
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwqrXepXORbnDPk015ekfb4O_-L_hpYu0Y-h_dhRO7fa8M-iqXlos8pij_44vMLkmzytQ/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxjN6lF3PBiFnx36i4yNT7Neqe33L9xtmnvEDiG8Ua5mPdbksBTSMfID1DaAxn5Vg7OrA/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
         let queriedAdminClient = null;
         let allClientsCache = [];
         let rewardsList = [];
+        let globalCanjesCache = [];
 
-        // --- SISTEMA DE INACTIVIDAD (AUTO-LOGOUT ADMIN - 10 MINUTOS) ---
         let inactivityTimer = null;
         const INACTIVITY_LIMIT = 10 * 60 * 1000;
 
@@ -373,7 +407,7 @@
                     loadAdminLevelStats();
                     resetInactivityTimer();
                 } else {
-                    document.getElementById('admin-login-view').classList.add('hidden');
+                    document.getElementById('admin-login-view').classList.remove('hidden');
                 }
             }
         }
@@ -546,6 +580,7 @@
                 if(data.status === "success") {
                     alert(data.mensaje);
                     document.getElementById('admin-codigo-canje-input').value = '';
+                    loadAdminLevelStats();
                 } else {
                     alert(data.message);
                 }
@@ -582,6 +617,7 @@
                 if (data.status === "success") { 
                     sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token); 
                     rewardsList = data.premios || rewardsList;
+                    globalCanjesCache = data.canjesGlobales || [];
                     switchRole('admin'); 
                 } else { 
                     showToast('❌ ' + (data.message || 'Contraseña incorrecta')); 
@@ -598,13 +634,17 @@
                 if (data.status === "success") {
                     allClientsCache = data.clientes || [];
                     rewardsList = data.premios || rewardsList;
+                    globalCanjesCache = data.canjesGlobales || [];
+
                     let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
                     allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
                     document.getElementById('stat-bronce').textContent = stats.bronce;
                     document.getElementById('stat-plata').textContent = stats.plata;
                     document.getElementById('stat-oro').textContent = stats.oro;
                     document.getElementById('stat-diamante').textContent = stats.diamante;
+                    
                     renderAdminRewards();
+                    renderGlobalCanjesDashboard();
                 } else {
                     renderAdminRewards();
                 }
@@ -612,6 +652,25 @@
                 console.error("Error cargando stats de admin", e);
                 renderAdminRewards();
             }
+        }
+
+        function renderGlobalCanjesDashboard() {
+            const tbody = document.getElementById('admin-global-canjes-tbody');
+            if (!globalCanjesCache || globalCanjesCache.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No hay premios canjeados todavía.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = globalCanjesCache.map(c => `
+                <tr>
+                    <td>${String(c.fecha).substring(0, 10)}</td>
+                    <td>${c.cedula}</td>
+                    <td><strong>${c.cliente}</strong></td>
+                    <td>${c.premio}</td>
+                    <td><code style="background:#f5f2eb; padding:2px 6px; border-radius:4px; font-weight:bold;">${c.codigo}</code></td>
+                    <td><span style="padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; background:${c.estado === 'Entregado' ? '#dcfce7' : '#fef3c7'}; color:${c.estado === 'Entregado' ? '#166534' : '#b45309'};">${c.estado}</span></td>
+                </tr>
+            `).join('');
         }
 
         function showTierClientsList(tierKey) {
@@ -648,6 +707,19 @@
                                 </div>
                                 <div style="font-size:0.7rem; color:#777;">🕒 ${String(h.fecha).substring(0, 19)}</div>
                             </li>
+                        `).join('');
+                    }
+
+                    const canjesTbody = document.getElementById('admin-client-canjes-tbody');
+                    if (!data.canjes || data.canjes.length === 0) {
+                        canjesTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Sin canjes realizados.</td></tr>';
+                    } else {
+                        canjesTbody.innerHTML = data.canjes.map(cj => `
+                            <tr>
+                                <td>${cj.premio}</td>
+                                <td><code>${cj.codigo}</code></td>
+                                <td><span style="font-size:0.7rem; font-weight:bold; color:${cj.estado === 'Entregado' ? '#166534' : '#b45309'};">${cj.estado}</span></td>
+                            </tr>
                         `).join('');
                     }
 
