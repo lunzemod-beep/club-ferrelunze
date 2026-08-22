@@ -219,7 +219,7 @@
                 <button onclick="logoutAdmin()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.8rem;">Cerrar Sesión 🚪</button>
             </div>
 
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes pertenecientes a esa categoría. <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes pertenecientes a esa categoría (ordenados de mayor a menor saldo). <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
             
             <div class="stats-grid">
                 <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size: 0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
@@ -228,6 +228,7 @@
                 <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size: 0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
             </div>
 
+            <!-- TABLA DE CLIENTES POR CATEGORÍA -->
             <div id="admin-tier-list-box" class="box-card hidden" style="border-left: 5px solid var(--primary);">
                 <div style="display:flex; justify-content:space-between; align-items:center;"><h3 id="tier-list-title">Clientes</h3><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
                 <div style="overflow-x: auto;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Puntos Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
@@ -366,7 +367,7 @@
                     loadAdminLevelStats();
                     resetInactivityTimer();
                 } else {
-                    document.getElementById('admin-login-view').classList.add('hidden');
+                    document.getElementById('admin-login-view').classList.remove('hidden');
                 }
             }
         }
@@ -607,8 +608,12 @@
         }
 
         function showTierClientsList(tierKey) {
-            const filtered = allClientsCache.filter(c => calculateTier(c.puntos).name.toLowerCase() === tierKey);
-            document.getElementById('tier-list-title').textContent = `Clientes Categoría ${tierKey.toUpperCase()}`;
+            // Filtramos por categoría y ordenamos estrictamente de MAYOR A MENOR puntos
+            const filtered = allClientsCache
+                .filter(c => calculateTier(c.puntos).name.toLowerCase() === tierKey)
+                .sort((a, b) => b.puntos - a.puntos);
+
+            document.getElementById('tier-list-title').textContent = `Clientes Categoría ${tierKey.toUpperCase()} (Mayor a Menor)`;
             document.getElementById('tier-list-table-body').innerHTML = filtered.length === 0 ? '<tr><td colspan="4">Sin clientes</td></tr>' : filtered.map(c => `<tr><td><strong>${c.nombre}</strong></td><td>${c.telefono}</td><td>${c.cedula}</td><td style="color:var(--primary); font-weight:bold;">${c.puntos} pts</td></tr>`).join('');
             document.getElementById('admin-tier-list-box').classList.remove('hidden');
         }
