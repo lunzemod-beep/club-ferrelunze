@@ -293,7 +293,7 @@
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxzZVwZyufqilY9O2WyBvb9EKhVdA-ayi44Ha0UPkcg9v4xJi9q7-GmwslmlMejr66DDg/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyEzovOcm3iQ9ptzacfh8whipvN1PKfYeIqz3CWAs4-jFvdXbB3V73zXp1CiMQCqvkt6A/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -545,7 +545,6 @@
                     document.getElementById('stat-diamante').textContent = stats.diamante;
                     renderAdminRewards();
                 } else {
-                    // EVITAMOS QUE EXPULSE AL ADMIN SI HUBO UN RETARDO DE RED: Cargamos catálogo local por defecto
                     renderAdminRewards();
                 }
             } catch(e) {
