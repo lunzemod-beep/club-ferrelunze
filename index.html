@@ -219,7 +219,7 @@
                 <button onclick="logoutAdmin()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.8rem;">Cerrar Sesión 🚪</button>
             </div>
 
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes pertenecientes a esa categoría (ordenados de mayor a menor saldo). <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes (ordenados de mayor a menor saldo). <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
             
             <div class="stats-grid">
                 <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size: 0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
@@ -244,9 +244,9 @@
                 </form>
             </div>
 
-            <!-- CORRECCIÓN DE PUNTOS CON MOTIVO -->
+            <!-- CONSULTA Y CORRECCIÓN DE PUNTOS CON HISTORIAL -->
             <div class="box-card" style="border-left: 5px solid #d97706;">
-                <h3>🔍 Consulta y Corrección de Puntos con Motivo</h3>
+                <h3>🔍 Consulta, Corrección e Historial de Cliente</h3>
                 <form onsubmit="handleAdminSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 16px;">
                     <input type="text" id="admin-search-cedula" required placeholder="Buscar por cédula" class="input-field" style="margin-bottom:0;">
                     <button type="submit" id="btn-buscar-cliente" class="btn-dark" style="white-space:nowrap;">Buscar</button>
@@ -254,7 +254,13 @@
 
                 <div id="admin-client-info-box" class="hidden" style="background:#f5f2eb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
                     <h4 id="info-client-name" style="font-size: 1.1rem;">-</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Saldo: <strong id="info-client-points" style="color:var(--primary);">0 pts</strong></p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Saldo actual: <strong id="info-client-points" style="color:var(--primary);">0 pts</strong></p>
+
+                    <!-- HISTORIAL DEL CLIENTE VISIBLE PARA EL ADMIN -->
+                    <div style="margin-top: 14px;">
+                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Historial de Movimientos y Canjes del Cliente:</h5>
+                        <ul id="admin-client-history-list" style="list-style: none; max-height: 150px; overflow-y: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4;"></ul>
+                    </div>
 
                     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #dcd2c4;">
                         <h5 style="font-size: 0.85rem; margin-bottom: 8px;">Ajustar Puntos y Motivo</h5>
@@ -304,7 +310,7 @@
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxtjt83Q9O6hKZgYOio5rpYjoPi98e9soXfQeNtYma7Knr0BDxouyaXCV6_Gkqv6kttgw/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwqrXepXORbnDPk015ekfb4O_-L_hpYu0Y-h_dhRO7fa8M-iqXlos8pij_44vMLkmzytQ/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -367,7 +373,7 @@
                     loadAdminLevelStats();
                     resetInactivityTimer();
                 } else {
-                    document.getElementById('admin-login-view').classList.remove('hidden');
+                    document.getElementById('admin-login-view').classList.add('hidden');
                 }
             }
         }
@@ -515,6 +521,7 @@
                 const data = await res.json();
                 if (data.status === "success") {
                     activeClient.puntos = data.nuevosPuntos;
+                    activeClient.historial = data.historial || [];
                     renderClientDashboard();
                     alert(`🎉 ¡Canje exitoso!\n\nPremio: ${tituloPremio}\nTu Código de Retiro es: [ ${data.codigoCanje} ]\n\nPreséntate en el mostrador de Ferrelunze con tu cédula física y dicta este código de 4 dígitos para recibir tu premio.`);
                 } else {
@@ -558,7 +565,7 @@
                         <span style="color: var(--primary-dark);">${t.descripcion}</span>
                         <span style="color:${parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${t.puntos} pts</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${String(t.fecha).substring(0, 10)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${String(t.fecha).substring(0, 19)}</div>
                 </li>
             `).join('');
         }
@@ -608,7 +615,6 @@
         }
 
         function showTierClientsList(tierKey) {
-            // Filtramos por categoría y ordenamos estrictamente de MAYOR A MENOR puntos
             const filtered = allClientsCache
                 .filter(c => calculateTier(c.puntos).name.toLowerCase() === tierKey)
                 .sort((a, b) => b.puntos - a.puntos);
@@ -621,13 +627,30 @@
 
         async function handleAdminSearchClient(e) {
             e.preventDefault();
+            const cedulaBuscada = document.getElementById('admin-search-cedula').value.trim();
             try {
-                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'consultar_cliente', cedula: document.getElementById('admin-search-cedula').value.trim() }) });
+                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'consultar_cliente', cedula: cedulaBuscada }) });
                 const data = await response.json();
                 if (data.status === "success") {
-                    queriedAdminClient = { cedula: document.getElementById('admin-search-cedula').value.trim(), nombre: data.nombre, puntos: data.puntos };
+                    queriedAdminClient = { cedula: cedulaBuscada, nombre: data.nombre, puntos: data.puntos };
                     document.getElementById('info-client-name').textContent = data.nombre;
                     document.getElementById('info-client-points').textContent = `${data.puntos} pts`;
+                    
+                    const histList = document.getElementById('admin-client-history-list');
+                    if (!data.historial || data.historial.length === 0) {
+                        histList.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">Sin movimientos registrados.</li>';
+                    } else {
+                        histList.innerHTML = data.historial.map(h => `
+                            <li style="padding: 6px 0; border-bottom: 1px solid #eee; font-size: 0.8rem;">
+                                <div style="display:flex; justify-content:space-between; font-weight:600;">
+                                    <span>${h.descripcion}</span>
+                                    <span style="color:${Number(h.puntos) >= 0 ? '#2e7d32' : '#b91c1c'};">${h.puntos} pts</span>
+                                </div>
+                                <div style="font-size:0.7rem; color:#777;">🕒 ${String(h.fecha).substring(0, 19)}</div>
+                            </li>
+                        `).join('');
+                    }
+
                     document.getElementById('admin-client-info-box').classList.remove('hidden');
                 } else { showToast('❌ ' + data.message); }
             } catch(err) {
