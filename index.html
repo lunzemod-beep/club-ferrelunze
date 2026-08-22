@@ -233,6 +233,16 @@
                 <div style="overflow-x: auto;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Puntos Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
             </div>
 
+            <!-- VALIDADOR DE CANJES EN MOSTRADOR -->
+            <div class="box-card" style="border-left: 5px solid #2e7d32;">
+                <h3>🎁 Validar Código de Canje en Mostrador</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula física antes de entregar el premio.</p>
+                <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
+                    <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
+                    <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
+                </form>
+            </div>
+
             <!-- CORRECCIÓN DE PUNTOS CON MOTIVO -->
             <div class="box-card" style="border-left: 5px solid #d97706;">
                 <h3>🔍 Consulta y Corrección de Puntos con Motivo</h3>
@@ -293,7 +303,7 @@
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzz5fIii7lFQJ1AWc_TLGm65tejAoIwsPovVMmKgI1EB_IY57oVjTDdMeSmPFh7ZVJhew/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxtjt83Q9O6hKZgYOio5rpYjoPi98e9soXfQeNtYma7Knr0BDxouyaXCV6_Gkqv6kttgw/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -356,7 +366,7 @@
                     loadAdminLevelStats();
                     resetInactivityTimer();
                 } else {
-                    document.getElementById('admin-login-view').classList.remove('hidden');
+                    document.getElementById('admin-login-view').classList.add('hidden');
                 }
             }
         }
@@ -511,6 +521,28 @@
                 }
             } catch (err) {
                 showToast('❌ Error de red al procesar el canje.');
+            }
+        }
+
+        async function handleAdminValidateCanje(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('admin-codigo-canje-input').value.trim();
+            if(codigo.length !== 4) { showToast('El código debe ser de 4 dígitos'); return; }
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ tipo: 'validar_canje_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), codigoCanje: codigo }) 
+                });
+                const data = await res.json();
+                if(data.status === "success") {
+                    alert(data.mensaje);
+                    document.getElementById('admin-codigo-canje-input').value = '';
+                } else {
+                    alert(data.message);
+                }
+            } catch(err) {
+                showToast('❌ Error de red al validar canje.');
             }
         }
 
