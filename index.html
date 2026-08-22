@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Ferrelunze | Sistema de Fidelización</title>
+    <!-- MANTENEMOS TU CSS ORIGINAL E INTEGRAMOS EL DISEÑO LATERAL -->
     <style>
-        :root { --primary: #8b4513; --primary-dark: #3e2723; --bg-body: #f5f2eb; --text-dark: #2c1d11; --text-muted: #6d594b; --accent: #d97706; --danger: #b91c1c; --whatsapp: #25d366; }
+        :root { --primary: #8b4513; --primary-dark: #3e2723; --bg-body: #f5f2eb; --text-dark: #2c1d11; --text-muted: #6d594b; --card-bg: #ffffff; --accent: #d97706; --danger: #b91c1c; --whatsapp: #25d366; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; position: relative; }
-        body::before { content: ''; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 550px; height: 550px; background-image: url('https://lunzemod-beep.github.io/logo.png'); background-repeat: no-repeat; background-position: center; background-size: contain; opacity: 0.12; pointer-events: none; z-index: 0; }
+        body::before { content: ''; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 550px; height: 550px; background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: contain; opacity: 0.12; pointer-events: none; z-index: 0; }
         
+        /* DISEÑO DE LAYOUT CON PANELES PUBLICITARIOS LATERALES */
         @media (min-width: 1200px) {
             body { display: flex; flex-direction: column; align-items: center; }
             header { width: 100%; }
@@ -19,7 +21,7 @@
             .side-ad-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover; }
         }
         @media (max-width: 1199px) { .side-ad-left, .side-ad-right { display: none !important; } main { max-width: 1100px; margin: 24px auto; padding: 0 16px; } }
-
+        /* ... (MANTENEMOS TU CSS ORIGINAL DE LAS TARJETAS Y TABLAS QUE YA FUNCIONABAN) ... */
         header { background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1; }
         .brand-logo { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
         .role-switch { display: flex; background: #e7dfd5; padding: 4px; border-radius: 12px; gap: 4px; }
@@ -30,9 +32,14 @@
         .login-card { max-width: 460px; margin: 30px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; text-align: center; }
         .input-field { width: 100%; padding: 12px; border: 1px solid #c8bba8; border-radius: 10px; margin-bottom: 12px; }
         .btn-primary { width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        .reward-card { background: white; border: 1px solid #e2d9cd; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+        .btn-redeem { background: #2e7d32; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 12px; }
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; display: none; z-index: 100; }
     </style>
 </head>
 <body>
+
     <header>
         <div class="brand-logo">🛠️ Ferrelunze <span>Club</span></div>
         <div class="role-switch">
@@ -42,27 +49,30 @@
     </header>
 
     <div class="app-container-wrapper">
-        <aside id="side-ad-left-container" class="side-ad-left hidden"><img id="pub-img-left" class="side-ad-img" src=""><h4 id="pub-title-left"></h4><p id="pub-text-left"></p></aside>
+        <!-- PUBLICIDAD IZQUIERDA -->
+        <aside id="side-ad-left-container" class="side-ad-left hidden">
+            <img id="pub-img-left" src="" class="side-ad-img">
+            <h4 id="pub-title-left"></h4><p id="pub-text-left"></p>
+        </aside>
 
-        <main style="width: 100%;">
-            <!-- VISTAS -->
-            <div id="client-login-view" class="login-card">
-                <h2>Portal de Clientes</h2>
-                <form onsubmit="handleClientLogin(event)">
-                    <input type="text" id="client-cedula-input" required placeholder="Cédula" class="input-field">
-                    <input type="password" id="client-pin-login" maxlength="4" required placeholder="PIN" class="input-field">
-                    <button type="submit" id="btn-login-cliente" class="btn-primary">Ingresar</button>
-                </form>
-            </div>
-            <!-- ... (Aquí irían el resto de tus divs de dashboard, admin, etc, tal cual los tenías antes) ... -->
+        <!-- AQUÍ VA TODO TU CONTENIDO ORIGINAL -->
+        <main id="main-content" style="width: 100%;">
+            <!-- (Asegúrate de tener tus bloques de divs: client-login-view, client-dashboard-view, etc.) -->
         </main>
 
-        <aside id="side-ad-right-container" class="side-ad-right hidden"><img id="pub-img-right" class="side-ad-img" src=""><h4 id="pub-title-right"></h4><p id="pub-text-right"></p></aside>
+        <!-- PUBLICIDAD DERECHA -->
+        <aside id="side-ad-right-container" class="side-ad-right hidden">
+            <img id="pub-img-right" src="" class="side-ad-img">
+            <h4 id="pub-title-right"></h4><p id="pub-text-right"></p>
+        </aside>
     </div>
 
     <script>
+        // LA URL DE TU NUEVA IMPLEMENTACIÓN
         const API_URL = 'https://script.google.com/macros/s/AKfycbzOHDyJoFt5VGlPOogbf-c1_4HHCFkGAVv3cWQQ_HXeSLsbwbI5WuPtwRIC05DrOq-cNA/exec';
-        // ... (Tu lógica de JS anterior)
+        
+        // ... (AQUÍ PEGA TODO TU CÓDIGO DE LÓGICA JS QUE TENÍAS FUNCIONANDO) ...
+        // ... (Asegúrate de incluir la función renderPublicidadLaterales que te envié anteriormente) ...
     </script>
 </body>
 </html>
