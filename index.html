@@ -30,6 +30,63 @@
             opacity: 0.12; pointer-events: none; z-index: 0;
         }
 
+        /* DISEÑO DE LAYOUT CON PANELES PUBLICITARIOS LATERALES EN PANTALLAS GRANDES */
+        @media (min-width: 1200px) {
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            header {
+                width: 100%;
+            }
+            .app-container-wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                max-width: 1350px;
+                width: 100%;
+                margin: 24px auto;
+                gap: 20px;
+                padding: 0 16px;
+            }
+            main {
+                flex: 0 0 850px;
+                margin: 0 !important;
+            }
+            .side-ad-left, .side-ad-right {
+                flex: 1;
+                max-width: 230px;
+                background: white;
+                padding: 16px;
+                border-radius: 16px;
+                border: 1px solid #e2d9cd;
+                box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04);
+                text-align: center;
+                position: sticky;
+                top: 24px;
+            }
+            .side-ad-img {
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                object-fit: cover;
+            }
+        }
+
+        /* EN CELULARES Y TABLETS PEQUEÑAS SE OCULTAN LOS LATERALES */
+        @media (max-width: 1199px) {
+            .side-ad-left, .side-ad-right {
+                display: none !important;
+            }
+            main {
+                max-width: 1100px;
+                margin: 24px auto;
+                padding: 0 16px;
+            }
+        }
+
         header {
             background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px;
             display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1;
@@ -41,7 +98,6 @@
         .role-btn { border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; background: transparent; color: var(--text-muted); transition: all 0.2s; }
         .role-btn.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
 
-        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; position: relative; z-index: 1; }
         .hidden { display: none !important; }
 
         .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
@@ -112,239 +168,256 @@
         </div>
     </header>
 
-    <main>
-        <!-- CLIENTE: LOGIN -->
-        <div id="client-login-view" class="login-card">
-            <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-            <h2>Portal de Clientes Ferrelunze</h2>
-            <p>Ingresa tus datos para consultar o canjear tus puntos</p>
-            <form id="form-client-login" onsubmit="handleClientLogin(event)">
-                <input type="text" id="client-cedula-input" required placeholder="Cédula de Ciudadanía" class="input-field">
-                <input type="password" id="client-pin-login" maxlength="4" required placeholder="PIN de Seguridad" class="input-field">
-                <button type="submit" id="btn-login-cliente" class="btn-primary">Ingresar</button>
-            </form>
-            <div style="margin-top: 16px; font-size: 0.85rem;">
-                ¿Eres cliente nuevo? <a href="#" onclick="showRegisterForm()" style="color:var(--primary); font-weight:700;">Regístrate aquí</a>
-            </div>
-        </div>
+    <!-- WRAPPER PARA DISEÑO DINÁMICO CON PANELES PUBLICITARIOS LATERALES -->
+    <div class="app-container-wrapper">
+        <!-- === PUBLICIDAD IZQUIERDA === -->
+        <aside id="side-ad-left-container" class="side-ad-left hidden">
+            <img id="pub-img-left" src="" class="side-ad-img" alt="Publicidad Izquierda">
+            <h4 id="pub-title-left" style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px;">-</h4>
+            <p id="pub-text-left" style="font-size:0.75rem; color:var(--text-muted);">-</p>
+        </aside>
 
-        <!-- CLIENTE: REGISTRO -->
-        <div id="client-register-view" class="login-card hidden">
-            <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-            <h2>Registro de Nuevo Cliente</h2>
-            <p>Completa tus datos para ingresar al Club de Fidelización</p>
-            <form id="form-client-register" onsubmit="handleClientRegister(event)">
-                <input type="text" id="reg-name" required placeholder="Nombre Completo" class="input-field">
-                <input type="text" id="reg-cedula" required placeholder="Cédula de Ciudadanía / NIT" class="input-field">
-                <input type="tel" id="reg-phone" required placeholder="Número de Celular" class="input-field">
-                <input type="email" id="reg-email" required placeholder="Correo Electrónico" class="input-field">
-                <input type="text" id="reg-address" required placeholder="Dirección de Residencia" class="input-field">
-                <input type="password" id="reg-pin" maxlength="4" required placeholder="Crea un PIN de 4 dígitos" class="input-field">
-
-                <div class="legal-box">
-                    <strong>Autorización de Tratamiento de Datos (Ley 1581 de 2012):</strong>
-                    Autorizo expresamente a Ferrelunze para recolectar, almacenar y tratar mis datos personales para la gestión del programa de fidelización y notificaciones comerciales.
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; text-align: left; font-size: 0.8rem;">
-                    <input type="checkbox" id="reg-habeas" required>
-                    <label for="reg-habeas">Acepto los términos y la política de tratamiento de datos personales.</label>
-                </div>
-
-                <button type="submit" id="btn-registro-cliente" class="btn-primary">Completar Registro</button>
-                <button type="button" onclick="showLoginForm()" class="btn-dark" style="margin-top: 8px; background:#6d594b; width:100%;">Volver al Ingreso</button>
-            </form>
-        </div>
-
-        <!-- CLIENTE: DASHBOARD -->
-        <div id="client-dashboard-view" class="hidden">
-            <div class="vip-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="client-tier-badge" class="tier-badge tier-bronce">BRONCE</span>
-                    <button onclick="logoutClient()" style="background:transparent; border:none; color:white; font-size:0.75rem; cursor:pointer; opacity:0.8;">Cerrar Sesión 🚪</button>
-                </div>
-                <h2 id="client-name-display" style="font-size: 1.3rem; margin-top: 10px;">Hola, Cliente</h2>
-                <div class="points-large"><span id="client-points-display">0</span> <span style="font-size: 1.2rem; color: white;">pts</span></div>
-                
-                <p style="font-size: 0.8rem; opacity: 0.9;" id="progress-text">Progreso al siguiente nivel</p>
-                <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
-                
-                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; opacity: 0.85;">
-                    📅 <strong>Vencimiento de puntos:</strong> Vigencia de 12 meses a partir de la fecha de compra.
-                </div>
-            </div>
-
-            <!-- CAMBIAR PIN -->
-            <div class="box-card" style="border-left: 5px solid var(--primary);">
-                <h3>🔒 Cambiar mi PIN de Seguridad</h3>
-                <form onsubmit="handleClientChangePin(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="password" id="client-new-pin" maxlength="4" required placeholder="Nuevo PIN (4 dígitos)" class="input-field" style="flex:1; margin-bottom:0;">
-                    <button type="submit" class="btn-primary" style="flex:auto; width:auto;">Actualizar PIN</button>
+        <main style="width: 100%;">
+            <!-- CLIENTE: LOGIN -->
+            <div id="client-login-view" class="login-card">
+                <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
+                <h2>Portal de Clientes Ferrelunze</h2>
+                <p>Ingresa tus datos para consultar o canjear tus puntos</p>
+                <form id="form-client-login" onsubmit="handleClientLogin(event)">
+                    <input type="text" id="client-cedula-input" required placeholder="Cédula de Ciudadanía" class="input-field">
+                    <input type="password" id="client-pin-login" maxlength="4" required placeholder="PIN de Seguridad" class="input-field">
+                    <button type="submit" id="btn-login-cliente" class="btn-primary">Ingresar</button>
                 </form>
-            </div>
-
-            <h3 style="margin-bottom: 12px;">Premios Disponibles para Canje</h3>
-            <div id="client-rewards-container" class="rewards-grid" style="margin-bottom: 32px;"></div>
-
-            <!-- BOTÓN FLOTANTE WHATSAPP FERRELUNZE -->
-            <div class="box-card" style="text-align: center; background: #fdfbf7;">
-                <h3 style="font-size: 1rem; margin-bottom: 4px;">¿Tienes dudas con tus puntos o un premio?</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Comunícate directamente con nuestro equipo de mostrador.</p>
-                <a href="https://wa.me/573156933747?text=Hola,%20soy%20cliente%20de%20Club%20Ferrelunze%20y%20deseo%20consultar%20sobre%20mis%20beneficios." target="_blank" class="whatsapp-float">
-                    💬 Escribir a WhatsApp Ferrelunze
-                </a>
-            </div>
-
-            <div class="box-card">
-                <h3>Historial de Movimientos y Vencimientos</h3>
-                <ul id="client-history-list" style="list-style: none;"></ul>
-            </div>
-        </div>
-
-        <!-- ADMIN: LOGIN -->
-        <div id="admin-login-view" class="login-card hidden">
-            <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-            <h2>Acceso Administrador</h2>
-            <p>Ingresa la contraseña del sistema</p>
-            <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
-                <input type="password" id="admin-pass-input" required placeholder="Contraseña de administrador" class="input-field">
-                <button type="submit" id="btn-login-admin" class="btn-primary" style="background:var(--primary-dark);">Acceder al Panel</button>
-            </form>
-        </div>
-
-        <!-- ADMIN: DASHBOARD -->
-        <div id="admin-dashboard-view" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="margin: 0;">Panel de Control - Administrador</h3>
-                <button onclick="logoutAdmin()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.8rem;">Cerrar Sesión 🚪</button>
-            </div>
-
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes (ordenados de mayor a menor saldo). <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
-            
-            <div class="stats-grid">
-                <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size: 0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #546e7a;" onclick="showTierClientsList('plata')"><span style="font-size: 0.8rem; font-weight:700; color:#546e7a;">🥈 PLATA</span><div class="val" id="stat-plata">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #b45309;" onclick="showTierClientsList('oro')"><span style="font-size: 0.8rem; font-weight:700; color:#b45309;">🥇 ORO</span><div class="val" id="stat-oro">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size: 0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
-            </div>
-
-            <!-- TABLA DE CLIENTES POR CATEGORÍA -->
-            <div id="admin-tier-list-box" class="box-card hidden" style="border-left: 5px solid var(--primary);">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><h3 id="tier-list-title">Clientes</h3><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
-                <div style="overflow-x: auto;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Puntos Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
-            </div>
-
-            <!-- VALIDADOR DE CANJES EN MOSTRADOR -->
-            <div class="box-card" style="border-left: 5px solid #2e7d32;">
-                <h3>🎁 Validar Código de Canje en Mostrador</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula física antes de entregar el premio.</p>
-                <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
-                    <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
-                    <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
-                </form>
-            </div>
-
-            <!-- DASHBOARD GENERAL DE PREMIOS CANJEADOS (GLOBAL) -->
-            <div class="box-card" style="border-left: 5px solid var(--accent);">
-                <h3>🏆 Dashboard Global de Premios Canjeados por Clientes</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Listado general de todos los premios solicitados y su estado actual de entrega en el local.</p>
-                <div style="overflow-x: auto; max-height: 220px;">
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cédula</th>
-                                <th>Cliente</th>
-                                <th>Premio</th>
-                                <th>Código</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-global-canjes-tbody">
-                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Cargando registros...</td></tr>
-                        </tbody>
-                    </table>
+                <div style="margin-top: 16px; font-size: 0.85rem;">
+                    ¿Eres cliente nuevo? <a href="#" onclick="showRegisterForm()" style="color:var(--primary); font-weight:700;">Regístrate aquí</a>
                 </div>
             </div>
 
-            <!-- CONSULTA Y CORRECCIÓN DE PUNTOS CON HISTORIAL Y CANJES DEL CLIENTE -->
-            <div class="box-card" style="border-left: 5px solid #d97706;">
-                <h3>🔍 Consulta, Corrección e Historial de Cliente</h3>
-                <form onsubmit="handleAdminSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 16px;">
-                    <input type="text" id="admin-search-cedula" required placeholder="Buscar por cédula" class="input-field" style="margin-bottom:0;">
-                    <button type="submit" id="btn-buscar-cliente" class="btn-dark" style="white-space:nowrap;">Buscar</button>
-                </form>
+            <!-- CLIENTE: REGISTRO -->
+            <div id="client-register-view" class="login-card hidden">
+                <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
+                <h2>Registro de Nuevo Cliente</h2>
+                <p>Completa tus datos para ingresar al Club de Fidelización</p>
+                <form id="form-client-register" onsubmit="handleClientRegister(event)">
+                    <input type="text" id="reg-name" required placeholder="Nombre Completo" class="input-field">
+                    <input type="text" id="reg-cedula" required placeholder="Cédula de Ciudadanía / NIT" class="input-field">
+                    <input type="tel" id="reg-phone" required placeholder="Número de Celular" class="input-field">
+                    <input type="email" id="reg-email" required placeholder="Correo Electrónico" class="input-field">
+                    <input type="text" id="reg-address" required placeholder="Dirección de Residencia" class="input-field">
+                    <input type="password" id="reg-pin" maxlength="4" required placeholder="Crea un PIN de 4 dígitos" class="input-field">
 
-                <div id="admin-client-info-box" class="hidden" style="background:#f5f2eb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                    <h4 id="info-client-name" style="font-size: 1.1rem;">-</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Saldo actual: <strong id="info-client-points" style="color:var(--primary);">0 pts</strong></p>
-
-                    <!-- HISTORIAL DE MOVIMIENTOS -->
-                    <div style="margin-top: 14px;">
-                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Historial de Movimientos de Puntos:</h5>
-                        <ul id="admin-client-history-list" style="list-style: none; max-height: 120px; overflow-y: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4;"></ul>
+                    <div class="legal-box">
+                        <strong>Autorización de Tratamiento de Datos (Ley 1581 de 2012):</strong>
+                        Autorizo expresamente a Ferrelunze para recolectar, almacenar y tratar mis datos personales para la gestión del programa de fidelización y notificaciones comerciales.
                     </div>
 
-                    <!-- CANJES ESPECÍFICOS DE ESTE CLIENTE -->
-                    <div style="margin-top: 14px;">
-                        <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Premios Canjeados por este Cliente:</h5>
-                        <div style="overflow-x: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4; max-height: 120px;">
-                            <table class="custom-table" style="margin-top:0;">
-                                <thead><tr><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
-                                <tbody id="admin-client-canjes-tbody"><tr><td colspan="3">Sin canjes</td></tr></tbody>
-                            </table>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; text-align: left; font-size: 0.8rem;">
+                        <input type="checkbox" id="reg-habeas" required>
+                        <label for="reg-habeas">Acepto los términos y la política de tratamiento de datos personales.</label>
+                    </div>
+
+                    <button type="submit" id="btn-registro-cliente" class="btn-primary">Completar Registro</button>
+                    <button type="button" onclick="showLoginForm()" class="btn-dark" style="margin-top: 8px; background:#6d594b; width:100%;">Volver al Ingreso</button>
+                </form>
+            </div>
+
+            <!-- CLIENTE: DASHBOARD -->
+            <div id="client-dashboard-view" class="hidden">
+                <div class="vip-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="client-tier-badge" class="tier-badge tier-bronce">BRONCE</span>
+                        <button onclick="logoutClient()" style="background:transparent; border:none; color:white; font-size:0.75rem; cursor:pointer; opacity:0.8;">Cerrar Sesión 🚪</button>
+                    </div>
+                    <h2 id="client-name-display" style="font-size: 1.3rem; margin-top: 10px;">Hola, Cliente</h2>
+                    <div class="points-large"><span id="client-points-display">0</span> <span style="font-size: 1.2rem; color: white;">pts</span></div>
+                    
+                    <p style="font-size: 0.8rem; opacity: 0.9;" id="progress-text">Progreso al siguiente nivel</p>
+                    <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
+                    
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; opacity: 0.85;">
+                        📅 <strong>Vencimiento de puntos:</strong> Vigencia de 12 meses a partir de la fecha de compra.
+                    </div>
+                </div>
+
+                <!-- CAMBIAR PIN -->
+                <div class="box-card" style="border-left: 5px solid var(--primary);">
+                    <h3>🔒 Cambiar mi PIN de Seguridad</h3>
+                    <form onsubmit="handleClientChangePin(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="password" id="client-new-pin" maxlength="4" required placeholder="Nuevo PIN (4 dígitos)" class="input-field" style="flex:1; margin-bottom:0;">
+                        <button type="submit" class="btn-primary" style="flex:auto; width:auto;">Actualizar PIN</button>
+                    </form>
+                </div>
+
+                <h3 style="margin-bottom: 12px;">Premios Disponibles para Canje</h3>
+                <div id="client-rewards-container" class="rewards-grid" style="margin-bottom: 32px;"></div>
+
+                <!-- BOTÓN FLOTANTE WHATSAPP FERRELUNZE -->
+                <div class="box-card" style="text-align: center; background: #fdfbf7;">
+                    <h3 style="font-size: 1rem; margin-bottom: 4px;">¿Tienes dudas con tus puntos o un premio?</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Comunícate directamente con nuestro equipo de mostrador.</p>
+                    <a href="https://wa.me/573156933747?text=Hola,%20soy%20cliente%20de%20Club%20Ferrelunze%20y%20deseo%20consultar%20sobre%20mis%20beneficios." target="_blank" class="whatsapp-float">
+                        💬 Escribir a WhatsApp Ferrelunze
+                    </a>
+                </div>
+
+                <div class="box-card">
+                    <h3>Historial de Movimientos y Vencimientos</h3>
+                    <ul id="client-history-list" style="list-style: none;"></ul>
+                </div>
+            </div>
+
+            <!-- ADMIN: LOGIN -->
+            <div id="admin-login-view" class="login-card hidden">
+                <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
+                <h2>Acceso Administrador</h2>
+                <p>Ingresa la contraseña del sistema</p>
+                <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
+                    <input type="password" id="admin-pass-input" required placeholder="Contraseña de administrador" class="input-field">
+                    <button type="submit" id="btn-login-admin" class="btn-primary" style="background:var(--primary-dark);">Acceder al Panel</button>
+                </form>
+            </div>
+
+            <!-- ADMIN: DASHBOARD -->
+            <div id="admin-dashboard-view" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0;">Panel de Control - Administrador</h3>
+                    <button onclick="logoutAdmin()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.8rem;">Cerrar Sesión 🚪</button>
+                </div>
+
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Haz clic en cualquiera de los niveles para ver la lista de clientes (ordenados de mayor a menor saldo). <span style="color:var(--accent); float:right;">⏱️ Auto-logout activo (10 min)</span></p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size: 0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
+                    <div class="stat-card" style="border-top: 4px solid #546e7a;" onclick="showTierClientsList('plata')"><span style="font-size: 0.8rem; font-weight:700; color:#546e7a;">🥈 PLATA</span><div class="val" id="stat-plata">0</div></div>
+                    <div class="stat-card" style="border-top: 4px solid #b45309;" onclick="showTierClientsList('oro')"><span style="font-size: 0.8rem; font-weight:700; color:#b45309;">🥇 ORO</span><div class="val" id="stat-oro">0</div></div>
+                    <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size: 0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
+                </div>
+
+                <!-- TABLA DE CLIENTES POR CATEGORÍA -->
+                <div id="admin-tier-list-box" class="box-card hidden" style="border-left: 5px solid var(--primary);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;"><h3 id="tier-list-title">Clientes</h3><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
+                    <div style="overflow-x: auto;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Puntos Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
+                </div>
+
+                <!-- VALIDADOR DE CANJES EN MOSTRADOR -->
+                <div class="box-card" style="border-left: 5px solid #2e7d32;">
+                    <h3>🎁 Validar Código de Canje en Mostrador</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula física antes de entregar el premio.</p>
+                    <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
+                        <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
+                        <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
+                    </form>
+                </div>
+
+                <!-- DASHBOARD GENERAL DE PREMIOS CANJEADOS (GLOBAL) -->
+                <div class="box-card" style="border-left: 5px solid var(--accent);">
+                    <h3>🏆 Dashboard Global de Premios Canjeados por Clientes</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Listado general de todos los premios solicitados y su estado actual de entrega en el local.</p>
+                    <div style="overflow-x: auto; max-height: 220px;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cédula</th>
+                                    <th>Cliente</th>
+                                    <th>Premio</th>
+                                    <th>Código</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-global-canjes-tbody">
+                                <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Cargando registros...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CONSULTA Y CORRECCIÓN DE PUNTOS CON HISTORIAL Y CANJES DEL CLIENTE -->
+                <div class="box-card" style="border-left: 5px solid #d97706;">
+                    <h3>🔍 Consulta, Corrección e Historial de Cliente</h3>
+                    <form onsubmit="handleAdminSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <input type="text" id="admin-search-cedula" required placeholder="Buscar por cédula" class="input-field" style="margin-bottom:0;">
+                        <button type="submit" id="btn-buscar-cliente" class="btn-dark" style="white-space:nowrap;">Buscar</button>
+                    </form>
+
+                    <div id="admin-client-info-box" class="hidden" style="background:#f5f2eb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <h4 id="info-client-name" style="font-size: 1.1rem;">-</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Saldo actual: <strong id="info-client-points" style="color:var(--primary);">0 pts</strong></p>
+
+                        <!-- HISTORIAL DE MOVIMIENTOS -->
+                        <div style="margin-top: 14px;">
+                            <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Historial de Movimientos de Puntos:</h5>
+                            <ul id="admin-client-history-list" style="list-style: none; max-height: 120px; overflow-y: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4;"></ul>
+                        </div>
+
+                        <!-- CANJES ESPECÍFICOS DE ESTE CLIENTE -->
+                        <div style="margin-top: 14px;">
+                            <h5 style="font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark);">Premios Canjeados por este Cliente:</h5>
+                            <div style="overflow-x: auto; background: white; padding: 8px; border-radius: 8px; border: 1px solid #dcd2c4; max-height: 120px;">
+                                <table class="custom-table" style="margin-top:0;">
+                                    <thead><tr><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
+                                    <tbody id="admin-client-canjes-tbody"><tr><td colspan="3">Sin canjes</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #dcd2c4;">
+                            <h5 style="font-size: 0.85rem; margin-bottom: 8px;">Ajustar Puntos y Motivo</h5>
+                            <form onsubmit="handleAdminAdjustPoints(event)" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <input type="number" id="adjust-amount" required placeholder="Nuevo saldo total" class="input-field" style="flex:1; min-width: 110px; margin-bottom:0;">
+                                <input type="text" id="adjust-reason" required placeholder="Motivo u observación (ej: Garantía / Error caja)" class="input-field" style="flex:2; min-width: 180px; margin-bottom:0;">
+                                <button type="submit" id="btn-ajustar-puntos" class="btn-danger" style="white-space:nowrap;">Aplicar Ajuste</button>
+                            </form>
+                        </div>
+
+                        <div style="margin-top: 12px;">
+                            <button onclick="handleAdminResetClientPin()" id="btn-reset-pin" class="btn-warning" style="width:100%;">Generar Código de Acceso Temporal</button>
                         </div>
                     </div>
+                </div>
 
-                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #dcd2c4;">
-                        <h5 style="font-size: 0.85rem; margin-bottom: 8px;">Ajustar Puntos y Motivo</h5>
-                        <form onsubmit="handleAdminAdjustPoints(event)" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <input type="number" id="adjust-amount" required placeholder="Nuevo saldo total" class="input-field" style="flex:1; min-width: 110px; margin-bottom:0;">
-                            <input type="text" id="adjust-reason" required placeholder="Motivo u observación (ej: Garantía / Error caja)" class="input-field" style="flex:2; min-width: 180px; margin-bottom:0;">
-                            <button type="submit" id="btn-ajustar-puntos" class="btn-danger" style="white-space:nowrap;">Aplicar Ajuste</button>
+                <div class="grid-2">
+                    <div class="box-card">
+                        <h3>Acreditar Compra en Mostrador</h3>
+                        <form onsubmit="handleAdminAddSale(event)">
+                            <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
+                            <input type="number" id="admin-sale-amount" required min="1000" placeholder="Monto total ($ COP)" class="input-field">
+                            <button type="submit" id="btn-acreditar-compra" class="btn-primary">Acreditar Compra</button>
                         </form>
                     </div>
 
-                    <div style="margin-top: 12px;">
-                        <button onclick="handleAdminResetClientPin()" id="btn-reset-pin" class="btn-warning" style="width:100%;">Generar Código de Acceso Temporal</button>
+                    <!-- GESTOR DE PREMIOS PERSISTENTES -->
+                    <div class="box-card">
+                        <h3>Gestor de Premios (Borrador / Publicar)</h3>
+                        <form onsubmit="handleAdminAddReward(event)">
+                            <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
+                            <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
+                            <input type="text" id="reward-desc-input" placeholder="Descripción corta" class="input-field">
+                            <button type="submit" class="btn-primary" style="background:#2e7d32;">Guardar como Borrador</button>
+                        </form>
                     </div>
                 </div>
-            </div>
 
-            <div class="grid-2">
                 <div class="box-card">
-                    <h3>Acreditar Compra en Mostrador</h3>
-                    <form onsubmit="handleAdminAddSale(event)">
-                        <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
-                        <input type="number" id="admin-sale-amount" required min="1000" placeholder="Monto total ($ COP)" class="input-field">
-                        <button type="submit" id="btn-acreditar-compra" class="btn-primary">Acreditar Compra</button>
-                    </form>
-                </div>
-
-                <!-- GESTOR DE PREMIOS PERSISTENTES -->
-                <div class="box-card">
-                    <h3>Gestor de Premios (Borrador / Publicar)</h3>
-                    <form onsubmit="handleAdminAddReward(event)">
-                        <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
-                        <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
-                        <input type="text" id="reward-desc-input" placeholder="Descripción corta" class="input-field">
-                        <button type="submit" class="btn-primary" style="background:#2e7d32;">Guardar como Borrador</button>
-                    </form>
+                    <h3>Catálogo de Premios (Borradores y Activos)</h3>
+                    <div id="admin-rewards-container" class="rewards-grid"></div>
                 </div>
             </div>
+        </main>
 
-            <div class="box-card">
-                <h3>Catálogo de Premios (Borradores y Activos)</h3>
-                <div id="admin-rewards-container" class="rewards-grid"></div>
-            </div>
-        </div>
-    </main>
+        <!-- === PUBLICIDAD DERECHA === -->
+        <aside id="side-ad-right-container" class="side-ad-right hidden">
+            <img id="pub-img-right" src="" class="side-ad-img" alt="Publicidad Derecha">
+            <h4 id="pub-title-right" style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px;">-</h4>
+            <p id="pub-text-right" style="font-size:0.75rem; color:var(--text-muted);">-</p>
+        </aside>
+    </div>
 
     <div id="toast"></div>
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxjN6lF3PBiFnx36i4yNT7Neqe33L9xtmnvEDiG8Ua5mPdbksBTSMfID1DaAxn5Vg7OrA/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzKhN13eSgYrs4G6exqDY9j67pwnvKabPkVoHdXkAAi8OdY0LtVJczGiFXnNDgB8X3K1Q/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -352,6 +425,7 @@
         let allClientsCache = [];
         let rewardsList = [];
         let globalCanjesCache = [];
+        let publicidadList = [];
 
         let inactivityTimer = null;
         const INACTIVITY_LIMIT = 10 * 60 * 1000;
@@ -421,11 +495,39 @@
                 const data = await res.json();
                 if(data.status === "success") {
                     rewardsList = data.premios || [];
+                    publicidadList = data.publicidad || [];
+                    renderPublicidadLaterales();
                     if(activeClient) renderClientRewards();
                     if(sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) renderAdminRewards();
                 }
             } catch(e) { 
                 console.error("Excepción en sincronizarPremios:", e); 
+            }
+        }
+
+        // RENDERIZAR BANNERS PUBLICITARIOS DINÁMICOS DESDE GOOGLE SHEETS
+        function renderPublicidadLaterales() {
+            const pubIzquierda = publicidadList.find(p => p.sector.toLowerCase() === 'izquierdo' || p.sector.toLowerCase() === 'izquierda');
+            const pubDerecha = publicidadList.find(p => p.sector.toLowerCase() === 'derecho' || p.sector.toLowerCase() === 'derecha');
+
+            const containerLeft = document.getElementById('side-ad-left-container');
+            if (pubIzquierda) {
+                document.getElementById('pub-img-left').src = pubIzquierda.imagen;
+                document.getElementById('pub-title-left').textContent = pubIzquierda.titulo;
+                document.getElementById('pub-text-left').textContent = pubIzquierda.texto;
+                containerLeft.classList.remove('hidden');
+            } else {
+                containerLeft.classList.add('hidden');
+            }
+
+            const containerRight = document.getElementById('side-ad-right-container');
+            if (pubDerecha) {
+                document.getElementById('pub-img-right').src = pubDerecha.imagen;
+                document.getElementById('pub-title-right').textContent = pubDerecha.titulo;
+                document.getElementById('pub-text-right').textContent = pubDerecha.texto;
+                containerRight.classList.remove('hidden');
+            } else {
+                containerRight.classList.add('hidden');
             }
         }
 
@@ -449,6 +551,8 @@
                 if (data.status === "success") {
                     activeClient = { nombre: data.nombre, puntos: data.puntos, cedula: cedula, historial: data.historial };
                     rewardsList = data.premios || rewardsList;
+                    publicidadList = data.publicidad || publicidadList;
+                    renderPublicidadLaterales();
                     if (data.requiereCambioPass) showToast("⚠️ Ingresaste con código temporal. Cambia tu PIN abajo.");
                     resetForms();
                     document.getElementById('client-login-view').classList.add('hidden');
@@ -618,6 +722,8 @@
                     sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token); 
                     rewardsList = data.premios || rewardsList;
                     globalCanjesCache = data.canjesGlobales || [];
+                    publicidadList = data.publicidad || [];
+                    renderPublicidadLaterales();
                     switchRole('admin'); 
                 } else { 
                     showToast('❌ ' + (data.message || 'Contraseña incorrecta')); 
@@ -635,6 +741,8 @@
                     allClientsCache = data.clientes || [];
                     rewardsList = data.premios || rewardsList;
                     globalCanjesCache = data.canjesGlobales || [];
+                    publicidadList = data.publicidad || [];
+                    renderPublicidadLaterales();
 
                     let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
                     allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
