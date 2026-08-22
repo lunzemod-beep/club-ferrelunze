@@ -292,8 +292,8 @@
     <div id="toast"></div>
 
     <script>
-        // ÚLTIMA URL OFICIAL Y SEGURA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxHNI6fbVLbuIWKbn9CjKDqRqIcmbzF23Ou1NXbzpNmX3U78khoXg-GFM8-I0qXFxcR7g/exec';
+        // ÚLTIMA URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxzZVwZyufqilY9O2WyBvb9EKhVdA-ayi44Ha0UPkcg9v4xJi9q7-GmwslmlMejr66DDg/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -372,8 +372,6 @@
                     rewardsList = data.premios || [];
                     if(activeClient) renderClientRewards();
                     if(sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) renderAdminRewards();
-                } else {
-                    console.error("Error al sincronizar premios:", data.message);
                 }
             } catch(e) { 
                 console.error("Excepción en sincronizarPremios:", e); 
@@ -410,7 +408,6 @@
                 }
             } catch (error) { 
                 showToast('❌ Error de conexión con el servidor.'); 
-                console.error(error);
             } finally { 
                 btn.disabled = false; btn.innerText = "Ingresar"; 
             }
@@ -530,7 +527,6 @@
                 }
             } catch (err) {
                 showToast('❌ Error de red al intentar conectar con el admin.');
-                console.error(err);
             }
         }
 
