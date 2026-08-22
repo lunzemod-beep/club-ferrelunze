@@ -95,7 +95,7 @@
 
         .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
         .reward-card { background: white; border: 1px solid #e2d9cd; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-        .btn-redeem { background: var(--primary-dark); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
+        .btn-redeem { background: #2e7d32; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
         .btn-redeem:disabled { background: #e2d9cd; color: #a19282; cursor: not-allowed; }
 
         .legal-box { font-size: 0.75rem; color: var(--text-muted); text-align: justify; background: #f5f2eb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #dcd2c4; }
@@ -293,7 +293,7 @@
 
     <script>
         // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzBuZgGwbNGAgqmdLRRdlvDZMh7NIokuOGOBQqmwxjNhbScfUZ6MdAtHrsaMY8YzAIscg/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzz5fIii7lFQJ1AWc_TLGm65tejAoIwsPovVMmKgI1EB_IY57oVjTDdMeSmPFh7ZVJhew/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -488,9 +488,30 @@
                 <div class="reward-card">
                     <div><h4>${r.title}</h4><p style="font-size:0.75rem; color:var(--text-muted);">${r.desc || ''}</p></div>
                     <div><div style="font-weight:800; color:var(--accent); font-size:0.9rem; margin-top:8px;">${Number(r.cost).toLocaleString()} pts</div>
-                    <button class="btn-redeem" ${(activeClient.puntos || 0) < r.cost ? 'disabled' : ''} onclick="window.open('https://wa.me/573156933747?text=Hola,%20deseo%20canjear%20el%20premio:%20*${encodeURIComponent(r.title)}*', '_blank')">Canjear por WhatsApp</button></div>
+                    <button class="btn-redeem" ${(activeClient.puntos || 0) < r.cost ? 'disabled' : ''} onclick="solicitarCanjePremio('${r.id}', '${r.title}', ${r.cost})">Canjear en Mostrador 🎁</button></div>
                 </div>
             `).join('');
+        }
+
+        async function solicitarCanjePremio(idPremio, tituloPremio, costoPremio) {
+            if (!confirm(`¿Estás seguro de canjear "${tituloPremio}" por ${costoPremio.toLocaleString()} puntos?\n\nEsta acción descontará tus puntos de inmediato y generará un código para reclamar en el local con tu cédula física.`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ tipo: 'canjear_premio', cedula: activeClient.cedula, idPremio: idPremio }) 
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    activeClient.puntos = data.nuevosPuntos;
+                    renderClientDashboard();
+                    alert(`🎉 ¡Canje exitoso!\n\nPremio: ${tituloPremio}\nTu Código de Retiro es: [ ${data.codigoCanje} ]\n\nPreséntate en el mostrador de Ferrelunze con tu cédula física y dicta este código de 4 dígitos para recibir tu premio.`);
+                } else {
+                    showToast('❌ ' + data.message);
+                }
+            } catch (err) {
+                showToast('❌ Error de red al procesar el canje.');
+            }
         }
 
         function renderClientHistory() {
