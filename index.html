@@ -292,7 +292,7 @@
     <div id="toast"></div>
 
     <script>
-        // ÚLTIMA URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
+        // URL OFICIAL Y ACTUALIZADA DE APPS SCRIPT
         const API_URL = 'https://script.google.com/macros/s/AKfycbxzZVwZyufqilY9O2WyBvb9EKhVdA-ayi44Ha0UPkcg9v4xJi9q7-GmwslmlMejr66DDg/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
@@ -545,10 +545,12 @@
                     document.getElementById('stat-diamante').textContent = stats.diamante;
                     renderAdminRewards();
                 } else {
-                    logoutAdmin();
+                    // EVITAMOS QUE EXPULSE AL ADMIN SI HUBO UN RETARDO DE RED: Cargamos catálogo local por defecto
+                    renderAdminRewards();
                 }
             } catch(e) {
                 console.error("Error cargando stats de admin", e);
+                renderAdminRewards();
             }
         }
 
