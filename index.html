@@ -30,7 +30,7 @@
             opacity: 0.12; pointer-events: none; z-index: 0;
         }
 
-        /* DISEÑO DE LAYOUT CON PANELES PUBLICITARIOS LATERALES EN PANTALLAS GRANDES */
+        /* LAYOUT PUBLICITARIO LATERAL */
         @media (min-width: 1200px) {
             body { display: flex; flex-direction: column; align-items: center; }
             header { width: 100%; }
@@ -40,7 +40,6 @@
             .side-ad-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover; }
         }
 
-        /* EN CELULARES Y TABLETS PEQUEÑAS SE OCULTAN LOS LATERALES */
         @media (max-width: 1199px) {
             .side-ad-left, .side-ad-right { display: none !important; }
             main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
@@ -101,9 +100,7 @@
 
         .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
         
-        /* ----------------------------------------------------- */
-        /* NUEVO DISEÑO GLASSMORPHISM PARA TARJETAS DE CLIENTES  */
-        /* ----------------------------------------------------- */
+        /* GLASSMORPHISM PREMIOS */
         .glass-card {
             position: relative;
             background: linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(217, 119, 6, 0.95) 100%);
@@ -120,19 +117,15 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
         .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(139, 69, 19, 0.3); }
-        
-        /* Brillo dinámico */
         .glass-card::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
             transform: skewX(-20deg); transition: left 0.7s ease;
         }
         .glass-card:hover::before { left: 200%; }
-
         .glass-card .titulo { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .glass-card .descripcion { font-size: 0.8rem; font-weight: 400; opacity: 0.9; margin-bottom: 20px; }
         
-        /* Barra inteligente de premio */
         .barra-fondo { background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; margin-bottom: 6px; overflow: hidden; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
         .barra-llena { background: #fef3c7; height: 100%; border-radius: 4px; box-shadow: 0 0 10px rgba(254, 243, 199, 0.8); transition: width 0.6s ease-out; }
         .texto-puntos { font-size: 0.75rem; display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; opacity: 0.95; }
@@ -147,10 +140,19 @@
         .btn-accion.success:hover { background: #16a34a; }
         .btn-accion:disabled { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); cursor: not-allowed; box-shadow: none; border: 1px solid rgba(255,255,255,0.3); }
 
-        /* Estilo original de tarjetas para el panel Admin */
-        .reward-card { background: white; border: 1px solid #e2d9cd; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-        /* ----------------------------------------------------- */
+        /* ESTILOS RASPA Y GANA Y CALCULADORA FERRELUNZE */
+        .scratch-container {
+            position: relative; width: 100%; height: 140px; border-radius: 14px; overflow: hidden;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3); margin-top: 12px;
+        }
+        .scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 5; }
 
+        .calc-box { background: #fdfbf7; border: 2px solid #e2d9cd; padding: 20px; border-radius: 16px; margin-bottom: 24px; }
+        .kit-item { display: inline-flex; align-items: center; gap: 6px; background: #e7dfd5; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: var(--primary-dark); margin: 4px; }
+
+        .reward-card { background: white; border: 1px solid #e2d9cd; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
         .legal-box { font-size: 0.75rem; color: var(--text-muted); text-align: justify; background: #f5f2eb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #dcd2c4; }
         #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; border: 1px solid #8d6e63; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
@@ -219,6 +221,12 @@
 
             <!-- CLIENTE: DASHBOARD -->
             <div id="client-dashboard-view" class="hidden">
+                <!-- NOTIFICACIÓN / ALERTA DE PUNTOS POR VENCER (MÓDULO 3) -->
+                <div id="alert-vencimiento-box" class="hidden" style="background:#fff3cd; border: 1px solid #ffeeba; color:#856404; padding: 12px 16px; border-radius:12px; margin-bottom:16px; font-size:0.85rem; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">⚠️</span>
+                    <div><strong>¡Atención!</strong> Tienes puntos acumulados próximos a cumplir su vigencia de 12 meses. ¡Aprovéchalos y canjea tus premios en mostrador!</div>
+                </div>
+
                 <div class="vip-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span id="client-tier-badge" class="tier-badge tier-bronce">BRONCE</span>
@@ -232,6 +240,86 @@
                     
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; opacity: 0.85;">
                         📅 <strong>Vencimiento de puntos:</strong> Vigencia de 12 meses a partir de la fecha de compra.
+                    </div>
+                </div>
+
+                <!-- MÓDULO 1: RASPA Y GANA FERRELUNZE (INCENTIVO A LA COMPRA) -->
+                <div class="box-card" style="border-left: 5px solid #10b981;">
+                    <h3 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span>🎰 Raspa y Gana FerreLunze</span>
+                        <span style="font-size:0.75rem; background:#ecfdf5; color:#047857; padding:4px 8px; border-radius:12px; border:1px solid #a7f3d0;">Premio Sorpresa</span>
+                    </h3>
+                    <p id="raspa-incentivo-text" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                        Acumula compras para desbloquear tu tarjeta de juego.
+                    </p>
+                    
+                    <div id="raspa-locked-view" class="scratch-container" style="background:#f3f4f6; color:#6b7280; border:2px dashed #d1d5db;">
+                        <div>
+                            <div style="font-size:1.8rem; margin-bottom:4px;">🔒</div>
+                            <div id="raspa-locked-msg" style="font-size:0.85rem; font-weight:700;">¡Realiza tu próxima compra en la ferretería para desbloquear tu Raspa y Gana!</div>
+                        </div>
+                    </div>
+
+                    <div id="raspa-active-view" class="scratch-container hidden">
+                        <div>
+                            <div style="font-size:0.8rem; text-transform:uppercase; opacity:0.9;">¡Ganaste un premio!</div>
+                            <div id="raspa-reward-text" style="font-size:1.4rem; font-weight:900; margin:4px 0; color:#fef3c7;">🎁 +50 PUNTOS EXTRA</div>
+                            <div style="font-size:0.7rem; opacity:0.8;">Dicta tu código en mostrador al pagar</div>
+                        </div>
+                        <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- MÓDULO 2: CALCULADORA FERRELUNZE (VENTA CRUZADA DE PINTURA Y KITS) -->
+                <div class="calc-box">
+                    <h3 style="color:var(--primary-dark); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                        🎨 Calculadora FerreLunze
+                    </h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+                        Calcula el material exacto para tu proyecto y conoce los puntos que ganarás con tu compra.
+                    </p>
+
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:12px;">
+                        <div>
+                            <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Área a pintar (m²):</label>
+                            <input type="number" id="calc-m2" min="1" value="30" oninput="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Línea de Pintura:</label>
+                            <select id="calc-linea" onchange="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px; font-weight:600;">
+                                <option value="profesional">Pintura Profesional FerreLunze (Máximo Rendimiento)</option>
+                                <option value="tipo1">Pinturas FerreLunze Tipo 1 (Acrílica Superior)</option>
+                                <option value="tipo2">Pinturas FerreLunze Tipo 2 (Uso Interior Standard)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="calc-result-box" style="background:white; padding:14px; border-radius:12px; border:1px solid #e2d9cd; font-size:0.85rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0eaf1; padding-bottom:8px; margin-bottom:8px;">
+                            <span>Material Sugerido:</span>
+                            <strong id="calc-material-text" style="color:var(--primary-dark); font-size:0.95rem;">-</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#2e7d32;">
+                            <span>Puntos a Acumular en esta compra:</span>
+                            <span id="calc-puntos-text" style="font-size:1rem;">+0 pts</span>
+                        </div>
+
+                        <!-- KIT COMPLETO DE PINTURA (VENTA CRUZADA) -->
+                        <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #dcd2c4;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--primary-dark); margin-bottom:6px; text-transform:uppercase;">
+                                🛠️ Kit Completo Sugerido para tu Proyecto:
+                            </div>
+                            <div>
+                                <span class="kit-item">🖌️ Brocha FerreLunze</span>
+                                <span class="kit-item">🌀 Rodillo Felpa Cero Gota</span>
+                                <span class="kit-item">📜 Lija Fina para Pared</span>
+                                <span class="kit-item">🎗️ Cinta de Enmascarar</span>
+                                <span class="kit-item">🪣 Bandeja Pintora</span>
+                            </div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-style:italic;">
+                                ¡Lleva el kit completo en mostrador y asegura un acabado perfecto en tus muros!
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -625,11 +713,126 @@
             const badge = document.getElementById('client-tier-badge');
             badge.textContent = `Nivel ${tier.name}`; badge.className = `tier-badge ${tier.class}`;
 
+            verificarVencimientoPuntos();
+            setupRaspaYGana();
+            calcularPinturaFerreLunze();
             renderClientRewards();
             renderClientHistory();
         }
 
-        // --- FUNCIÓN ACTUALIZADA CON LÓGICA DE BARRA INTELIGENTE (GLASSMORPHISM) ---
+        // MÓDULO 3: ALERTA DE PUNTOS PRÓXIMOS A VENCER
+        function verificarVencimientoPuntos() {
+            const alertBox = document.getElementById('alert-vencimiento-box');
+            if (!activeClient || !activeClient.historial || activeClient.historial.length === 0) {
+                alertBox.classList.add('hidden');
+                return;
+            }
+
+            const ahora = new Date();
+            let hayPuntosAntiguos = false;
+
+            activeClient.historial.forEach(h => {
+                if (Number(h.puntos) > 0 && h.fecha) {
+                    const fechaCompra = new Date(h.fecha);
+                    const diferenciaMeses = (ahora.getFullYear() - fechaCompra.getFullYear()) * 12 + (ahora.getMonth() - fechaCompra.getMonth());
+                    if (diferenciaMeses >= 11) hayPuntosAntiguos = true;
+                }
+            });
+
+            if (hayPuntosAntiguos) alertBox.classList.remove('hidden');
+            else alertBox.classList.add('hidden');
+        }
+
+        // MÓDULO 1: RASPA Y GANA FERRELUNZE (MECÁNICA CON INCENTIVO)
+        function setupRaspaYGana() {
+            const lockedView = document.getElementById('raspa-locked-view');
+            const activeView = document.getElementById('raspa-active-view');
+            const incentivoText = document.getElementById('raspa-incentivo-text');
+
+            // Verifica si el cliente tiene al menos un movimiento registrado (compra reciente)
+            const tieneCompras = activeClient && activeClient.historial && activeClient.historial.length > 0;
+
+            if (!tieneCompras) {
+                incentivoText.textContent = "Acumula tus primeras compras en el local para activar tu tarjeta de juego.";
+                lockedView.classList.remove('hidden');
+                activeView.classList.add('hidden');
+                return;
+            }
+
+            incentivoText.textContent = "¡Rasca sobre la capa dorada con tu dedo o ratón y descubre tu premio!";
+            lockedView.classList.add('hidden');
+            activeView.classList.remove('hidden');
+
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            // Cubre con capa dorada
+            ctx.fillStyle = '#d97706';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('✨ RASPA AQUÍ CON TU DEDO ✨', canvas.width / 2, canvas.height / 2 + 5);
+
+            let isScratching = false;
+
+            function scratch(e) {
+                if (!isScratching) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            canvas.onmousedown = canvas.ontouchstart = () => isScratching = true;
+            canvas.onmouseup = canvas.ontouchend = () => isScratching = false;
+            canvas.onmousemove = canvas.ontouchmove = scratch;
+        }
+
+        // MÓDULO 2: CALCULADORA FERRELUNZE (MANTENIENDO LÍNEAS TIPO 1, TIPO 2 Y PROFESIONAL)
+        function calcularPinturaFerreLunze() {
+            const m2 = parseFloat(document.getElementById('calc-m2').value) || 0;
+            const linea = document.getElementById('calc-linea').value;
+            
+            let rendimientoGln = 35; // Rendimiento m2/galón a 2 manos por defecto
+            let precioAproxGln = 45000;
+
+            if (linea === 'profesional') { rendimientoGln = 45; precioAproxGln = 65000; }
+            else if (linea === 'tipo1') { rendimientoGln = 38; precioAproxGln = 50000; }
+            else if (linea === 'tipo2') { rendimientoGln = 28; precioAproxGln = 35000; }
+
+            if (m2 <= 0) {
+                document.getElementById('calc-material-text').textContent = 'Ingresa un área válida';
+                document.getElementById('calc-puntos-text').textContent = '+0 pts';
+                return;
+            }
+
+            const galonesNecesarios = Math.ceil((m2 / rendimientoGln) * 10) / 10;
+            let desglose = "";
+
+            if (galonesNecesarios >= 5) {
+                const cunetes = Math.floor(galonesNecesarios / 5);
+                const restoGln = Math.ceil(galonesNecesarios % 5);
+                desglose = `${cunetes} Cuñete(s) (5 Gln)${restoGln > 0 ? ` + ${restoGln} Galón(es)` : ''}`;
+            } else if (galonesNecesarios >= 2.5) {
+                desglose = `1 Balde (2.5 Gln)`;
+            } else {
+                desglose = `${Math.ceil(galonesNecesarios)} Galón(es)`;
+            }
+
+            const estimacionInversion = Math.ceil(galonesNecesarios) * precioAproxGln;
+            const puntosEstimados = Math.floor(estimacionInversion / 10000);
+
+            document.getElementById('calc-material-text').textContent = desglose;
+            document.getElementById('calc-puntos-text').textContent = `+${puntosEstimados} pts aprox.`;
+        }
+
         function renderClientRewards() {
             const container = document.getElementById('client-rewards-container');
             const publicos = rewardsList.filter(r => r.status === 'published');
@@ -639,7 +842,6 @@
 
             container.innerHTML = publicos.map(r => {
                 let costo = Number(r.cost);
-                // Calcula el porcentaje exacto para llenar la barra
                 let porcentaje = Math.min(100, Math.floor((puntosCliente / costo) * 100));
                 let leAlcanza = puntosCliente >= costo;
                 
@@ -952,7 +1154,6 @@
             }
         }
 
-        // El panel de admin sigue usando las cajas normales para editar
         function renderAdminRewards() {
             const container = document.getElementById('admin-rewards-container');
             if(!container) return;
