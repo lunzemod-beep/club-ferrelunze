@@ -142,7 +142,7 @@
 
         /* ESTILOS RASPA Y GANA Y CALCULADORA FERRELUNZE */
         .scratch-container {
-            position: relative; width: 100%; height: 150px; border-radius: 14px; overflow: hidden;
+            position: relative; width: 100%; min-height: 150px; border-radius: 14px; overflow: hidden;
             background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white;
             display: flex; align-items: center; justify-content: center; text-align: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.3); margin-top: 12px;
@@ -221,7 +221,7 @@
 
             <!-- CLIENTE: DASHBOARD -->
             <div id="client-dashboard-view" class="hidden">
-                <!-- NOTIFICACIÓN / ALERTA DE PUNTOS POR VENCER -->
+                <!-- ALERTA DE VENCIMIENTO -->
                 <div id="alert-vencimiento-box" class="hidden" style="background:#fff3cd; border: 1px solid #ffeeba; color:#856404; padding: 12px 16px; border-radius:12px; margin-bottom:16px; font-size:0.85rem; display:flex; align-items:center; gap:10px;">
                     <span style="font-size:1.4rem;">⚠️</span>
                     <div><strong>¡Atención!</strong> Tienes puntos acumulados próximos a cumplir su vigencia de 12 meses. ¡Aprovéchalos y canjea tus premios en mostrador!</div>
@@ -243,26 +243,40 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO 1: RASPA Y GANA FERRELUNZE (DESBLOQUEO CADA 4 COMPRAS Y CÓDIGO VISIBLE) -->
+                <!-- MÓDULO 1: RASPA Y GANA FERRELUNZE (CERO LOCALSTORAGE - TODO VALIDADO CON GOOGLE SHEETS) -->
                 <div class="box-card" style="border-left: 5px solid #10b981;">
                     <h3 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <span>🎰 Raspa y Gana FerreLunze</span>
                         <span style="font-size:0.75rem; background:#ecfdf5; color:#047857; padding:4px 8px; border-radius:12px; border:1px solid #a7f3d0;">Premio Sorpresa</span>
                     </h3>
                     <p id="raspa-incentivo-text" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
-                        ¡Desbloquea una tarjeta de juego cada 4 compras acreditadas!
+                        ¡Acredita compras en mostrador y desbloquea un juego cada 4 compras!
                     </p>
                     
+                    <!-- VISTA 1: BLOQUEADO (NO CUMPLE CICLO DE 4 COMPRAS) -->
                     <div id="raspa-locked-view" class="scratch-container" style="background:#f3f4f6; color:#6b7280; border:2px dashed #d1d5db;">
-                        <div style="padding:10px;">
-                            <div style="font-size:1.6rem; margin-bottom:4px;">🔒</div>
-                            <div id="raspa-locked-msg" style="font-size:0.85rem; font-weight:700;">Llevas <span id="raspa-compras-count">0</span> de 4 compras registradas.</div>
-                            <div style="font-size:0.75rem; opacity:0.8; margin-top:2px;">¡Registra más compras en mostrador para desbloquear tu Raspa y Gana!</div>
+                        <div style="padding:16px;">
+                            <div style="font-size:1.8rem; margin-bottom:4px;">🔒</div>
+                            <div style="font-size:0.85rem; font-weight:700;">Llevas <span id="raspa-compras-count">0</span> de 4 compras registradas en tu ciclo actual.</div>
+                            <div style="font-size:0.75rem; opacity:0.8; margin-top:4px;">Acredita tus facturas en el local para desbloquear la tarjeta de juego.</div>
                         </div>
                     </div>
 
+                    <!-- VISTA 2: YA RASPADO EN ESTE CICLO (INFORMACIÓN EXTRAÍDA DE GOOGLE SHEETS) -->
+                    <div id="raspa-claimed-view" class="scratch-container hidden" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%);">
+                        <div style="padding:16px;">
+                            <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9; color:#a7f3d0;">¡Premio Sorpresa Obtenido!</div>
+                            <div id="raspa-claimed-title" style="font-size:1.2rem; font-weight:900; margin:4px 0; color:#fef3c7;">🎁 PREMIO REGISTRADO EN SHEETS</div>
+                            <div style="font-size:0.85rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:8px; display:inline-block; margin-top:6px; border:1px solid rgba(255,255,255,0.2);">
+                                Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">----</span>
+                            </div>
+                            <div style="font-size:0.7rem; opacity:0.8; margin-top:6px;">¡Completa 4 compras adicionales para activar tu próximo ciclo!</div>
+                        </div>
+                    </div>
+
+                    <!-- VISTA 3: ACTIVO PARA RASPAR -->
                     <div id="raspa-active-view" class="scratch-container hidden">
-                        <div style="padding:10px;">
+                        <div style="padding:16px;">
                             <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9;">¡Premio Sorpresa Desbloqueado!</div>
                             <div id="raspa-reward-text" style="font-size:1.2rem; font-weight:900; margin:2px 0; color:#fef3c7;">🎁 +10 PUNTOS EXTRA</div>
                             <div style="font-size:0.8rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:8px; display:inline-block; margin-top:4px;">
@@ -273,19 +287,19 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO 2: CALCULADORA FERRELUNZE (CÁLCULO EXACTO POR M2 Y LÍNEA DE PINTURA) -->
+                <!-- MÓDULO 2: CALCULADORA FERRELUNZE (INICIA EN CERO Y CALCULA ÁREAS GRANDES) -->
                 <div class="calc-box">
                     <h3 style="color:var(--primary-dark); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
                         🎨 Calculadora FerreLunze
                     </h3>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
-                        Calcula los materiales exactos para tu pared o proyecto y conoce los puntos que ganarás.
+                        Ingresa el área a pintar y selecciona el tipo de pintura FerreLunze para calcular tus recipientes y puntos.
                     </p>
 
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:12px;">
                         <div>
                             <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Área a pintar (m²):</label>
-                            <input type="number" id="calc-m2" min="1" value="30" oninput="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px;">
+                            <input type="number" id="calc-m2" min="0" value="0" placeholder="0" oninput="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px;">
                         </div>
                         <div>
                             <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Línea de Pintura:</label>
@@ -300,7 +314,7 @@
                     <div id="calc-result-box" style="background:white; padding:14px; border-radius:12px; border:1px solid #e2d9cd; font-size:0.85rem;">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0eaf1; padding-bottom:8px; margin-bottom:8px;">
                             <span>Material Sugerido:</span>
-                            <strong id="calc-material-text" style="color:var(--primary-dark); font-size:0.95rem;">-</strong>
+                            <strong id="calc-material-text" style="color:var(--primary-dark); font-size:0.95rem;">Digita los m² para calcular</strong>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#2e7d32;">
                             <span>Puntos a Acumular en esta compra:</span>
@@ -313,7 +327,7 @@
                                 🛠️ Kit Completo Sugerido para tu Proyecto:
                             </div>
                             <div>
-                                <span class="kit-item">GF Brocha FerreLunze</span>
+                                <span class="kit-item">🖌️ Brocha FerreLunze</span>
                                 <span class="kit-item">🌀 Rodillo Felpa Cero Gota</span>
                                 <span class="kit-item">📜 Lija Fina para Pared</span>
                                 <span class="kit-item">🎗️ Cinta de Enmascarar</span>
@@ -634,7 +648,7 @@
                 const data = await response.json();
 
                 if (data.status === "success") {
-                    activeClient = { nombre: data.nombre, puntos: data.puntos, cedula: cedula, historial: data.historial };
+                    activeClient = { nombre: data.nombre, puntos: data.puntos, cedula: cedula, historial: data.historial, canjes: data.canjes || [] };
                     rewardsList = data.premios || rewardsList;
                     publicidadList = data.publicidad || publicidadList;
                     renderPublicidadLaterales();
@@ -716,7 +730,7 @@
             badge.textContent = `Nivel ${tier.name}`; badge.className = `tier-badge ${tier.class}`;
 
             verificarVencimientoPuntos();
-            setupRaspaYGana();
+            setupRaspaYGanaConSheets();
             calcularPinturaFerreLunze();
             renderClientRewards();
             renderClientHistory();
@@ -744,45 +758,59 @@
             else alertBox.classList.add('hidden');
         }
 
-        // MÓDULO 1: RASPA Y GANA FERRELUNZE (Ajustado: Desbloqueo tras cada 4 compras y código de canje visible)
-        function setupRaspaYGana() {
+        // MÓDULO 1: RASPA Y GANA VALIDADO 100% CONTRA GOOGLE SHEETS
+        function setupRaspaYGanaConSheets() {
             const lockedView = document.getElementById('raspa-locked-view');
+            const claimedView = document.getElementById('raspa-claimed-view');
             const activeView = document.getElementById('raspa-active-view');
-            const comprasCountEl = document.getElementById('raspa-compras-count');
 
-            // Filtra solo movimientos que corresponden a compras (puntos positivos)
+            // 1. Contar compras en historial de Google Sheets (puntos positivos)
             const comprasRealizadas = (activeClient && activeClient.historial) ? 
                 activeClient.historial.filter(h => Number(h.puntos) > 0).length : 0;
 
-            comprasCountEl.textContent = comprasRealizadas;
+            const comprasEnCicloActual = comprasRealizadas % 4;
+            const numeroCicloActual = Math.floor(comprasRealizadas / 4);
 
-            // Se desbloquea si tiene al menos 4 compras y es múltiplo de 4
-            const estaDesbloqueado = comprasRealizadas >= 4 && (comprasRealizadas % 4 === 0);
+            document.getElementById('raspa-compras-count').textContent = comprasEnCicloActual;
 
-            if (!estaDesbloqueado) {
+            // 2. Buscar si en Google Sheets ya existe un registro de Raspa y Gana para este ciclo
+            const registroRaspaEnSheets = (activeClient && activeClient.historial) ?
+                activeClient.historial.find(h => String(h.descripcion).includes(`[RASPA_CICLO_${numeroCicloActual}]`)) : null;
+
+            // Caso A: No ha acumulado 4 compras
+            if (comprasRealizadas < 4 || (comprasEnCicloActual !== 0 && !registroRaspaEnSheets)) {
                 lockedView.classList.remove('hidden');
+                claimedView.classList.add('hidden');
                 activeView.classList.add('hidden');
                 return;
             }
 
-            // Muestra vista activa y genera código de canje seguro de 4 dígitos basado en la cédula
+            // Caso B: Ya raspó y el registro existe en Google Sheets
+            if (registroRaspaEnSheets) {
+                lockedView.classList.add('hidden');
+                activeView.classList.add('hidden');
+                claimedView.classList.remove('hidden');
+
+                document.getElementById('raspa-claimed-title').textContent = registroRaspaEnSheets.descripcion.replace(/\[.*\]/, '');
+                // Extraer el código del texto guardado en Sheets
+                const codigoEncontrado = String(registroRaspaEnSheets.descripcion).match(/CÓDIGO: (\d{4})/);
+                document.getElementById('raspa-claimed-code').textContent = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
+                return;
+            }
+
+            // Caso C: Desbloqueado y listo para raspar por primera vez en este ciclo
             lockedView.classList.add('hidden');
+            claimedView.classList.add('hidden');
             activeView.classList.remove('hidden');
 
-            // Premios sorpresa moderados
-            const opcionesPremios = [
-                "🎁 +5 PUNTOS EXTRA",
-                "🎁 +10 PUNTOS EXTRA",
-                "🎁 5% DESC. EN BROCHAS",
-                "🎁 +15 PUNTOS EXTRA"
-            ];
-            // Selección determinista según cédula para evitar que cambie al refrescar
+            const opcionesPremios = ["+5 PUNTOS EXTRA", "+10 PUNTOS EXTRA", "5% DESC. EN BROCHAS", "+15 PUNTOS EXTRA"];
             const idx = Math.abs(parseInt(activeClient.cedula || 0)) % opcionesPremios.length;
-            document.getElementById('raspa-reward-text').textContent = opcionesPremios[idx];
+            const premioElegido = opcionesPremios[idx];
+            
+            const codigoGenerado = String(Math.abs(parseInt(activeClient.cedula) * 9 + numeroCicloActual)).slice(-4).padStart(4, '0');
 
-            // Genera código de caja visible
-            const codigoRaspa = String(Math.abs(parseInt(activeClient.cedula) * 7)).slice(-4).padStart(4, '0');
-            document.getElementById('raspa-codigo-val').textContent = codigoRaspa;
+            document.getElementById('raspa-reward-text').textContent = `🎁 ${premioElegido}`;
+            document.getElementById('raspa-codigo-val').textContent = codigoGenerado;
 
             const canvas = document.getElementById('scratch-canvas');
             const ctx = canvas.getContext('2d');
@@ -798,6 +826,21 @@
 
             let isScratching = false;
 
+            async function registrarRaspaEnSheets() {
+                try {
+                    const descRegistro = `Raspa y Gana (${premioElegido}) CÓDIGO: ${codigoGenerado} [RASPA_CICLO_${numeroCicloActual}]`;
+                    await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            tipo: 'guardar_raspa_sheets',
+                            cedula: activeClient.cedula,
+                            descripcion: descRegistro,
+                            codigo: codigoGenerado
+                        })
+                    });
+                } catch(e) { console.error("Error guardando raspa en Sheets", e); }
+            }
+
             function scratch(e) {
                 if (!isScratching) return;
                 const rect = canvas.getBoundingClientRect();
@@ -808,6 +851,9 @@
                 ctx.beginPath();
                 ctx.arc(x, y, 22, 0, Math.PI * 2);
                 ctx.fill();
+
+                // Al raspar más del 40%, guarda automáticamente el movimiento en Google Sheets
+                registrarRaspaEnSheets();
             }
 
             canvas.onmousedown = canvas.ontouchstart = () => isScratching = true;
@@ -815,12 +861,11 @@
             canvas.onmousemove = canvas.ontouchmove = scratch;
         }
 
-        // MÓDULO 2: CALCULADORA FERRELUNZE (Fórmula corregida para grandes áreas como 187 m²)
+        // MÓDULO 2: CALCULADORA FERRELUNZE (INICIA EN CERO Y CALCULA CORRECTAMENTE GRANDES ÁREAS)
         function calcularPinturaFerreLunze() {
             const m2 = parseFloat(document.getElementById('calc-m2').value) || 0;
             const linea = document.getElementById('calc-linea').value;
             
-            // Rendimiento real promedio a 2 manos (m² por galón)
             let rendimientoGln = 35;
             let precioAproxGln = 48000;
 
@@ -829,16 +874,14 @@
             else if (linea === 'tipo2') { rendimientoGln = 25; precioAproxGln = 38000; }
 
             if (m2 <= 0) {
-                document.getElementById('calc-material-text').textContent = 'Ingresa un área válida';
+                document.getElementById('calc-material-text').textContent = 'Digita los m² para calcular';
                 document.getElementById('calc-puntos-text').textContent = '+0 pts';
                 return;
             }
 
-            // Total galones exactos requeridos
             const galonesExactos = m2 / rendimientoGln;
             let desglose = "";
 
-            // Lógica corregida para escalas de empaque
             if (galonesExactos >= 4.5) {
                 const cunetes5Gln = Math.floor(galonesExactos / 5);
                 const restoGalones = Math.ceil(galonesExactos % 5);
