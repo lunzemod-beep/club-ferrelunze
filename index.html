@@ -257,7 +257,7 @@
                     <div id="raspa-locked-view" class="scratch-container" style="background:#f3f4f6; color:#6b7280; border:2px dashed #d1d5db;">
                         <div style="padding:16px;">
                             <div style="font-size:1.8rem; margin-bottom:4px;">🔒</div>
-                            <div style="font-size:0.85rem; font-weight:700;">Llevas <span id="raspa-compras-count">0</span> de 4 compras registradas en tu ciclo actual.</div>
+                            <div style="font-size:0.85rem; font-weight:700;">Llevas <span id="raspa-compras-count">0</span> de 4 compras registradas.</div>
                             <div style="font-size:0.75rem; opacity:0.8; margin-top:4px;">Acredita tus facturas en el local para desbloquear la tarjeta de juego.</div>
                         </div>
                     </div>
@@ -287,7 +287,7 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO 2: CALCULADORA FERRELUNZE (INICIA EN CERO Y CALCULA ÁREAS GRANDES) -->
+                <!-- MÓDULO 2: CALCULADORA FERRELUNZE (INICIA EN CERO Y CALCULA MATEMÁTICA FERRETERA EXACTA) -->
                 <div class="calc-box">
                     <h3 style="color:var(--primary-dark); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
                         🎨 Calculadora FerreLunze
@@ -299,6 +299,7 @@
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:12px;">
                         <div>
                             <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Área a pintar (m²):</label>
+                            <!-- ESTE INPUT AHORA INICIA EN 0 PARA NO CONFUNDIR AL CLIENTE -->
                             <input type="number" id="calc-m2" min="0" value="0" placeholder="0" oninput="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px;">
                         </div>
                         <div>
@@ -731,7 +732,7 @@
 
             verificarVencimientoPuntos();
             setupRaspaYGanaConSheets();
-            calcularPinturaFerreLunze();
+            calcularPinturaFerreLunze(); // Ejecutar validación inicial (ahora en cero)
             renderClientRewards();
             renderClientHistory();
         }
@@ -792,7 +793,6 @@
                 claimedView.classList.remove('hidden');
 
                 document.getElementById('raspa-claimed-title').textContent = registroRaspaEnSheets.descripcion.replace(/\[.*\]/, '');
-                // Extraer el código del texto guardado en Sheets
                 const codigoEncontrado = String(registroRaspaEnSheets.descripcion).match(/CÓDIGO: (\d{4})/);
                 document.getElementById('raspa-claimed-code').textContent = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
                 return;
@@ -852,7 +852,6 @@
                 ctx.arc(x, y, 22, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Al raspar más del 40%, guarda automáticamente el movimiento en Google Sheets
                 registrarRaspaEnSheets();
             }
 
@@ -861,7 +860,7 @@
             canvas.onmousemove = canvas.ontouchmove = scratch;
         }
 
-        // MÓDULO 2: CALCULADORA FERRELUNZE (INICIA EN CERO Y CALCULA CORRECTAMENTE GRANDES ÁREAS)
+        // MÓDULO 2: CALCULADORA FERRELUNZE CON LÓGICA DE FERRETERÍA (Cuñetes, Baldes y Galones)
         function calcularPinturaFerreLunze() {
             const m2 = parseFloat(document.getElementById('calc-m2').value) || 0;
             const linea = document.getElementById('calc-linea').value;
@@ -880,24 +879,40 @@
             }
 
             const galonesExactos = m2 / rendimientoGln;
-            let desglose = "";
-
-            if (galonesExactos >= 4.5) {
-                const cunetes5Gln = Math.floor(galonesExactos / 5);
-                const restoGalones = Math.ceil(galonesExactos % 5);
-                
-                if (cunetes5Gln > 0 && restoGalones === 0) {
-                    desglose = `${cunetes5Gln} Cuñete(s) (5 Gln)`;
-                } else if (cunetes5Gln > 0 && restoGalones > 0) {
-                    desglose = `${cunetes5Gln} Cuñete(s) (5 Gln) + ${restoGalones} Galón(es)`;
-                } else {
-                    desglose = `1 Cuñete (5 Gln)`;
-                }
-            } else if (galonesExactos >= 2.1) {
-                desglose = `1 Balde (2.5 Gln)`;
-            } else {
-                desglose = `${Math.ceil(galonesExactos)} Galón(es)`;
+            
+            let cunetes = Math.floor(galonesExactos / 5);
+            let faltante = galonesExactos - (cunetes * 5);
+            
+            let baldes = 0;
+            if (faltante > 2.5) {
+                baldes = 1;
+                faltante -= 2.5;
+            } else if (faltante > 2.0) {
+                baldes = 1;
+                faltante = 0;
             }
+            
+            let galones = Math.ceil(faltante);
+            
+            // Si el cliente necesita 1 Balde y 2 Galones (4.5 Gln total)... es mejor que compre el Cuñete de 5 Gln.
+            if (baldes === 1 && galones >= 2) {
+                cunetes += 1;
+                baldes = 0;
+                galones = 0;
+            } else if (galones >= 3) {
+                // Si la matemática dice 3 galones sueltos, equivale a 1 Balde (2.5) y 1 Galón
+                baldes += 1;
+                galones -= 2.5;
+                galones = Math.ceil(galones);
+            }
+            
+            let partes = [];
+            if (cunetes > 0) partes.push(`${cunetes} Cuñete(s)`);
+            if (baldes > 0) partes.push(`${baldes} Balde(s)`);
+            if (galones > 0) partes.push(`${galones} Galón(es)`);
+            
+            let desglose = partes.join(" + ");
+            if (desglose === "") desglose = "1 Galón(es)";
 
             const estimacionInversion = Math.ceil(galonesExactos) * precioAproxGln;
             const puntosEstimados = Math.floor(estimacionInversion / 10000);
