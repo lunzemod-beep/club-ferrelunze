@@ -32,65 +32,21 @@
 
         /* DISEÑO DE LAYOUT CON PANELES PUBLICITARIOS LATERALES EN PANTALLAS GRANDES */
         @media (min-width: 1200px) {
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            header {
-                width: 100%;
-            }
-            .app-container-wrapper {
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                max-width: 1350px;
-                width: 100%;
-                margin: 24px auto;
-                gap: 20px;
-                padding: 0 16px;
-            }
-            main {
-                flex: 0 0 850px;
-                margin: 0 !important;
-            }
-            .side-ad-left, .side-ad-right {
-                flex: 1;
-                max-width: 230px;
-                background: white;
-                padding: 16px;
-                border-radius: 16px;
-                border: 1px solid #e2d9cd;
-                box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04);
-                text-align: center;
-                position: sticky;
-                top: 24px;
-            }
-            .side-ad-img {
-                width: 100%;
-                height: auto;
-                border-radius: 10px;
-                margin-bottom: 10px;
-                object-fit: cover;
-            }
+            body { display: flex; flex-direction: column; align-items: center; }
+            header { width: 100%; }
+            .app-container-wrapper { display: flex; justify-content: center; align-items: flex-start; max-width: 1350px; width: 100%; margin: 24px auto; gap: 20px; padding: 0 16px; }
+            main { flex: 0 0 850px; margin: 0 !important; }
+            .side-ad-left, .side-ad-right { flex: 1; max-width: 230px; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2d9cd; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); text-align: center; position: sticky; top: 24px; }
+            .side-ad-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover; }
         }
 
         /* EN CELULARES Y TABLETS PEQUEÑAS SE OCULTAN LOS LATERALES */
         @media (max-width: 1199px) {
-            .side-ad-left, .side-ad-right {
-                display: none !important;
-            }
-            main {
-                max-width: 1100px;
-                margin: 24px auto;
-                padding: 0 16px;
-            }
+            .side-ad-left, .side-ad-right { display: none !important; }
+            main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
         }
 
-        header {
-            background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px;
-            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1;
-        }
+        header { background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1; }
         .brand-logo { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
         .brand-logo span { color: var(--primary); }
 
@@ -99,7 +55,6 @@
         .role-btn.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
 
         .hidden { display: none !important; }
-
         .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
         .box-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--primary-dark); }
 
@@ -118,12 +73,7 @@
         .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .btn-warning { background-color: #d97706; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         
-        .whatsapp-float {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            background-color: var(--whatsapp); color: white; padding: 10px 16px; border-radius: 10px;
-            text-decoration: none; font-weight: 700; font-size: 0.85rem; width: 100%; margin-top: 12px;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: opacity 0.2s;
-        }
+        .whatsapp-float { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--whatsapp); color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.85rem; width: 100%; margin-top: 12px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: opacity 0.2s; }
         .whatsapp-float:hover { opacity: 0.9; }
 
         .vip-card { background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%); color: white; padding: 28px; border-radius: 24px; box-shadow: 0 12px 20px -5px rgba(62, 39, 35, 0.4); margin-bottom: 24px; border: 1px solid #8d6e63; }
@@ -149,10 +99,57 @@
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 
-        .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        
+        /* ----------------------------------------------------- */
+        /* NUEVO DISEÑO GLASSMORPHISM PARA TARJETAS DE CLIENTES  */
+        /* ----------------------------------------------------- */
+        .glass-card {
+            position: relative;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(217, 119, 6, 0.95) 100%);
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15);
+            padding: 22px;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(139, 69, 19, 0.3); }
+        
+        /* Brillo dinámico */
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg); transition: left 0.7s ease;
+        }
+        .glass-card:hover::before { left: 200%; }
+
+        .glass-card .titulo { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .glass-card .descripcion { font-size: 0.8rem; font-weight: 400; opacity: 0.9; margin-bottom: 20px; }
+        
+        /* Barra inteligente de premio */
+        .barra-fondo { background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; margin-bottom: 6px; overflow: hidden; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+        .barra-llena { background: #fef3c7; height: 100%; border-radius: 4px; box-shadow: 0 0 10px rgba(254, 243, 199, 0.8); transition: width 0.6s ease-out; }
+        .texto-puntos { font-size: 0.75rem; display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; opacity: 0.95; }
+        
+        .btn-accion {
+            padding: 12px 16px; background: #ffffff; color: #8b4513; border-radius: 12px; font-weight: 800;
+            font-size: 0.8rem; border: none; cursor: pointer; transition: 0.3s; text-transform: uppercase; width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 2;
+        }
+        .btn-accion:hover:not(:disabled) { background: #fef3c7; transform: scale(1.02); }
+        .btn-accion.success { background: #22c55e; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .btn-accion.success:hover { background: #16a34a; }
+        .btn-accion:disabled { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); cursor: not-allowed; box-shadow: none; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* Estilo original de tarjetas para el panel Admin */
         .reward-card { background: white; border: 1px solid #e2d9cd; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-        .btn-redeem { background: #2e7d32; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
-        .btn-redeem:disabled { background: #e2d9cd; color: #a19282; cursor: not-allowed; }
+        /* ----------------------------------------------------- */
 
         .legal-box { font-size: 0.75rem; color: var(--text-muted); text-align: justify; background: #f5f2eb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #dcd2c4; }
         #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; border: 1px solid #8d6e63; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
@@ -168,7 +165,6 @@
         </div>
     </header>
 
-    <!-- WRAPPER PARA DISEÑO DINÁMICO CON PANELES PUBLICITARIOS LATERALES -->
     <div class="app-container-wrapper">
         <!-- === PUBLICIDAD IZQUIERDA === -->
         <aside id="side-ad-left-container" class="side-ad-left hidden">
@@ -633,18 +629,49 @@
             renderClientHistory();
         }
 
+        // --- FUNCIÓN ACTUALIZADA CON LÓGICA DE BARRA INTELIGENTE (GLASSMORPHISM) ---
         function renderClientRewards() {
             const container = document.getElementById('client-rewards-container');
             const publicos = rewardsList.filter(r => r.status === 'published');
             if (publicos.length === 0) { container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No hay premios disponibles por el momento.</p>'; return; }
 
-            container.innerHTML = publicos.map(r => `
-                <div class="reward-card">
-                    <div><h4>${r.title}</h4><p style="font-size:0.75rem; color:var(--text-muted);">${r.desc || ''}</p></div>
-                    <div><div style="font-weight:800; color:var(--accent); font-size:0.9rem; margin-top:8px;">${Number(r.cost).toLocaleString()} pts</div>
-                    <button class="btn-redeem" ${(activeClient.puntos || 0) < r.cost ? 'disabled' : ''} onclick="solicitarCanjePremio('${r.id}', '${r.title}', ${r.cost})">Canjear en Mostrador 🎁</button></div>
-                </div>
-            `).join('');
+            let puntosCliente = Number(activeClient.puntos || 0);
+
+            container.innerHTML = publicos.map(r => {
+                let costo = Number(r.cost);
+                // Calcula el porcentaje exacto para llenar la barra
+                let porcentaje = Math.min(100, Math.floor((puntosCliente / costo) * 100));
+                let leAlcanza = puntosCliente >= costo;
+                
+                let textoBoton = leAlcanza ? "¡Canjear Ahora! 🎁" : `Faltan ${(costo - puntosCliente).toLocaleString()} pts`;
+                let claseBotonAdicional = leAlcanza ? "success" : "";
+
+                return `
+                    <div class="glass-card">
+                        <div>
+                            <div class="titulo">${r.title}</div>
+                            <div class="descripcion">${r.desc || 'Beneficio exclusivo FerreLunze'}</div>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <div class="texto-puntos">
+                                <span>Tienes: ${puntosCliente.toLocaleString()}</span>
+                                <span>Meta: ${costo.toLocaleString()}</span>
+                            </div>
+                            <div class="barra-fondo">
+                                <div class="barra-llena" style="width: ${porcentaje}%;"></div>
+                            </div>
+                            
+                            <button class="btn-accion ${claseBotonAdicional}" 
+                                    style="margin-top: 16px;" 
+                                    ${leAlcanza ? '' : 'disabled'} 
+                                    onclick="solicitarCanjePremio('${r.id}', '${r.title}', ${costo})">
+                                ${textoBoton}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function solicitarCanjePremio(idPremio, tituloPremio, costoPremio) {
@@ -925,6 +952,7 @@
             }
         }
 
+        // El panel de admin sigue usando las cajas normales para editar
         function renderAdminRewards() {
             const container = document.getElementById('admin-rewards-container');
             if(!container) return;
