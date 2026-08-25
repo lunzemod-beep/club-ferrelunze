@@ -428,7 +428,8 @@
                         <h3>Acreditar Compra en Mostrador</h3>
                         <form onsubmit="handleAdminAddSale(event)">
                             <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
-                            <input type="number" id="admin-sale-amount" required min="1000" placeholder="Monto total ($ COP)" class="input-field">
+                            <!-- Input formateado con comas de miles -->
+                            <input type="text" id="admin-sale-amount" required placeholder="Monto total ($ COP) - Ej: 50,000" class="input-field" oninput="formatCurrencyInput(this)">
                             <button type="submit" id="btn-acreditar-compra" class="btn-primary">Acreditar Compra</button>
                         </form>
                     </div>
@@ -461,7 +462,7 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzeQicWmyLdRtXLemussocxPTrm4onIcN4RafldoFlCmw4kwed5a6MCPnCZ3upPbdBpgA/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyo--5LwgtEN7EAnTsY3BcGfsfGpKVkRN_CL1FuqKXvts6pY0MCgHZf1OI2DvAsjktXAg/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -494,6 +495,15 @@
             document.getElementById('form-client-register')?.reset();
             document.getElementById('form-admin-login')?.reset();
             document.getElementById('form-admin-add-reward')?.reset();
+        }
+
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            input.value = Number(value).toLocaleString('en-US');
         }
 
         function switchRole(role) {
@@ -846,9 +856,10 @@
                 if (data.status === "success") {
                     activeClient.puntos = data.nuevosPuntos;
                     activeClient.historial = data.historial || [];
+                    activeClient.canjes = data.canjes || activeClient.canjes;
                     renderClientDashboard();
                     triggerConfetti();
-                    alert(`🎉 ¡Canje exitoso!\nCódigo de Retiro: [ ${data.codigoCanje} ]`);
+                    alert(`🎉 ¡Canje exitoso!\nCódigo de Retiro en Mostrador: [ ${data.codigoCanje} ]`);
                 } else { showToast('❌ ' + data.message); }
             } catch (err) { showToast('❌ Error de red.'); }
         }
@@ -979,7 +990,10 @@
 
         async function handleAdminAddSale(e) {
             e.preventDefault();
-            const amountInput = parseInt(document.getElementById('admin-sale-amount').value);
+            const rawAmount = document.getElementById('admin-sale-amount').value.replace(/,/g, '');
+            const amountInput = parseInt(rawAmount);
+            if (isNaN(amountInput) || amountInput <= 0) { showToast('❌ Ingrese un monto válido.'); return; }
+
             try {
                 const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'venta', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: document.getElementById('admin-sale-cedula').value.trim(), puntosGanados: Math.floor(amountInput / 10000), monto: amountInput }) });
                 const data = await response.json();
