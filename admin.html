@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja & Administración | FerreLunze</title>
+    <style>
+        :root {
+            --primary: #8b4513;
+            --primary-dark: #3e2723;
+            --bg-body: #f5f2eb;
+            --text-dark: #2c1d11;
+            --text-muted: #6d594b;
+            --accent: #d97706;
+            --danger: #b91c1c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding: 20px; }
+        .hidden { display: none !important; }
+        .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); max-width: 900px; margin-left: auto; margin-right: auto; }
+        .login-card { max-width: 400px; margin: 60px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; background-color: #fdfbf7; }
+        .btn-primary { width: 100%; background-color: var(--primary-dark); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; padding: 16px; border-radius: 14px; border: 1px solid #e2d9cd; text-align: center; cursor: pointer; }
+        .stat-card .val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: var(--primary-dark); }
+        .custom-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
+        .custom-table th, .custom-table td { padding: 10px; border-bottom: 1px solid #e2d9cd; text-align: left; }
+        .custom-table th { background: #f5f2eb; font-weight: 700; }
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: none; z-index: 100; }
+    </style>
+</head>
+<body>
+
+    <div id="admin-login-view" class="login-card">
+        <h2>🔒 Caja FerreLunze</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Ingresa la contraseña de administrador</p>
+        <form onsubmit="handleAdminLogin(event)">
+            <input type="password" id="admin-pass-input" required placeholder="Contraseña" class="input-field">
+            <button type="submit" class="btn-primary">Ingresar al Sistema</button>
+        </form>
+    </div>
+
+    <div id="admin-dashboard-view" class="hidden">
+        <div class="box-card" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">🛠️ Panel de Caja y Mostrador - FerreLunze</h3>
+            <button onclick="logoutAdmin()" class="btn-danger">Cerrar Sesión 🚪</button>
+        </div>
+
+        <div class="box-card">
+            <div class="stats-grid">
+                <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size:0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
+                <div class="stat-card" style="border-top: 4px solid #546e7a;" onclick="showTierClientsList('plata')"><span style="font-size:0.8rem; font-weight:700; color:#546e7a;">🥈 PLATA</span><div class="val" id="stat-plata">0</div></div>
+                <div class="stat-card" style="border-top: 4px solid #b45309;" onclick="showTierClientsList('oro')"><span style="font-size:0.8rem; font-weight:700; color:#b45309;">🥇 ORO</span><div class="val" id="stat-oro">0</div></div>
+                <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size:0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
+            </div>
+            <div id="admin-tier-list-box" class="hidden" style="margin-top:16px; padding-top:16px; border-top:1px solid #e2d9cd;">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><h4 id="tier-list-title">Clientes</h4><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
+                <div style="overflow-x: auto; max-height: 200px;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
+            </div>
+        </div>
+
+        <div class="box-card" style="border-left: 5px solid #2e7d32;">
+            <h3>🎁 Validar Código de Canje / Raspa y Gana</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula antes de entregar el premio.</p>
+            <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
+                <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
+                <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
+            </form>
+        </div>
+
+        <div class="box-card" style="border-left: 5px solid #d97706;">
+            <h3>🏆 Canjes Registrados</h3>
+            <div style="overflow-x: auto; max-height: 220px;">
+                <table class="custom-table">
+                    <thead><tr><th>Fecha</th><th>Cédula</th><th>Cliente</th><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
+                    <tbody id="admin-global-canjes-tbody"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="box-card">
+                <h3>Acreditar Compra en Mostrador</h3>
+                <form onsubmit="handleAdminAddSale(event)">
+                    <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
+                    <input type="text" id="admin-sale-amount" required placeholder="Monto total ($ COP) - Ej: 50,000" class="input-field" oninput="formatCurrencyInput(this)">
+                    <button type="submit" class="btn-primary">Acreditar Compra</button>
+                </form>
+            </div>
+
+            <div class="box-card">
+                <h3>Gestor de Premios</h3>
+                <form onsubmit="handleAdminAddReward(event)">
+                    <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
+                    <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
+                    <input type="text" id="reward-desc-input" placeholder="Descripción corta" class="input-field">
+                    <button type="submit" class="btn-primary" style="background:#2e7d32;">Guardar como Borrador</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="box-card">
+            <h3>Catálogo de Premios</h3>
+            <div id="admin-rewards-container" class="rewards-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px;"></div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyo--5LwgtEN7EAnTsY3BcGfsfGpKVkRN_CL1FuqKXvts6pY0MCgHZf1OI2DvAsjktXAg/exec';
+        const ORIGIN_URL = 'https://lunzemod-beep.github.io';
+
+        let allClientsCache = [];
+        let rewardsList = [];
+        let globalCanjesCache = [];
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg; toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 4000);
+        }
+
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value === '') { input.value = ''; return; }
+            input.value = Number(value).toLocaleString('en-US');
+        }
+
+        if (sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) {
+            document.getElementById('admin-login-view').classList.add('hidden');
+            document.getElementById('admin-dashboard-view').classList.remove('hidden');
+            loadAdminData();
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const passVal = document.getElementById('admin-pass-input').value;
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'login_admin', password: passVal }) });
+                const data = await res.json();
+                if (data.status === "success") {
+                    sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token);
+                    document.getElementById('admin-login-view').classList.add('hidden');
+                    document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                    loadAdminData();
+                } else { showToast('❌ Contraseña incorrecta'); }
+            } catch(err) { showToast('❌ Error de red.'); }
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem("FERRELUNZE_ADMIN_TOKEN");
+            document.getElementById('admin-dashboard-view').classList.add('hidden');
+            document.getElementById('admin-login-view').classList.remove('hidden');
+        }
+
+        function calculateTier(pts) {
+            const p = Number(pts || 0);
+            if (p >= 1000) return { name: 'DIAMANTE' };
+            if (p >= 500) return { name: 'ORO' };
+            if (p >= 100) return { name: 'PLATA' };
+            return { name: 'BRONCE' };
+        }
+
+        async function loadAdminData() {
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN") }) });
+                const data = await res.json();
+                if (data.status === "success") {
+                    allClientsCache = data.clientes || [];
+                    rewardsList = data.premios || [];
+                    globalCanjesCache = data.canjesGlobales || [];
+
+                    let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
+                    allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
+                    document.getElementById('stat-bronce').textContent = stats.bronce;
+                    document.getElementById('stat-plata').textContent = stats.plata;
+                    document.getElementById('stat-oro').textContent = stats.oro;
+                    document.getElementById('stat-diamante').textContent = stats.diamante;
+
+                    renderGlobalCanjes();
+                    renderAdminRewards();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderGlobalCanjes() {
+            const tbody = document.getElementById('admin-global-canjes-tbody');
+            if(!globalCanjesCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; return; }
+            tbody.innerHTML = globalCanjesCache.map(c => `
+                <tr>
+                    <td>${String(c.fecha).substring(0, 10)}</td>
+                    <td>${c.cedula}</td>
+                    <td><strong>${c.cliente}</strong></td>
+                    <td>${c.premio}</td>
+                    <td><code>${c.codigo}</code></td>
+                    <td><span style="padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; background:${c.estado === 'Entregado' ? '#dcfce7' : '#fef3c7'}; color:${c.estado === 'Entregado' ? '#166534' : '#b45309'};">${c.estado}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function showTierClientsList(tierKey) {
+            const filtered = allClientsCache.filter(c => calculateTier(c.puntos).name.toLowerCase() === tierKey).sort((a, b) => b.puntos - a.puntos);
+            document.getElementById('tier-list-title').textContent = `Clientes Categoría ${tierKey.toUpperCase()}`;
+            document.getElementById('tier-list-table-body').innerHTML = filtered.map(c => `<tr><td><strong>${c.nombre}</strong></td><td>${c.telefono}</td><td>${c.cedula}</td><td style="color:var(--primary); font-weight:bold;">${c.puntos} pts</td></tr>`).join('');
+            document.getElementById('admin-tier-list-box').classList.remove('hidden');
+        }
+        function hideTierClientsList() { document.getElementById('admin-tier-list-box').classList.add('hidden'); }
+
+        async function handleAdminValidateCanje(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('admin-codigo-canje-input').value.trim();
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'validar_canje_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), codigoCanje: codigo }) });
+                const data = await res.json();
+                if(data.status === "success") { alert(data.mensaje); document.getElementById('admin-codigo-canje-input').value = ''; loadAdminData(); }
+                else { alert(data.message); }
+            } catch(err) { showToast('❌ Error de red.'); }
+        }
+
+        async function handleAdminAddSale(e) {
+            e.preventDefault();
+            const rawAmount = document.getElementById('admin-sale-amount').value.replace(/,/g, '');
+            const amountInput = parseInt(rawAmount);
+            if (isNaN(amountInput) || amountInput <= 0) { showToast('❌ Monto inválido'); return; }
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'venta', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: document.getElementById('admin-sale-cedula').value.trim(), puntosGanados: Math.floor(amountInput / 10000), monto: amountInput }) });
+                const data = await res.json();
+                if (data.status === "success") { showToast(`✅ Venta acreditada. Saldo: ${data.nuevosPuntos} pts`); document.getElementById('admin-sale-cedula').value = ''; document.getElementById('admin-sale-amount').value = ''; loadAdminData(); }
+                else { showToast('❌ ' + data.message); }
+            } catch(err) { showToast('❌ Error de red.'); }
+        }
+
+        async function handleAdminAddReward(e) {
+            e.preventDefault();
+            const titulo = document.getElementById('reward-title-input').value.trim();
+            const puntos = parseInt(document.getElementById('reward-cost-input').value);
+            const descripcion = document.getElementById('reward-desc-input').value.trim();
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'guardar_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), titulo, puntos, descripcion, estado: 'draft' }) });
+                const data = await res.json();
+                if(data.status === "success") { showToast('✅ Borrador guardado'); e.target.reset(); loadAdminData(); }
+                else { showToast('❌ ' + data.message); }
+            } catch(err) { showToast('❌ Error de red.'); }
+        }
+
+        async function cambiarEstadoPremio(idPremio, accion) {
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }) });
+                const data = await res.json();
+                if(data.status === "success") { showToast('✅ Actualizado'); loadAdminData(); }
+                else { showToast('❌ ' + data.message); }
+            } catch(err) { showToast('❌ Error de red.'); }
+        }
+
+        function renderAdminRewards() {
+            const container = document.getElementById('admin-rewards-container');
+            if(!rewardsList.length) { container.innerHTML = '<p>Sin premios.</p>'; return; }
+            container.innerHTML = rewardsList.map(r => `
+                <div style="background:white; border:1px solid #e2d9cd; padding:12px; border-radius:10px;">
+                    <span style="font-size:0.65rem; font-weight:bold; padding:2px 6px; background:${r.status === 'draft' ? '#fef3c7' : '#dcfce7'}; color:${r.status === 'draft' ? '#b45309' : '#166534'}; border-radius:4px;">${r.status === 'draft' ? '📝 BORRADOR' : '🟢 PUBLICADO'}</span>
+                    <h4 style="margin:4px 0; font-size:0.95rem;">${r.title}</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                        <strong style="color:var(--accent); font-size:0.85rem;">${Number(r.cost).toLocaleString()} pts</strong>
+                        <div>
+                            ${r.status === 'draft' ? `<button onclick="cambiarEstadoPremio('${r.id}', 'publicar')" style="background:#2e7d32; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Publicar</button>` : ''}
+                            <button onclick="cambiarEstadoPremio('${r.id}', 'eliminar')" style="background:#b91c1c; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
