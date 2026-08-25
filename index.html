@@ -435,7 +435,7 @@
 
                     <div class="box-card">
                         <h3>Gestor de Premios (Borrador / Publicar)</h3>
-                        <form onsubmit="handleAdminAddReward(event)">
+                        <form id="form-admin-add-reward" onsubmit="handleAdminAddReward(event)">
                             <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
                             <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
                             <input type="text" id="reward-desc-input" placeholder="Descripción corta" class="input-field">
@@ -461,7 +461,7 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbww735bVPLx14_tuWHWloxnmAfVePVqe_ETKuGY1jyTg_0IPYmBijkG80K_9CI4JTamNQ/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzeQicWmyLdRtXLemussocxPTrm4onIcN4RafldoFlCmw4kwed5a6MCPnCZ3upPbdBpgA/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -493,6 +493,7 @@
             document.getElementById('form-client-login')?.reset();
             document.getElementById('form-client-register')?.reset();
             document.getElementById('form-admin-login')?.reset();
+            document.getElementById('form-admin-add-reward')?.reset();
         }
 
         function switchRole(role) {
@@ -736,8 +737,9 @@
                     if(data.status === "success" && data.nuevosPuntos !== undefined) {
                         activeClient.puntos = data.nuevosPuntos;
                         document.getElementById('client-points-display').textContent = Number(data.nuevosPuntos).toLocaleString();
-                        // Refrescar historial localmente para sincronizar
-                        activeClient.historial.unshift({ fecha: new Date().toISOString(), descripcion: descRegistro, puntos: `+${premioElegido.match(/\d+/)[0] || 0}` });
+                        const matchPtos = premioElegido.match(/\+(\d+)/);
+                        const ptsVal = matchPtos ? `+${matchPtos[1]}` : '+0';
+                        activeClient.historial.unshift({ fecha: new Date().toISOString(), descripcion: descRegistro, puntos: ptsVal });
                         renderClientHistory();
                     }
                 } catch(e) { console.error("Error guardando raspa", e); }
@@ -874,7 +876,7 @@
                 <li style="padding: 12px 0; border-bottom: 1px solid #e2d9cd; font-size: 0.85rem;">
                     <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
                         <span style="color: var(--primary-dark);">${String(t.descripcion || '').replace(/\(\$.*\)/, '')}</span>
-                        <span style="color:${parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${t.puntos} pts</span>
+                        <span style="color:${String(t.puntos).includes('+') || parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${t.puntos} pts</span>
                     </div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${String(t.fecha).substring(0, 19)}</div>
                 </li>
@@ -995,7 +997,12 @@
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'guardar_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), titulo, puntos, descripcion, estado: 'draft' }) });
                 const data = await res.json();
-                if(data.status === "success") { rewardsList = data.premios || rewardsList; showToast('Premio guardado'); renderAdminRewards(); }
+                if(data.status === "success") { 
+                    rewardsList = data.premios || rewardsList; 
+                    showToast('✅ Premio guardado en borrador'); 
+                    document.getElementById('form-admin-add-reward').reset();
+                    renderAdminRewards(); 
+                } else { showToast('❌ ' + data.message); }
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
@@ -1003,13 +1010,21 @@
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }) });
                 const data = await res.json();
-                if(data.status === "success") { rewardsList = data.premios || rewardsList; renderAdminRewards(); }
+                if(data.status === "success") { 
+                    rewardsList = data.premios || rewardsList; 
+                    showToast(accion === 'publicar' ? '🚀 Premio publicado' : '🗑️ Premio eliminado');
+                    renderAdminRewards(); 
+                } else { showToast('❌ ' + data.message); }
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
         function renderAdminRewards() {
             const container = document.getElementById('admin-rewards-container');
             if(!container) return;
+            if(!rewardsList || rewardsList.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No hay premios registrados.</p>';
+                return;
+            }
             container.innerHTML = rewardsList.map(r => `
                 <div class="reward-card" style="border: 2px dashed ${r.status === 'draft' ? '#d97706' : '#2e7d32'};">
                     <div>
