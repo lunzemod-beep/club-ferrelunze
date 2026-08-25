@@ -250,9 +250,9 @@
 
                     <div id="raspa-claimed-view" class="scratch-container hidden" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%);">
                         <div style="padding:16px;">
-                            <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9; color:#a7f3d0;">¡Premio Sorpresa Obtenido!</div>
+                            <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9; color:#a7f3d0;" id="raspa-claimed-subtitle">¡Premio Sorpresa Obtenido!</div>
                             <div id="raspa-claimed-title" style="font-size:1.2rem; font-weight:900; margin:4px 0; color:#fef3c7;">🎁 PREMIO REGISTRADO EN SHEETS</div>
-                            <div style="font-size:0.85rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:8px; display:inline-block; margin-top:6px; border:1px solid rgba(255,255,255,0.2);">
+                            <div style="font-size:0.85rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:8px; display:inline-block; margin-top:6px; border:1px solid rgba(255,255,255,0.2);" id="raspa-claimed-code-box">
                                 Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">----</span>
                             </div>
                         </div>
@@ -461,7 +461,7 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzU6ZVRALbkU9FdYoF-oldyIpeqOprSS5mlkZEuhZtxPAnO0tiH0nRKjLgGQhf-iU_E/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbww735bVPLx14_tuWHWloxnmAfVePVqe_ETKuGY1jyTg_0IPYmBijkG80K_9CI4JTamNQ/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -662,24 +662,36 @@
 
             document.getElementById('raspa-compras-count').textContent = comprasEnCicloActual;
 
-            const registroRaspaEnSheets = (activeClient && activeClient.historial) ?
+            const registroRaspaEnHistorial = (activeClient && activeClient.historial) ?
                 activeClient.historial.find(h => String(h.descripcion).includes(`[RASPA_CICLO_${numeroCicloActual}]`)) : null;
 
-            if (comprasRealizadas < 4 || (comprasEnCicloActual !== 0 && !registroRaspaEnSheets)) {
+            const codigoGeneradoTest = String(Math.abs(parseInt(activeClient.cedula || 0) * 9 + numeroCicloActual)).slice(-4).padStart(4, '0');
+            const canjeEntregado = (activeClient && activeClient.canjes) ?
+                activeClient.canjes.find(c => String(c.codigo) === String(codigoGeneradoTest) && c.estado === 'Entregado') : null;
+
+            if (comprasRealizadas < 4 || (comprasEnCicloActual !== 0 && !registroRaspaEnHistorial)) {
                 lockedView.classList.remove('hidden');
                 claimedView.classList.add('hidden');
                 activeView.classList.add('hidden');
                 return;
             }
 
-            if (registroRaspaEnSheets) {
+            if (registroRaspaEnHistorial || canjeEntregado) {
                 lockedView.classList.add('hidden');
                 activeView.classList.add('hidden');
                 claimedView.classList.remove('hidden');
 
-                document.getElementById('raspa-claimed-title').textContent = registroRaspaEnSheets.descripcion.replace(/\[.*\]/, '');
-                const codigoEncontrado = String(registroRaspaEnSheets.descripcion).match(/CÓDIGO: (\d{4})/);
-                document.getElementById('raspa-claimed-code').textContent = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
+                if (canjeEntregado) {
+                    document.getElementById('raspa-claimed-subtitle').textContent = "¡Premio Canjeado y Entregado!";
+                    document.getElementById('raspa-claimed-title').textContent = "🎁 CICLO COMPLETADO CON ÉXITO";
+                    document.getElementById('raspa-claimed-code-box').innerHTML = '<span style="color:#4ade80;">Estado: Entregado en Mostrador ✅</span>';
+                } else {
+                    document.getElementById('raspa-claimed-subtitle').textContent = "¡Premio Sorpresa Obtenido!";
+                    document.getElementById('raspa-claimed-title').textContent = registroRaspaEnHistorial.descripcion.replace(/\[.*\]/, '');
+                    const codigoEncontrado = String(registroRaspaEnHistorial.descripcion).match(/CÓDIGO: (\d{4})/);
+                    const codigoMostrado = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
+                    document.getElementById('raspa-claimed-code-box').innerHTML = `Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">${codigoMostrado}</span>`;
+                }
                 return;
             }
 
@@ -690,7 +702,7 @@
             const opcionesPremios = ["+5 PUNTOS EXTRA", "+10 PUNTOS EXTRA", "5% DESC. EN BROCHAS", "+15 PUNTOS EXTRA"];
             const idx = Math.abs(parseInt(activeClient.cedula || 0)) % opcionesPremios.length;
             const premioElegido = opcionesPremios[idx];
-            const codigoGenerado = String(Math.abs(parseInt(activeClient.cedula) * 9 + numeroCicloActual)).slice(-4).padStart(4, '0');
+            const codigoGenerado = codigoGeneradoTest;
 
             document.getElementById('raspa-reward-text').textContent = `🎁 ${premioElegido}`;
             document.getElementById('raspa-codigo-val').textContent = codigoGenerado;
@@ -716,10 +728,18 @@
                 triggerConfetti();
                 try {
                     const descRegistro = `Raspa y Gana (${premioElegido}) CÓDIGO: ${codigoGenerado} [RASPA_CICLO_${numeroCicloActual}]`;
-                    await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
                         method: 'POST',
                         body: JSON.stringify({ tipo: 'guardar_raspa_sheets', cedula: activeClient.cedula, descripcion: descRegistro, codigo: codigoGenerado })
                     });
+                    const data = await res.json();
+                    if(data.status === "success" && data.nuevosPuntos !== undefined) {
+                        activeClient.puntos = data.nuevosPuntos;
+                        document.getElementById('client-points-display').textContent = Number(data.nuevosPuntos).toLocaleString();
+                        // Refrescar historial localmente para sincronizar
+                        activeClient.historial.unshift({ fecha: new Date().toISOString(), descripcion: descRegistro, puntos: `+${premioElegido.match(/\d+/)[0] || 0}` });
+                        renderClientHistory();
+                    }
                 } catch(e) { console.error("Error guardando raspa", e); }
             }
 
