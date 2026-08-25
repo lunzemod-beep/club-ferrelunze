@@ -461,7 +461,7 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxeFo8o_vJP2ZGcsT55KgokBaTlYpfWMOdPyjfa4hd2w4LoJbYlWCON5EfIBkroP8jCcw/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyQxQNsLW3yI5owixhpLchW2z9HgrKj3b3JQyDKXCMde7Vs0kV7w0R7m0CZkGP4avHiSg/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -535,8 +535,6 @@
                     publicidadList = data.publicidad || [];
                     renderPublicidadLaterales();
                     if(activeClient) renderClientRewards();
-                } else {
-                    console.error("Respuesta fallida de Apps Script:", data);
                 }
             } catch(e) { console.error("Error sincronizando catálogo", e); }
         }
@@ -577,7 +575,6 @@
                     method: 'POST', 
                     body: JSON.stringify({ tipo: 'login_verificar', cedula: cedula, password: pin, pin: pin, accion: 'login' }) 
                 });
-                
                 const data = await response.json();
 
                 if (data.status === "success") {
@@ -591,10 +588,7 @@
                     renderClientDashboard();
                     triggerConfetti();
                 } else { showToast('❌ ' + (data.message || 'Credenciales incorrectas')); }
-            } catch (error) { 
-                console.error("Error completo:", error);
-                showToast('❌ Error de conexión con el servidor.'); 
-            }
+            } catch (error) { showToast('❌ Error de conexión.'); }
             finally { btn.disabled = false; btn.innerText = "Ingresar"; }
         }
 
