@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Ferrelunze | Sistema de Fidelización</title>
+    <title>Club FerreLunze | Sistema de Fidelización</title>
     <!-- Librería de Confeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     
@@ -153,7 +153,7 @@
 <body>
 
     <header>
-        <div class="brand-logo">🛠️ Ferrelunze <span>Club</span></div>
+        <div class="brand-logo">🛠️ FerreLunze <span>Club</span></div>
         <div class="role-switch">
             <button class="role-btn active" id="btn-role-client" onclick="switchRole('client')">Cliente</button>
             <button class="role-btn" id="btn-role-admin" onclick="switchRole('admin')">Administrador</button>
@@ -170,7 +170,7 @@
         <main style="width: 100%;">
             <div id="client-login-view" class="login-card">
                 <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-                <h2>Portal de Clientes Ferrelunze</h2>
+                <h2>Portal de Clientes FerreLunze</h2>
                 <p>Ingresa tus datos para consultar o canjear tus puntos</p>
                 <form id="form-client-login" onsubmit="handleClientLogin(event)">
                     <input type="text" id="client-cedula-input" required placeholder="Cédula de Ciudadanía" class="input-field">
@@ -196,7 +196,7 @@
 
                     <div class="legal-box">
                         <strong>Autorización de Tratamiento de Datos (Ley 1581 de 2012):</strong>
-                        Autorizo expresamente a Ferrelunze para recolectar, almacenar y tratar mis datos personales para la gestión del programa de fidelización y notificaciones comerciales.
+                        Autorizo expresamente a FerreLunze para recolectar, almacenar y tratar mis datos personales para la gestión del programa de fidelización y notificaciones comerciales.
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; text-align: left; font-size: 0.8rem;">
@@ -332,8 +332,8 @@
                 <div class="box-card" style="text-align: center; background: #fdfbf7;">
                     <h3 style="font-size: 1rem; margin-bottom: 4px;">¿Tienes dudas con tus puntos o un premio?</h3>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Comunícate directamente con nuestro equipo de mostrador.</p>
-                    <a href="https://wa.me/573156933747?text=Hola,%20soy%20cliente%20de%20Club%20Ferrelunze%20y%20deseo%20consultar%20sobre%20mis%20beneficios." target="_blank" class="whatsapp-float">
-                        💬 Escribir a WhatsApp Ferrelunze
+                    <a href="https://wa.me/573156933747?text=Hola,%20soy%20cliente%20de%20Club%20FerreLunze%20y%20deseo%20consultar%20sobre%20mis%20beneficios." target="_blank" class="whatsapp-float">
+                        💬 Escribir a WhatsApp FerreLunze
                     </a>
                 </div>
 
@@ -461,7 +461,7 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxeKM6MmTWVIv_9CFCOiEcXZ_Fj_w0tidEFWeYgtML-ERsW5L6CkUuX2NKI3xoaXoVLUg/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxeFo8o_vJP2ZGcsT55KgokBaTlYpfWMOdPyjfa4hd2w4LoJbYlWCON5EfIBkroP8jCcw/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
@@ -535,13 +535,15 @@
                     publicidadList = data.publicidad || [];
                     renderPublicidadLaterales();
                     if(activeClient) renderClientRewards();
+                } else {
+                    console.error("Respuesta fallida de Apps Script:", data);
                 }
             } catch(e) { console.error("Error sincronizando catálogo", e); }
         }
 
         function renderPublicidadLaterales() {
-            const pubIzquierda = publicidadList.find(p => p.sector.toLowerCase().includes('izquierd'));
-            const pubDerecha = publicidadList.find(p => p.sector.toLowerCase().includes('derech'));
+            const pubIzquierda = publicidadList.find(p => p.sector && p.sector.toLowerCase().includes('izquierd'));
+            const pubDerecha = publicidadList.find(p => p.sector && p.sector.toLowerCase().includes('derech'));
             const containerLeft = document.getElementById('side-ad-left-container');
             const containerRight = document.getElementById('side-ad-right-container');
 
@@ -575,6 +577,7 @@
                     method: 'POST', 
                     body: JSON.stringify({ tipo: 'login_verificar', cedula: cedula, password: pin, pin: pin, accion: 'login' }) 
                 });
+                
                 const data = await response.json();
 
                 if (data.status === "success") {
@@ -588,7 +591,10 @@
                     renderClientDashboard();
                     triggerConfetti();
                 } else { showToast('❌ ' + (data.message || 'Credenciales incorrectas')); }
-            } catch (error) { showToast('❌ Error de conexión.'); }
+            } catch (error) { 
+                console.error("Error completo:", error);
+                showToast('❌ Error de conexión con el servidor.'); 
+            }
             finally { btn.disabled = false; btn.innerText = "Ingresar"; }
         }
 
