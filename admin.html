@@ -15,42 +15,147 @@
             --danger: #b91c1c;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding: 20px; }
+        
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-dark); 
+            min-height: 100vh; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Marca de agua de fondo corporativa */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 550px; height: 550px;
+            background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: contain;
+            opacity: 0.08; pointer-events: none; z-index: 0;
+        }
+
         .hidden { display: none !important; }
-        .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); max-width: 900px; margin-left: auto; margin-right: auto; }
-        .login-card { max-width: 400px; margin: 60px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; background-color: #fdfbf7; }
-        .btn-primary { width: 100%; background-color: var(--primary-dark); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: white; padding: 16px; border-radius: 14px; border: 1px solid #e2d9cd; text-align: center; cursor: pointer; }
-        .stat-card .val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: var(--primary-dark); }
+
+        /* Estilo profesional para la tarjeta de Login */
+        .login-card { 
+            max-width: 440px; 
+            width: 100%;
+            background: #ffffff; 
+            padding: 40px 32px; 
+            border-radius: 24px; 
+            border: 1px solid #e2d9cd; 
+            box-shadow: 0 15px 35px -5px rgba(62, 39, 35, 0.12); 
+            text-align: center; 
+            position: relative; 
+            z-index: 1;
+        }
+
+        .card-logo-img { 
+            max-width: 200px; 
+            height: auto; 
+            margin-bottom: 20px; 
+            display: inline-block; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .login-card h2 { 
+            font-size: 1.35rem; 
+            color: var(--primary-dark); 
+            margin-bottom: 6px; 
+            font-weight: 800;
+        }
+
+        .login-card p { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            margin-bottom: 24px; 
+        }
+
+        .input-field { 
+            width: 100%; 
+            padding: 14px 18px; 
+            border: 1px solid #c8bba8; 
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            outline: none; 
+            margin-bottom: 16px; 
+            background-color: #fdfbf7; 
+            transition: all 0.2s ease;
+        }
+        
+        .input-field:focus { 
+            border-color: var(--primary); 
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(139, 69, 19, 0.1);
+        }
+
+        .btn-primary { 
+            width: 100%; 
+            background-color: var(--primary-dark); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 0.95rem;
+            cursor: pointer; 
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.2);
+        }
+
+        .btn-primary:hover { background-color: var(--primary); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Estilos generales para el Dashboard una vez logueado */
+        .dashboard-wrapper { width: 100%; max-width: 1000px; position: relative; z-index: 1; margin: 0 auto; }
+        .box-card { background: white; padding: 24px; border-radius: 18px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(62, 39, 35, 0.05); }
+        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-danger:hover { opacity: 0.9; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: #fff; padding: 18px; border-radius: 14px; border: 1px solid #e2d9cd; text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(62, 39, 35, 0.08); }
+        .stat-card .val { font-size: 2rem; font-weight: 800; margin-top: 4px; color: var(--primary-dark); }
+
         .custom-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
-        .custom-table th, .custom-table td { padding: 10px; border-bottom: 1px solid #e2d9cd; text-align: left; }
-        .custom-table th { background: #f5f2eb; font-weight: 700; }
+        .custom-table th, .custom-table td { padding: 12px; border-bottom: 1px solid #e2d9cd; text-align: left; }
+        .custom-table th { background: #f5f2eb; font-weight: 700; color: var(--text-dark); }
+
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: none; z-index: 100; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 14px 22px; border-radius: 12px; font-weight: 600; display: none; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 1px solid #8d6e63; }
     </style>
 </head>
 <body>
 
+    <!-- Pantalla de Login Rediseñada -->
     <div id="admin-login-view" class="login-card">
-        <h2>🔒 Caja FerreLunze</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Ingresa la contraseña de administrador</p>
+        <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
+        <h2>🔒 Caja & Mostrador</h2>
+        <p>Ingresa tu contraseña de administración</p>
         <form onsubmit="handleAdminLogin(event)">
-            <input type="password" id="admin-pass-input" required placeholder="Contraseña" class="input-field">
+            <input type="password" id="admin-pass-input" required placeholder="Contraseña de acceso" class="input-field">
             <button type="submit" class="btn-primary">Ingresar al Sistema</button>
         </form>
     </div>
 
-    <div id="admin-dashboard-view" class="hidden">
+    <!-- Panel de Control Principal -->
+    <div id="admin-dashboard-view" class="dashboard-wrapper hidden">
         <div class="box-card" style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0;">🛠️ Panel de Caja y Mostrador - FerreLunze</h3>
-            <button onclick="logoutAdmin()" class="btn-danger">Cerrar Sesión 🚪</button>
+            <div>
+                <h3 style="margin: 0; color: var(--primary-dark); font-size: 1.2rem;">🛠️ FerreLunze Club</h3>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Panel de Control y Caja Registradora</span>
+            </div>
+            <button onclick="logoutAdmin()" class="btn-danger" style="font-size: 0.85rem;">Cerrar Sesión 🚪</button>
         </div>
 
         <div class="box-card">
+            <h4 style="margin-bottom: 12px; font-size: 0.95rem; color: var(--primary-dark);">Resumen de Clientes por Categoría</h4>
             <div class="stats-grid">
                 <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size:0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
                 <div class="stat-card" style="border-top: 4px solid #546e7a;" onclick="showTierClientsList('plata')"><span style="font-size:0.8rem; font-weight:700; color:#546e7a;">🥈 PLATA</span><div class="val" id="stat-plata">0</div></div>
@@ -58,26 +163,26 @@
                 <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size:0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
             </div>
             <div id="admin-tier-list-box" class="hidden" style="margin-top:16px; padding-top:16px; border-top:1px solid #e2d9cd;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><h4 id="tier-list-title">Clientes</h4><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
-                <div style="overflow-x: auto; max-height: 200px;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><h4 id="tier-list-title" style="font-size:1rem; color:var(--primary-dark);">Clientes</h4><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
+                <div style="overflow-x: auto; max-height: 220px;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
             </div>
         </div>
 
         <div class="box-card" style="border-left: 5px solid #2e7d32;">
-            <h3>🎁 Validar Código de Canje / Raspa y Gana</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula antes de entregar el premio.</p>
-            <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
-                <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
-                <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
+            <h3 style="color: var(--primary-dark); margin-bottom: 6px;">🎁 Validar Código de Canje / Raspa y Gana</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula física antes de entregar el premio.</p>
+            <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 240px; flex:1;">
+                <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap; flex:0;">Validar y Entregar</button>
             </form>
         </div>
 
         <div class="box-card" style="border-left: 5px solid #d97706;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-                <h3 style="margin: 0;">🏆 Canjes Registrados</h3>
+                <h3 style="margin: 0; color: var(--primary-dark);">🏆 Canjes Registrados</h3>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Filtrar por fecha:</label>
-                    <select id="filter-canjes-fecha" onchange="renderGlobalCanjes()" class="input-field" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; width: auto;">
+                    <select id="filter-canjes-fecha" onchange="renderGlobalCanjes()" class="input-field" style="margin-bottom: 0; padding: 8px 12px; font-size: 0.8rem; width: auto;">
                         <option value="todos">Todos los registros</option>
                         <option value="hoy">Hoy</option>
                         <option value="7dias">Últimos 7 días</option>
@@ -85,7 +190,7 @@
                     </select>
                 </div>
             </div>
-            <div style="overflow-x: auto; max-height: 220px;">
+            <div style="overflow-x: auto; max-height: 240px;">
                 <table class="custom-table">
                     <thead><tr><th>Fecha</th><th>Cédula</th><th>Cliente</th><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
                     <tbody id="admin-global-canjes-tbody"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
@@ -95,7 +200,8 @@
 
         <div class="grid-2">
             <div class="box-card">
-                <h3>Acreditar Compra en Mostrador</h3>
+                <h3 style="color: var(--primary-dark); margin-bottom: 6px;">Acreditar Compra en Mostrador</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Ingresa la cédula y el monto total para calcular los puntos.</p>
                 <form onsubmit="handleAdminAddSale(event)">
                     <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
                     <input type="text" id="admin-sale-amount" required placeholder="Monto total ($ COP) - Ej: 50,000" class="input-field" oninput="formatCurrencyInput(this)">
@@ -104,7 +210,8 @@
             </div>
 
             <div class="box-card">
-                <h3>Gestor de Premios</h3>
+                <h3 style="color: var(--primary-dark); margin-bottom: 6px;">Gestor de Premios</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Crea nuevos premios para el catálogo del club.</p>
                 <form onsubmit="handleAdminAddReward(event)">
                     <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
                     <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
@@ -115,7 +222,7 @@
         </div>
 
         <div class="box-card">
-            <h3>Catálogo de Premios</h3>
+            <h3 style="color: var(--primary-dark); margin-bottom: 12px;">Catálogo de Premios</h3>
             <div id="admin-rewards-container" class="rewards-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px;"></div>
         </div>
     </div>
@@ -204,7 +311,7 @@
             const filtro = document.getElementById('filter-canjes-fecha').value;
             
             if(!globalCanjesCache.length) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin canjes registrados.</td></tr>'; 
                 return; 
             }
 
@@ -216,7 +323,7 @@
             const canjesFiltrados = globalCanjesCache.filter(c => {
                 if (!c.fecha) return false;
                 const fechaCanje = new Date(c.fecha);
-                if (isNaN(fechaCanje)) return true; // Si hay formato desconocido, lo dejamos pasar
+                if (isNaN(fechaCanje)) return true;
 
                 if (filtro === 'hoy') {
                     return fechaCanje >= inicioHoy;
@@ -225,7 +332,7 @@
                 } else if (filtro === 'mes') {
                     return fechaCanje >= inicioMes;
                 }
-                return true; // 'todos'
+                return true;
             });
 
             if(!canjesFiltrados.length) {
@@ -303,16 +410,16 @@
 
         function renderAdminRewards() {
             const container = document.getElementById('admin-rewards-container');
-            if(!rewardsList.length) { container.innerHTML = '<p>Sin premios.</p>'; return; }
+            if(!rewardsList.length) { container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Sin premios registrados.</p>'; return; }
             container.innerHTML = rewardsList.map(r => `
-                <div style="background:white; border:1px solid #e2d9cd; padding:12px; border-radius:10px;">
-                    <span style="font-size:0.65rem; font-weight:bold; padding:2px 6px; background:${r.status === 'draft' ? '#fef3c7' : '#dcfce7'}; color:${r.status === 'draft' ? '#b45309' : '#166534'}; border-radius:4px;">${r.status === 'draft' ? '📝 BORRADOR' : '🟢 PUBLICADO'}</span>
-                    <h4 style="margin:4px 0; font-size:0.95rem;">${r.title}</h4>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                        <strong style="color:var(--accent); font-size:0.85rem;">${Number(r.cost).toLocaleString()} pts</strong>
+                <div style="background:white; border:1px solid #e2d9cd; padding:14px; border-radius:12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <span style="font-size:0.65rem; font-weight:bold; padding:3px 8px; background:${r.status === 'draft' ? '#fef3c7' : '#dcfce7'}; color:${r.status === 'draft' ? '#b45309' : '#166534'}; border-radius:6px;">${r.status === 'draft' ? '📝 BORRADOR' : '🟢 PUBLICADO'}</span>
+                    <h4 style="margin:6px 0; font-size:0.95rem; color:var(--primary-dark);">${r.title}</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <strong style="color:var(--accent); font-size:0.9rem;">${Number(r.cost).toLocaleString()} pts</strong>
                         <div>
-                            ${r.status === 'draft' ? `<button onclick="cambiarEstadoPremio('${r.id}', 'publicar')" style="background:#2e7d32; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Publicar</button>` : ''}
-                            <button onclick="cambiarEstadoPremio('${r.id}', 'eliminar')" style="background:#b91c1c; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.65rem; cursor:pointer;">Eliminar</button>
+                            ${r.status === 'draft' ? `<button onclick="cambiarEstadoPremio('${r.id}', 'publicar')" style="background:#2e7d32; color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; font-weight:700; margin-right:4px;">Publicar</button>` : ''}
+                            <button onclick="cambiarEstadoPremio('${r.id}', 'eliminar')" style="background:#b91c1c; color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; font-weight:700;">Eliminar</button>
                         </div>
                     </div>
                 </div>
