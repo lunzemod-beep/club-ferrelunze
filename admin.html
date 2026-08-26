@@ -73,7 +73,18 @@
         </div>
 
         <div class="box-card" style="border-left: 5px solid #d97706;">
-            <h3>🏆 Canjes Registrados</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                <h3 style="margin: 0;">🏆 Canjes Registrados</h3>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Filtrar por fecha:</label>
+                    <select id="filter-canjes-fecha" onchange="renderGlobalCanjes()" class="input-field" style="margin-bottom: 0; padding: 6px 10px; font-size: 0.8rem; width: auto;">
+                        <option value="todos">Todos los registros</option>
+                        <option value="hoy">Hoy</option>
+                        <option value="7dias">Últimos 7 días</option>
+                        <option value="mes">Este mes</option>
+                    </select>
+                </div>
+            </div>
             <div style="overflow-x: auto; max-height: 220px;">
                 <table class="custom-table">
                     <thead><tr><th>Fecha</th><th>Cédula</th><th>Cliente</th><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
@@ -190,8 +201,39 @@
 
         function renderGlobalCanjes() {
             const tbody = document.getElementById('admin-global-canjes-tbody');
-            if(!globalCanjesCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; return; }
-            tbody.innerHTML = globalCanjesCache.map(c => `
+            const filtro = document.getElementById('filter-canjes-fecha').value;
+            
+            if(!globalCanjesCache.length) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; 
+                return; 
+            }
+
+            const ahora = new Date();
+            const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+            const hace7Dias = new Date(ahora.getTime() - (7 * 24 * 60 * 60 * 1000));
+            const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+
+            const canjesFiltrados = globalCanjesCache.filter(c => {
+                if (!c.fecha) return false;
+                const fechaCanje = new Date(c.fecha);
+                if (isNaN(fechaCanje)) return true; // Si hay formato desconocido, lo dejamos pasar
+
+                if (filtro === 'hoy') {
+                    return fechaCanje >= inicioHoy;
+                } else if (filtro === '7dias') {
+                    return fechaCanje >= hace7Dias;
+                } else if (filtro === 'mes') {
+                    return fechaCanje >= inicioMes;
+                }
+                return true; // 'todos'
+            });
+
+            if(!canjesFiltrados.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No hay canjes en el periodo seleccionado.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = canjesFiltrados.map(c => `
                 <tr>
                     <td>${String(c.fecha).substring(0, 10)}</td>
                     <td>${c.cedula}</td>
