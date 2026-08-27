@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club FerreLunze | Sistema de Fidelización</title>
-    <!-- Librería de Confeti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    
+    <title>Club FerreLunze | Panel de Administración</title>
     <style>
         :root {
             --primary: #8b4513;
@@ -17,436 +14,166 @@
             --card-bg: #ffffff;
             --accent: #d97706;
             --danger: #b91c1c;
-            --whatsapp: #25d366;
+            --success: #15803d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; position: relative; }
+        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 550px; height: 550px;
-            background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: contain;
-            opacity: 0.12; pointer-events: none; z-index: 0;
-        }
-
-        /* LAYOUT PUBLICITARIO LATERAL */
-        @media (min-width: 1200px) {
-            body { display: flex; flex-direction: column; align-items: center; }
-            header { width: 100%; }
-            .app-container-wrapper { display: flex; justify-content: center; align-items: flex-start; max-width: 1350px; width: 100%; margin: 24px auto; gap: 20px; padding: 0 16px; }
-            main { flex: 0 0 850px; margin: 0 !important; }
-            .side-ad-left, .side-ad-right { flex: 1; max-width: 230px; background: white; padding: 16px; border-radius: 16px; border: 1px solid #e2d9cd; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); text-align: center; position: sticky; top: 24px; }
-            .side-ad-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover; }
-        }
-
-        @media (max-width: 1199px) {
-            .side-ad-left, .side-ad-right { display: none !important; }
-            main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        }
-
-        header { background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1; }
+        header { background-color: #ffffff; border-bottom: 3px solid var(--primary-dark); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); }
         .brand-logo { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
         .brand-logo span { color: var(--primary); }
 
+        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
         .hidden { display: none !important; }
-        .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
-        .box-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--primary-dark); }
 
-        .login-card { max-width: 460px; margin: 30px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.1); text-align: center; }
-        .card-logo-img { max-width: 220px; height: auto; margin-bottom: 16px; display: inline-block; }
+        .login-card { max-width: 420px; margin: 60px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.1); text-align: center; }
         .login-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: var(--primary-dark); }
         .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
 
-        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; text-align: left; background-color: #fdfbf7; }
+        .box-card { background: white; padding: 24px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
+        .box-card h3 { font-size: 1.15rem; margin-bottom: 16px; color: var(--primary-dark); border-bottom: 2px solid #f0eaf1; padding-bottom: 8px; }
+
+        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; background-color: #fdfbf7; }
         .input-field:focus { border-color: var(--primary); background-color: #ffffff; }
 
-        .btn-primary { width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: transform 0.1s, background 0.2s; }
-        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
         .btn-primary:hover { background-color: #6d330c; }
         .btn-dark { background-color: var(--primary-dark); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         
-        .whatsapp-float { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--whatsapp); color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.85rem; width: 100%; margin-top: 12px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: opacity 0.2s; }
-        .whatsapp-float:hover { opacity: 0.9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2d9cd; }
+        th { background-color: #f9f6f0; color: var(--primary-dark); font-weight: 700; }
+        tr:hover { background-color: #fcfbfa; }
 
-        .vip-card { background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%); color: white; padding: 28px; border-radius: 24px; box-shadow: 0 12px 20px -5px rgba(62, 39, 35, 0.4); margin-bottom: 24px; border: 1px solid #8d6e63; }
-        .tier-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-        .tier-bronce { background: #8d4925; color: #fef3c7; }
-        .tier-plata { background: #546e7a; color: #f1f5f9; }
-        .tier-oro { background: #b45309; color: #fef3c7; }
-        .tier-diamante { background: #0284c7; color: #e0f2fe; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .badge-success { background-color: #dcfce7; color: #15803d; }
+        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
+        .badge-warning { background-color: #fef3c7; color: #b45309; }
 
-        .points-large { font-size: 3.5rem; font-weight: 900; line-height: 1; color: #f59e0b; margin: 12px 0; }
-        .progress-bar-bg { background: rgba(255,255,255,0.15); height: 8px; border-radius: 4px; overflow: hidden; margin: 12px 0; }
-        .progress-bar-fill { background: #f59e0b; height: 100%; width: 0%; transition: width 0.4s ease; }
-
-        .kit-item { display: inline-flex; align-items: center; gap: 6px; background: #e7dfd5; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: var(--primary-dark); margin: 4px; }
-        .rewards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        
-        .glass-card {
-            position: relative;
-            background: linear-gradient(135deg, rgba(139, 69, 19, 0.9) 0%, rgba(217, 119, 6, 0.95) 100%);
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15);
-            padding: 22px;
-            color: white;
-            text-align: center;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(139, 69, 19, 0.3); }
-        .glass-card .titulo { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .glass-card .descripcion { font-size: 0.8rem; font-weight: 400; opacity: 0.9; margin-bottom: 20px; }
-        
-        .barra-fondo { background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; margin-bottom: 6px; overflow: hidden; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
-        .barra-llena { background: #fef3c7; height: 100%; border-radius: 4px; box-shadow: 0 0 10px rgba(254, 243, 199, 0.8); transition: width 0.6s ease-out; }
-        .texto-puntos { font-size: 0.75rem; display: flex; justify-content: space-between; margin-bottom: 16px; font-weight: 700; opacity: 0.95; }
-        
-        .btn-accion {
-            padding: 12px 16px; background: #ffffff; color: #8b4513; border-radius: 12px; font-weight: 800;
-            font-size: 0.8rem; border: none; cursor: pointer; transition: 0.3s; text-transform: uppercase; width: 100%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 2;
-        }
-        .btn-accion:hover:not(:disabled) { background: #fef3c7; transform: scale(1.02); }
-        .btn-accion.success { background: #22c55e; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .btn-accion.success:hover { background: #16a34a; }
-        .btn-accion:disabled { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); cursor: not-allowed; box-shadow: none; border: 1px solid rgba(255,255,255,0.3); }
-
-        .scratch-container {
-            position: relative; width: 100%; min-height: 150px; border-radius: 14px; overflow: hidden;
-            background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3); margin-top: 12px;
-        }
-        .scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; z-index: 5; }
-
-        .calc-box { background: #fdfbf7; border: 2px solid #e2d9cd; padding: 20px; border-radius: 16px; margin-bottom: 24px; }
-        .legal-box { font-size: 0.75rem; color: var(--text-muted); text-align: justify; background: #f5f2eb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #dcd2c4; }
-        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; border: 1px solid #8d6e63; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-
-        /* ESTILOS MÓDULO GUÍA Y LEGALES INTEGRADO Y MODAL */
-        .fl-tab-nav { display: flex; gap: 8px; border-bottom: 2px solid #e2d9cd; margin-bottom: 16px; flex-wrap: wrap; }
-        .fl-tab-btn { background: none; border: none; padding: 10px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
-        .fl-tab-btn.active { color: var(--primary-dark); border-bottom-color: var(--primary); }
-        .fl-tab-content { display: none; }
-        .fl-tab-content.active { display: block; }
-
-        .fl-btn-external { background-color: #0284c7; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .fl-btn-external:hover { background-color: #0369a1; }
-
-        .fl-grid-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
-        .fl-card-step { background: #fdfbf7; border: 1px solid #e2d9cd; border-radius: 10px; padding: 14px; }
-        .fl-step-number { display: inline-block; background: var(--primary); color: #fff; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: bold; font-size: 0.75rem; margin-bottom: 8px; }
-        .fl-card-step h4 { margin-bottom: 6px; font-size: 0.9rem; color: var(--primary-dark); }
-        .fl-card-step p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
-
-        .fl-legal-document { background: #f9f7f2; border: 1px solid #dcd2c4; padding: 16px; border-radius: 10px; max-height: 420px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; color: #3e2723; }
-        .fl-legal-document h4 { margin: 12px 0 4px; color: var(--primary); font-size: 0.88rem; }
-        .fl-legal-document ul { padding-left: 18px; margin-bottom: 10px; }
-
-        /* MODAL DE ACEPTACIÓN OBLIGATORIA */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .modal-box { background: white; border-radius: 16px; max-width: 500px; width: 100%; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand-logo">🛠️ FerreLunze <span>Club de Clientes</span></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Programa de Fidelización</div>
+        <div class="brand-logo">🛠️ FerreLunze <span>Panel Admin</span></div>
+        <div id="admin-status-bar" class="hidden" style="font-size: 0.85rem; display:flex; align-items:center; gap:12px;">
+            <span style="color: var(--primary-dark); font-weight: 700;">Sesión de Administrador</span>
+            <button onclick="logoutAdmin()" class="btn-dark" style="font-size: 0.75rem; padding: 6px 12px;">Cerrar Sesión 🚪</button>
+        </div>
     </header>
 
-    <div class="app-container-wrapper">
-        <aside id="side-ad-left-container" class="side-ad-left hidden"></aside>
+    <main>
+        <!-- VISTA DE LOGIN ADMIN -->
+        <div id="admin-login-view" class="login-card">
+            <h2>Acceso Administrativo</h2>
+            <p>Ingresa la contraseña maestra para administrar el club</p>
+            <form onsubmit="handleAdminLogin(event)">
+                <input type="password" id="admin-pass-input" required placeholder="Contraseña de Administrador" class="input-field">
+                <button type="submit" id="btn-login-admin" class="btn-primary" style="width: 100%;">Ingresar al Panel</button>
+            </form>
+        </div>
 
-        <main style="width: 100%;">
-            <!-- VISTA INICIO DE SESIÓN -->
-            <div id="client-login-view" class="login-card">
-                <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-                <h2>Portal de Clientes FerreLunze</h2>
-                <p>Ingresa tus datos para consultar o canjear tus puntos</p>
-                
-                <button type="button" class="fl-btn-external" onclick="abrirGuiaEnPestanaNueva()" style="width: 100%; margin-bottom: 16px;">
-                    ℹ️ Ver Guía y Términos Legales
-                </button>
-
-                <form id="form-client-login" onsubmit="handleClientLogin(event)">
-                    <input type="text" id="client-cedula-input" required placeholder="Cédula de Ciudadanía" class="input-field">
-                    <input type="password" id="client-pin-login" maxlength="4" required placeholder="PIN de Seguridad (4 dígitos)" class="input-field">
-                    <button type="submit" id="btn-login-cliente" class="btn-primary">Ingresar</button>
-                </form>
-                <div style="margin-top: 16px; font-size: 0.85rem;">
-                    ¿Eres cliente nuevo? <a href="#" onclick="showRegisterForm()" style="color:var(--primary); font-weight:700;">Regístrate aquí</a>
-                </div>
-            </div>
-
-            <!-- VISTA REGISTRO DE CLIENTE -->
-            <div id="client-register-view" class="login-card hidden">
-                <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
-                <h2>Registro de Nuevo Cliente</h2>
-                <p>Completa tus datos para ingresar al Club de Fidelización</p>
-                
-                <button type="button" class="fl-btn-external" onclick="abrirGuiaEnPestanaNueva()" style="width: 100%; margin-bottom: 16px;">
-                    ℹ️ Leer Términos y Condiciones
-                </button>
-
-                <form id="form-client-register" onsubmit="handleClientRegister(event)">
-                    <input type="text" id="reg-name" required placeholder="Nombre Completo" class="input-field">
-                    <input type="text" id="reg-cedula" required placeholder="Cédula de Ciudadanía / NIT" class="input-field">
-                    <input type="tel" id="reg-phone" required placeholder="Número de Celular" class="input-field">
-                    <input type="email" id="reg-email" required placeholder="Correo Electrónico" class="input-field">
-                    <input type="text" id="reg-address" required placeholder="Dirección de Residencia" class="input-field">
-                    <input type="password" id="reg-pin" maxlength="4" required placeholder="Crea un PIN de 4 dígitos" class="input-field">
-
-                    <div class="legal-box">
-                        <strong>Autorización de Tratamiento de Datos (Ley 1581 de 2012):</strong>
-                        Autorizo expresamente a FerreLunze para recolectar, almacenar y tratar mis datos personales para la gestión del programa de fidelización y notificaciones comerciales.
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; text-align: left; font-size: 0.8rem;">
-                        <input type="checkbox" id="reg-habeas" required>
-                        <label for="reg-habeas">Acepto los términos y la política de tratamiento de datos personales.</label>
-                    </div>
-
-                    <button type="submit" id="btn-registro-cliente" class="btn-primary">Completar Registro</button>
-                    <button type="button" onclick="showLoginForm()" class="btn-dark" style="margin-top: 8px; background:#6d594b; width:100%;">Volver al Ingreso</button>
-                </form>
-            </div>
-
-            <!-- DASHBOARD DEL CLIENTE -->
-            <div id="client-dashboard-view" class="hidden">
-                <div class="vip-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span id="client-tier-badge" class="tier-badge tier-bronce">BRONCE</span>
-                        <button onclick="logoutClient()" style="background:transparent; border:none; color:white; font-size:0.75rem; cursor:pointer; opacity:0.8;">Cerrar Sesión 🚪</button>
-                    </div>
-                    <h2 id="client-name-display" style="font-size: 1.3rem; margin-top: 10px;">Hola, Cliente</h2>
-                    <div class="points-large"><span id="client-points-display">0</span> <span style="font-size: 1.2rem; color: white;">pts</span></div>
-                    
-                    <p style="font-size: 0.8rem; opacity: 0.9;" id="progress-text">Progreso al siguiente nivel</p>
-                    <div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill"></div></div>
-                    
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; opacity: 0.85;">
-                        📅 <strong>Vencimiento de puntos:</strong> Vigencia de 12 meses a partir de la fecha de compra.
-                    </div>
-                </div>
-
-                <!-- MÓDULO INTEGRADO: GUÍA DE PUNTOS Y REGLAMENTO LEGAL -->
-                <div class="box-card" style="border-left: 5px solid #0284c7;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                        <h3 style="margin-bottom: 0;">ℹ️ Guía del Club y Reglas Legales</h3>
-                        <button type="button" class="fl-btn-external" onclick="abrirGuiaEnPestanaNueva()">
-                            🔗 Abrir Guía en Pestaña Nueva
-                        </button>
-                    </div>
-
-                    <div class="fl-tab-nav">
-                        <button class="fl-tab-btn active" onclick="cambiarPestanaGuia('tab-acumulacion', this)">
-                            📘 ¿Cómo Acumular y Redimir Puntos?
-                        </button>
-                        <button class="fl-tab-btn" onclick="cambiarPestanaGuia('tab-legales', this)">
-                            ⚖️ Términos y Condiciones Legales
-                        </button>
-                    </div>
-
-                    <!-- SUB-PESTAÑA 1: GUÍA PASO A PASO -->
-                    <div id="tab-acumulacion" class="fl-tab-content active">
-                        <div class="fl-grid-steps">
-                            <div class="fl-card-step">
-                                <div class="fl-step-number">1</div>
-                                <h4>Registra tu Compra</h4>
-                                <p>Dicta tu documento de identidad en caja antes de facturar tus compras de ferretería o <strong>Pinturas FerreLunze</strong>.</p>
-                            </div>
-                            <div class="fl-card-step">
-                                <div class="fl-step-number">2</div>
-                                <h4>Acumula Puntos</h4>
-                                <p>Suma puntos por cada compra. Tu nivel de cliente (Bronce, Plata, Oro, Diamante) activa multiplicadores de acumulado.</p>
-                            </div>
-                            <div class="fl-card-step">
-                                <div class="fl-step-number">3</div>
-                                <h4>Juega Raspa y Gana</h4>
-                                <p>Cada 4 compras elegibles desbloqueas un juego de <em>Raspa y Gana</em> con premios sorpresa y puntos bonificados.</p>
-                            </div>
-                            <div class="fl-card-step">
-                                <div class="fl-step-number">4</div>
-                                <h4>Redime Premios</h4>
-                                <p>Explora el catálogo, solicita tu premio digitalmente y presenta el código de retiro en el mostrador del local.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SUB-PESTAÑA 2: REGLAMENTO Y TÉRMINOS LEGALES -->
-                    <div id="tab-legales" class="fl-tab-content">
-                        <div class="fl-legal-document">
-                            <h3 style="font-size: 0.95rem; text-align: center; margin-bottom: 4px;">REGLAMENTO Y TÉRMINOS LEGALES DEL PROGRAMA</h3>
-                            <p style="text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px;">Entrada en vigencia: 2026 | FerreLunze</p>
-                            
-                            <h4>1. Naturaleza del Programa</h4>
-                            <p>El programa <strong>Club FerreLunze</strong> es de carácter promocional, gratuito e intransferible. La participación implica la aceptación completa de este reglamento por parte del usuario registrado.</p>
-
-                            <h4>2. Acumulación y Caducidad de Puntos</h4>
-                            <ul>
-                                <li>Los puntos son no negociables, no transferibles y no poseen equivalencia en dinero en efectivo.</li>
-                                <li>Los puntos acumulados poseen una vigencia máxima de doce (12) meses calendario contados desde la fecha de su abono en cuenta. Expirado el término, vencerán automáticamente.</li>
-                            </ul>
-
-                            <h4>3. Redención y Entrega de Premios</h4>
-                            <ul>
-                                <li>Los canjes están sujetos a la verificación previa del documento de identidad del titular y a la disponibilidad de stock en tienda.</li>
-                                <li>Una vez procesado el canje y descontados los puntos, no se aceptan devoluciones ni cambios de premios.</li>
-                            </ul>
-
-                            <h4>4. Dinámica "Raspa y Gana" y Seguridad</h4>
-                            <ul>
-                                <li>El acceso a la tarjeta de raspa se otorga tras acumular 4 compras válidas registradas en el sistema.</li>
-                                <li>Los códigos de premios deberán presentarse en mostrador dentro de los 30 días posteriores a su obtención.</li>
-                                <li><strong>Invalidez técnica:</strong> FerreLunze se reserva el derecho de anular premios o accesos generados por fallas del sistema, manipulación de código, automatismos o inconsistencias en facturación.</li>
-                            </ul>
-
-                            <h4>5. Protección de Datos Personales</h4>
-                            <p>El tratamiento de datos personales se rige bajo la Ley 1581 de 2012 para la administración de beneficios del club y notificaciones informativas del establecimiento.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="box-card" style="border-left: 5px solid #10b981;">
-                    <h3 style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <span>🎰 Raspa y Gana FerreLunze</span>
-                        <span style="font-size:0.75rem; background:#ecfdf5; color:#047857; padding:4px 8px; border-radius:12px; border:1px solid #a7f3d0;">Premio Sorpresa</span>
-                    </h3>
-                    <p id="raspa-incentivo-text" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
-                        ¡Acredita compras en mostrador y desbloquea un juego cada 4 compras!
-                    </p>
-                    
-                    <div id="raspa-locked-view" class="scratch-container" style="background:#f3f4f6; color:#6b7280; border:2px dashed #d1d5db;">
-                        <div style="padding:16px;">
-                            <div style="font-size:1.8rem; margin-bottom:4px;">🔒</div>
-                            <div style="font-size:0.85rem; font-weight:700;">Llevas <span id="raspa-compras-count">0</span> de 4 compras registradas.</div>
-                            <div style="font-size:0.75rem; opacity:0.8; margin-top:4px;">Acredita tus facturas en el local para desbloquear la tarjeta de juego.</div>
-                        </div>
-                    </div>
-
-                    <div id="raspa-claimed-view" class="scratch-container hidden" style="background:linear-gradient(135deg, #065f46 0%, #047857 100%);">
-                        <div style="padding:16px;">
-                            <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9; color:#a7f3d0;" id="raspa-claimed-subtitle">¡Premio Sorpresa Obtenido!</div>
-                            <div id="raspa-claimed-title" style="font-size:1.2rem; font-weight:900; margin:4px 0; color:#fef3c7;">🎁 PREMIO REGISTRADO EN SHEETS</div>
-                            <div style="font-size:0.85rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:8px; display:inline-block; margin-top:6px; border:1px solid rgba(255,255,255,0.2);" id="raspa-claimed-code-box">
-                                Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">----</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="raspa-active-view" class="scratch-container hidden">
-                        <div style="padding:16px;">
-                            <div style="font-size:0.75rem; text-transform:uppercase; opacity:0.9;">¡Premio Sorpresa Desbloqueado!</div>
-                            <div id="raspa-reward-text" style="font-size:1.2rem; font-weight:900; margin:2px 0; color:#fef3c7;">🎁 +10 PUNTOS EXTRA</div>
-                            <div style="font-size:0.8rem; font-weight:bold; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:8px; display:inline-block; margin-top:4px;">
-                                Código de Caja: <span id="raspa-codigo-val" style="color:#22c55e;">----</span>
-                            </div>
-                        </div>
-                        <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
-                    </div>
-                </div>
-
-                <div class="calc-box">
-                    <h3 style="color:var(--primary-dark); margin-bottom:6px; display:flex; align-items:center; gap:8px;">
-                        🎨 Calculadora FerreLunze
-                    </h3>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
-                        Ingresa el área a pintar y selecciona el tipo de pintura FerreLunze para calcular tus recipientes y puntos.
-                    </p>
-
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:12px;">
-                        <div>
-                            <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Área a pintar (m²):</label>
-                            <input type="number" id="calc-m2" min="0" value="0" placeholder="0" oninput="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px;">
-                        </div>
-                        <div>
-                            <label style="font-size:0.75rem; font-weight:700; color:var(--text-dark);">Línea de Pintura:</label>
-                            <select id="calc-linea" onchange="calcularPinturaFerreLunze()" class="input-field" style="margin-bottom:0; margin-top:4px; font-weight:600;">
-                                <option value="profesional">Pintura Profesional FerreLunze (Máximo Rendimiento)</option>
-                                <option value="tipo1">Pinturas FerreLunze Tipo 1 (Acrílica Superior)</option>
-                                <option value="tipo2">Pinturas FerreLunze Tipo 2 (Uso Interior Standard)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="calc-result-box" style="background:white; padding:14px; border-radius:12px; border:1px solid #e2d9cd; font-size:0.85rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0eaf1; padding-bottom:8px; margin-bottom:8px;">
-                            <span>Material Sugerido:</span>
-                            <strong id="calc-material-text" style="color:var(--primary-dark); font-size:0.95rem;">Digita los m² para calcular</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#2e7d32;">
-                            <span>Puntos a Acumular en esta compra:</span>
-                            <span id="calc-puntos-text" style="font-size:1rem;">+0 pts</span>
-                        </div>
-
-                        <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #dcd2c4;">
-                            <div style="font-size:0.75rem; font-weight:800; color:var(--primary-dark); margin-bottom:6px; text-transform:uppercase;">
-                                🛠️ Kit Completo Sugerido para tu Proyecto:
-                            </div>
-                            <div>
-                                <span class="kit-item">🖌️ Brocha FerreLunze</span>
-                                <span class="kit-item">🌀 Rodillo Felpa Cero Gota</span>
-                                <span class="kit-item">📜 Lija Fina para Pared</span>
-                                <span class="kit-item">🎗️ Cinta de Enmascarar</span>
-                                <span class="kit-item">🪣 Bandeja Pintora</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="box-card" style="border-left: 5px solid var(--primary);">
-                    <h3>🔒 Cambiar mi PIN de Seguridad</h3>
-                    <form onsubmit="handleClientChangePin(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <input type="password" id="client-new-pin" maxlength="4" required placeholder="Nuevo PIN (4 dígitos)" class="input-field" style="flex:1; margin-bottom:0;">
-                        <button type="submit" class="btn-primary" style="flex:auto; width:auto;">Actualizar PIN</button>
+        <!-- DASHBOARD ADMIN -->
+        <div id="admin-dashboard-view" class="hidden">
+            
+            <div class="grid-2">
+                <!-- REGISTRAR VENTA / SUMAR PUNTOS -->
+                <div class="box-card">
+                    <h3>🛒 Registrar Venta y Sumar Puntos</h3>
+                    <form onsubmit="handleRegistrarVenta(event)">
+                        <input type="text" id="venta-cedula" required placeholder="Cédula del Cliente" class="input-field">
+                        <input type="number" id="venta-monto" required min="1" placeholder="Monto Total de Compra ($ COP)" class="input-field">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Se otorgará 1 punto por cada $10.000 COP en compra.</p>
+                        <button type="submit" class="btn-primary" style="width: 100%;">Registrar y Abonar Puntos</button>
                     </form>
                 </div>
 
-                <h3 style="margin-bottom: 12px;">Premios Disponibles para Canje</h3>
-                <div id="client-rewards-container" class="rewards-grid" style="margin-bottom: 32px;"></div>
-
-                <div class="box-card" style="text-align: center; background: #fdfbf7;">
-                    <h3 style="font-size: 1rem; margin-bottom: 4px;">¿Tienes dudas con tus puntos o un premio?</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Comunícate directamente con nuestro equipo de mostrador.</p>
-                    <a href="https://wa.me/573156933747?text=Hola,%20soy%20cliente%20de%20Club%20FerreLunze%20y%20deseo%20consultar%20sobre%20mis%20beneficios." target="_blank" class="whatsapp-float">
-                        💬 Escribir a WhatsApp FerreLunze
-                    </a>
-                </div>
-
+                <!-- VALIDAR ENTREGAS DE PREMIOS -->
                 <div class="box-card">
-                    <h3>Historial de Movimientos y Vencimientos</h3>
-                    <ul id="client-history-list" style="list-style: none;"></ul>
+                    <h3>🎁 Validar Retiro de Premio en Mostrador</h3>
+                    <form onsubmit="handleValidarCanje(event)">
+                        <input type="text" id="canje-codigo" maxlength="4" required placeholder="Código de 4 dígitos presentado por el cliente" class="input-field">
+                        <button type="submit" class="btn-primary" style="width: 100%; background-color: var(--accent);">Validar y Entregar Premio</button>
+                    </form>
                 </div>
             </div>
-        </main>
 
-        <aside id="side-ad-right-container" class="side-ad-right hidden"></aside>
-    </div>
+            <!-- GESTIÓN DE PREMIOS EN CATÁLOGO -->
+            <div class="box-card">
+                <h3>📦 Crear Nuevo Premio para el Catálogo</h3>
+                <form onsubmit="handleGuardarPremio(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                    <input type="text" id="premio-titulo" required placeholder="Título del Premio (ej. Brocha 3 Rollo)" class="input-field" style="margin:0;">
+                    <input type="number" id="premio-costo" required min="1" placeholder="Costo en Puntos" class="input-field" style="margin:0;">
+                    <input type="text" id="premio-desc" placeholder="Descripción breve" class="input-field" style="margin:0;">
+                    <button type="submit" class="btn-primary" style="margin:0;">Guardar Premio</button>
+                </form>
 
-    <!-- MODAL DE ACEPTACIÓN OBLIGATORIA -->
-    <div id="modal-aceptar-terminos" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h3 style="color: var(--primary-dark); margin-bottom: 8px;">Actualización de Términos y Condiciones</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Para continuar disfrutando del <strong>Club FerreLunze</strong> y hacer uso de tus puntos, debes aceptar el reglamento del programa y la política de datos personales.
-            </p>
-            <button type="button" class="fl-btn-external" onclick="abrirGuiaEnPestanaNueva()" style="width: 100%; margin-bottom: 16px;">
-                📖 Leer Reglamento Completo
-            </button>
-            <div style="display: flex; gap: 10px;">
-                <button type="button" onclick="confirmarAceptacionTerminos(false)" class="btn-dark" style="flex: 1; background: #6c757d;">No Acepto</button>
-                <button type="button" onclick="confirmarAceptacionTerminos(true)" class="btn-primary" style="flex: 1;">Acepto</button>
+                <h4 style="margin-top: 20px; font-size: 0.95rem; color: var(--primary-dark);">Catálogo Actual de Premios</h4>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Premio</th>
+                                <th>Costo Puntos</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-premios-body"></tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- LISTADO DE CLIENTES Y BLOQUEOS -->
+            <div class="box-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3>👥 Clientes Registrados</h3>
+                    <button onclick="cargarDatosAdmin()" class="btn-dark" style="font-size: 0.75rem;">🔄 Actualizar Lista</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Cédula</th>
+                                <th>Teléfono</th>
+                                <th>Puntos Saldo</th>
+                                <th>Estado Cuenta</th>
+                                <th>Ajuste Manual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-clientes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- HISTORIAL GLOBAL DE CANJES -->
+            <div class="box-card">
+                <h3>📜 Registro Global de Premios Canjeados</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cédula</th>
+                                <th>Cliente</th>
+                                <th>Premio</th>
+                                <th>Código</th>
+                                <th>Estado Entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-canjes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <div id="toast"></div>
 
@@ -454,56 +181,10 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbxeNuKLgKMv4ivzSHMVCpqChIOKbtJlgWNXMbyUzrrZLjPRX5TGGWJ5_Zk-zAZMo8j44A/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
-        let activeClient = null;
-        let clientPendingLogin = null;
-        let rewardsList = [];
-        let publicidadList = [];
-
-        function cambiarPestanaGuia(tabId, btnElement) {
-            document.querySelectorAll('#client-dashboard-view .fl-tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('#client-dashboard-view .fl-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btnElement.classList.add('active');
-        }
-
-        function abrirGuiaEnPestanaNueva() {
-            const contenidoGuia = document.getElementById('tab-acumulacion').innerHTML;
-            const contenidoLegales = document.getElementById('tab-legales').innerHTML;
-
-            const contenidoHTML = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Club FerreLunze - Guía y Reglamento Legal</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f2eb; color: #2c1d11; padding: 24px; margin: 0; }
-                        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #e2d9cd; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-                        h2 { color: #3e2723; border-bottom: 2px solid #8b4513; padding-bottom: 8px; margin-bottom: 20px; }
-                        .fl-grid-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
-                        .fl-card-step { background: #fdfbf7; border: 1px solid #e2d9cd; border-radius: 10px; padding: 16px; }
-                        .fl-step-number { background: #8b4513; color: #fff; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
-                        .fl-legal-document { background: #f9f7f2; border: 1px solid #dcd2c4; padding: 20px; border-radius: 10px; font-size: 0.88rem; line-height: 1.6; }
-                        .fl-legal-document h4 { color: #8b4513; margin: 14px 0 6px; }
-                        ul { padding-left: 20px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <h2>🛠️ Guía del Cliente - Club FerreLunze</h2>
-                        ${contenidoGuia}
-                        <hr style="border: 0; height: 1px; background: #e2d9cd; margin: 30px 0;">
-                        <h2>⚖️ Términos y Condiciones Legales</h2>
-                        ${contenidoLegales}
-                    </div>
-                </body>
-                </html>
-            `;
-
-            const ventanaNueva = window.open('', '_blank');
-            ventanaNueva.document.write(contenidoHTML);
-            ventanaNueva.document.close();
-        }
+        let adminToken = null;
+        let premiosList = [];
+        let clientesList = [];
+        let canjesList = [];
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -513,440 +194,228 @@
             setTimeout(() => toast.style.display = 'none', 4500);
         }
 
-        function triggerConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-            }
-        }
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login-admin');
+            const pass = document.getElementById('admin-pass-input').value.trim();
 
-        function resetForms() {
-            document.getElementById('form-client-login')?.reset();
-            document.getElementById('form-client-register')?.reset();
-        }
-
-        async function sincronizarPremios() {
             try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
-                    method: 'POST', body: JSON.stringify({ tipo: 'obtener_catalogo' }) 
+                btn.disabled = true; btn.innerText = "Ingresando...";
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'login_admin', password: pass })
                 });
                 const data = await res.json();
-                if(data.status === "success") {
-                    rewardsList = data.premios || [];
-                    publicidadList = data.publicidad || [];
-                    renderPublicidadLaterales();
-                    if(activeClient) renderClientRewards();
-                }
-            } catch(e) { console.error("Error sincronizando catálogo", e); }
-        }
-
-        function renderPublicidadLaterales() {
-            const containerLeft = document.getElementById('side-ad-left-container');
-            const containerRight = document.getElementById('side-ad-right-container');
-
-            const adsIzquierda = publicidadList.filter(p => p.sector && p.sector.toLowerCase().includes('izquierd'));
-            const adsDerecha = publicidadList.filter(p => p.sector && p.sector.toLowerCase().includes('derech'));
-
-            // LADO IZQUIERDO: Apila hasta 3, rota si hay 4 o más
-            if (adsIzquierda.length > 0) {
-                let adsAMostrarIzq = [...adsIzquierda];
-                if (adsAMostrarIzq.length > 3) {
-                    adsAMostrarIzq.sort(() => 0.5 - Math.random());
-                    adsAMostrarIzq = adsAMostrarIzq.slice(0, 3);
-                }
-
-                containerLeft.innerHTML = adsAMostrarIzq.map(pub => `
-                    <div class="ad-item-card" style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #e2d9cd;">
-                        <img src="${pub.imagen}" class="side-ad-img" alt="${pub.titulo}">
-                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px;">${pub.titulo}</h4>
-                        <p style="font-size:0.75rem; color:var(--text-muted);">${pub.texto}</p>
-                    </div>
-                `).join('');
-
-                const ultimoIzq = containerLeft.querySelector('.ad-item-card:last-child');
-                if (ultimoIzq) {
-                    ultimoIzq.style.marginBottom = '0';
-                    ultimoIzq.style.paddingBottom = '0';
-                    ultimoIzq.style.borderBottom = 'none';
-                }
-
-                containerLeft.classList.remove('hidden');
-            } else {
-                containerLeft.classList.add('hidden');
-            }
-
-            // LADO DERECHO: Apila hasta 3, rota si hay 4 o más
-            if (adsDerecha.length > 0) {
-                let adsAMostrarDer = [...adsDerecha];
-                if (adsAMostrarDer.length > 3) {
-                    adsAMostrarDer.sort(() => 0.5 - Math.random());
-                    adsAMostrarDer = adsAMostrarDer.slice(0, 3);
-                }
-
-                containerRight.innerHTML = adsAMostrarDer.map(pub => `
-                    <div class="ad-item-card" style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #e2d9cd;">
-                        <img src="${pub.imagen}" class="side-ad-img" alt="${pub.titulo}">
-                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px;">${pub.titulo}</h4>
-                        <p style="font-size:0.75rem; color:var(--text-muted);">${pub.texto}</p>
-                    </div>
-                `).join('');
-
-                const ultimoDer = containerRight.querySelector('.ad-item-card:last-child');
-                if (ultimoDer) {
-                    ultimoDer.style.marginBottom = '0';
-                    ultimoDer.style.paddingBottom = '0';
-                    ultimoDer.style.borderBottom = 'none';
-                }
-
-                containerRight.classList.remove('hidden');
-            } else {
-                containerRight.classList.add('hidden');
-            }
-        }
-
-        function showRegisterForm() { resetForms(); document.getElementById('client-login-view').classList.add('hidden'); document.getElementById('client-register-view').classList.remove('hidden'); }
-        function showLoginForm() { resetForms(); document.getElementById('client-register-view').classList.add('hidden'); document.getElementById('client-login-view').classList.remove('hidden'); }
-
-        async function handleClientLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-login-cliente');
-            const cedula = document.getElementById('client-cedula-input').value.trim();
-            const pin = document.getElementById('client-pin-login').value.trim();
-
-            try {
-                btn.disabled = true; btn.innerText = "Verificando...";
-                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ tipo: 'login_verificar', cedula: cedula, password: pin, pin: pin, accion: 'login' }) 
-                });
-                const data = await response.json();
 
                 if (data.status === "success") {
-                    clientPendingLogin = { nombre: data.nombre, puntos: data.puntos, cedula: cedula, historial: data.historial, canjes: data.canjes || [] };
+                    adminToken = data.token;
+                    premiosList = data.premios || [];
+                    canjesList = data.canjesGlobales || [];
                     
-                    if (data.terminosAceptados) {
-                        completarIngresoCliente();
-                    } else {
-                        document.getElementById('modal-aceptar-terminos').classList.remove('hidden');
-                    }
-                } else { showToast('❌ ' + (data.message || 'Credenciales incorrectas')); }
-            } catch (error) { showToast('❌ Error de conexión.'); }
-            finally { btn.disabled = false; btn.innerText = "Ingresar"; }
+                    document.getElementById('admin-login-view').classList.add('hidden');
+                    document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                    document.getElementById('admin-status-bar').classList.remove('hidden');
+                    
+                    cargarDatosAdmin();
+                    showToast('✅ Sesión administrativa iniciada');
+                } else {
+                    showToast('❌ ' + data.message);
+                }
+            } catch(err) {
+                showToast('❌ Error de conexión con el servidor.');
+            } finally {
+                btn.disabled = false; btn.innerText = "Ingresar al Panel";
+            }
         }
 
-        async function confirmarAceptacionTerminos(acepta) {
-            document.getElementById('modal-aceptar-terminos').classList.add('hidden');
-            if (!acepta) {
-                showToast('⚠️ Debes aceptar los términos legales para ingresar al Club.');
-                clientPendingLogin = null;
+        async function cargarDatosAdmin() {
+            if (!adminToken) return;
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: adminToken })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    clientesList = data.clientes || [];
+                    premiosList = data.premios || premiosList;
+                    canjesList = data.canjesGlobales || canjesList;
+
+                    renderClientesTable();
+                    renderPremiosTable();
+                    renderCanjesTable();
+                }
+            } catch(e) { console.error("Error cargando datos admin", e); }
+        }
+
+        async function handleRegistrarVenta(e) {
+            e.preventDefault();
+            const cedula = document.getElementById('venta-cedula').value.trim();
+            const monto = parseFloat(document.getElementById('venta-monto').value) || 0;
+            const puntosGanados = Math.floor(monto / 10000);
+
+            if (puntosGanados <= 0) {
+                showToast('El monto debe ser de al menos $10.000 COP para otorgar puntos.');
                 return;
             }
 
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
                     method: 'POST',
-                    body: JSON.stringify({ tipo: 'aceptar_terminos', cedula: clientPendingLogin.cedula })
+                    body: JSON.stringify({ tipo: 'venta', token: adminToken, cedula: cedula, monto: monto, puntosGanados: puntosGanados })
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    completarIngresoCliente();
-                } else {
-                    showToast('❌ No se pudo guardar la aceptación en la base de datos.');
-                }
-            } catch(e) { showToast('❌ Error registrando aceptación.'); }
-        }
-
-        function completarIngresoCliente() {
-            activeClient = clientPendingLogin;
-            clientPendingLogin = null;
-            resetForms();
-            document.getElementById('client-login-view').classList.add('hidden');
-            document.getElementById('client-dashboard-view').classList.remove('hidden');
-            renderClientDashboard();
-            triggerConfetti();
-        }
-
-        async function handleClientRegister(e) {
-            e.preventDefault();
-            const payload = { 
-                tipo: 'registro', 
-                nombre: document.getElementById('reg-name').value.trim(), 
-                cedula: document.getElementById('reg-cedula').value.trim(), 
-                telefono: document.getElementById('reg-phone').value.trim(), 
-                email: document.getElementById('reg-email').value.trim(), 
-                direccion: document.getElementById('reg-address').value.trim(), 
-                password: document.getElementById('reg-pin').value.trim() 
-            };
-            if (payload.password.length !== 4) { showToast('El PIN debe ser de 4 dígitos'); return; }
-
-            try {
-                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await response.json();
-                if (data.status === "success") { showToast('¡Registro exitoso y términos aceptados!'); triggerConfetti(); showLoginForm(); } else { showToast('❌ ' + data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        async function handleClientChangePin(e) {
-            e.preventDefault();
-            const nuevoPin = document.getElementById('client-new-pin').value.trim();
-            if (nuevoPin.length !== 4) { showToast('El PIN debe ser de 4 dígitos'); return; }
-
-            try {
-                const response = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'cambiar_password', cedula: activeClient.cedula, nuevoPassword: nuevoPin }) });
-                const data = await response.json();
-                if (data.status === "success") { showToast('✅ ¡PIN actualizado!'); document.getElementById('client-new-pin').value = ''; }
-                else { showToast('❌ ' + data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        function logoutClient() { 
-            activeClient = null; 
-            resetForms(); 
-            document.getElementById('client-dashboard-view').classList.add('hidden');
-            document.getElementById('client-login-view').classList.remove('hidden');
-        }
-
-        function calculateTier(pts) {
-            const p = Number(pts || 0);
-            if (p >= 1000) return { name: 'DIAMANTE', class: 'tier-diamante' };
-            if (p >= 500) return { name: 'ORO', class: 'tier-oro' };
-            if (p >= 100) return { name: 'PLATA', class: 'tier-plata' };
-            return { name: 'BRONCE', class: 'tier-bronce' };
-        }
-
-        function renderClientDashboard() {
-            document.getElementById('client-name-display').textContent = `Hola, ${activeClient.nombre}`;
-            document.getElementById('client-points-display').textContent = (activeClient.puntos || 0).toLocaleString();
-            const tier = calculateTier(activeClient.puntos);
-            const badge = document.getElementById('client-tier-badge');
-            badge.textContent = `Nivel ${tier.name}`; badge.className = `tier-badge ${tier.class}`;
-
-            setupRaspaYGanaConSheets();
-            calcularPinturaFerreLunze();
-            renderClientRewards();
-            renderClientHistory();
-        }
-
-        function setupRaspaYGanaConSheets() {
-            const lockedView = document.getElementById('raspa-locked-view');
-            const claimedView = document.getElementById('raspa-claimed-view');
-            const activeView = document.getElementById('raspa-active-view');
-
-            const comprasRealizadas = (activeClient && activeClient.historial) ? 
-                activeClient.historial.filter(h => Number(h.puntos) > 0).length : 0;
-
-            const comprasEnCicloActual = comprasRealizadas % 4;
-            const numeroCicloActual = Math.floor(comprasRealizadas / 4);
-
-            document.getElementById('raspa-compras-count').textContent = comprasEnCicloActual;
-
-            const registroRaspaEnHistorial = (activeClient && activeClient.historial) ?
-                activeClient.historial.find(h => String(h.descripcion).includes(`[RASPA_CICLO_${numeroCicloActual}]`)) : null;
-
-            const codigoGeneradoTest = String(Math.abs(parseInt(activeClient.cedula || 0) * 9 + numeroCicloActual)).slice(-4).padStart(4, '0');
-            const canjeEntregado = (activeClient && activeClient.canjes) ?
-                activeClient.canjes.find(c => String(c.codigo) === String(codigoGeneradoTest) && c.estado === 'Entregado') : null;
-
-            if (comprasRealizadas < 4 || (comprasEnCicloActual !== 0 && !registroRaspaEnHistorial)) {
-                lockedView.classList.remove('hidden');
-                claimedView.classList.add('hidden');
-                activeView.classList.add('hidden');
-                return;
-            }
-
-            if (registroRaspaEnHistorial || canjeEntregado) {
-                lockedView.classList.add('hidden');
-                activeView.classList.add('hidden');
-                claimedView.classList.remove('hidden');
-
-                if (canjeEntregado) {
-                    document.getElementById('raspa-claimed-subtitle').textContent = "¡Premio Canjeado y Entregado!";
-                    document.getElementById('raspa-claimed-title').textContent = "🎁 CICLO COMPLETADO CON ÉXITO";
-                    document.getElementById('raspa-claimed-code-box').innerHTML = '<span style="color:#4ade80;">Estado: Entregado en Mostrador ✅</span>';
-                } else {
-                    document.getElementById('raspa-claimed-subtitle').textContent = "¡Premio Sorpresa Obtenido!";
-                    document.getElementById('raspa-claimed-title').textContent = registroRaspaEnHistorial.descripcion.replace(/\[.*\]/, '');
-                    const codigoEncontrado = String(registroRaspaEnHistorial.descripcion).match(/CÓDIGO: (\d{4})/);
-                    const codigoMostrado = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
-                    document.getElementById('raspa-claimed-code-box').innerHTML = `Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">${codigoMostrado}</span>`;
-                }
-                return;
-            }
-
-            lockedView.classList.add('hidden');
-            claimedView.classList.add('hidden');
-            activeView.classList.remove('hidden');
-
-            const opcionesPremios = ["+5 PUNTOS EXTRA", "+10 PUNTOS EXTRA", "5% DESC. EN BROCHAS", "+15 PUNTOS EXTRA"];
-            const idx = Math.abs(parseInt(activeClient.cedula || 0)) % opcionesPremios.length;
-            const premioElegido = opcionesPremios[idx];
-            const codigoGenerado = codigoGeneradoTest;
-
-            document.getElementById('raspa-reward-text').textContent = `🎁 ${premioElegido}`;
-            document.getElementById('raspa-codigo-val').textContent = codigoGenerado;
-
-            const canvas = document.getElementById('scratch-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.fillStyle = '#d97706';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 13px Segoe UI';
-            ctx.textAlign = 'center';
-            ctx.fillText('✨ RASPA AQUÍ CON TU DEDO ✨', canvas.width / 2, canvas.height / 2 + 4);
-
-            let isScratching = false;
-            let raspadoActivado = false;
-
-            async function registrarRaspaEnSheets() {
-                if (raspadoActivado) return;
-                raspadoActivado = true;
-                triggerConfetti();
-                try {
-                    const descRegistro = `Raspa y Gana (${premioElegido}) CÓDIGO: ${codigoGenerado} [RASPA_CICLO_${numeroCicloActual}]`;
-                    const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                        method: 'POST',
-                        body: JSON.stringify({ tipo: 'guardar_raspa_sheets', cedula: activeClient.cedula, descripcion: descRegistro, codigo: codigoGenerado })
-                    });
-                    const data = await res.json();
-                    if(data.status === "success" && data.nuevosPuntos !== undefined) {
-                        activeClient.puntos = data.nuevosPuntos;
-                        document.getElementById('client-points-display').textContent = Number(data.nuevosPuntos).toLocaleString();
-                        const matchPtos = premioElegido.match(/\+(\d+)/);
-                        const ptsVal = matchPtos ? `+${matchPtos[1]}` : '+0';
-                        activeClient.historial.unshift({ fecha: new Date().toISOString(), descripcion: descRegistro, puntos: ptsVal });
-                        renderClientHistory();
-                    }
-                } catch(e) { console.error("Error guardando raspa", e); }
-            }
-
-            function scratch(e) {
-                if (!isScratching) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-                const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x, y, 22, 0, Math.PI * 2);
-                ctx.fill();
-
-                registrarRaspaEnSheets();
-            }
-
-            canvas.onmousedown = canvas.ontouchstart = () => isScratching = true;
-            canvas.onmouseup = canvas.ontouchend = () => isScratching = false;
-            canvas.onmousemove = canvas.ontouchmove = scratch;
-        }
-
-        function calcularPinturaFerreLunze() {
-            const m2 = parseFloat(document.getElementById('calc-m2').value) || 0;
-            const linea = document.getElementById('calc-linea').value;
-            
-            let rendimientoGln = 35;
-            let precioAproxGln = 48000;
-
-            if (linea === 'profesional') { rendimientoGln = 42; precioAproxGln = 68000; }
-            else if (linea === 'tipo1') { rendimientoGln = 35; precioAproxGln = 52000; }
-            else if (linea === 'tipo2') { rendimientoGln = 25; precioAproxGln = 38000; }
-
-            if (m2 <= 0) {
-                document.getElementById('calc-material-text').textContent = 'Digita los m² para calcular';
-                document.getElementById('calc-puntos-text').textContent = '+0 pts';
-                return;
-            }
-
-            const galonesExactos = m2 / rendimientoGln;
-            let cunetes = Math.floor(galonesExactos / 5);
-            let faltante = galonesExactos - (cunetes * 5);
-            let baldes = 0;
-
-            if (faltante > 2.5) { baldes = 1; faltante -= 2.5; } 
-            else if (faltante > 2.0) { baldes = 1; faltante = 0; }
-            
-            let galones = Math.ceil(faltante);
-            if (baldes === 1 && galones >= 2) { cunetes += 1; baldes = 0; galones = 0; }
-
-            let partes = [];
-            if (cunetes > 0) partes.push(`${cunetes} Cuñete(s)`);
-            if (baldes > 0) partes.push(`${baldes} Balde(s)`);
-            if (galones > 0) partes.push(`${galones} Galón(es)`);
-            
-            let desglose = partes.join(" + ") || "1 Galón(es)";
-            const estimacionInversion = Math.ceil(galonesExactos) * precioAproxGln;
-            const puntosEstimados = Math.floor(estimacionInversion / 10000);
-
-            document.getElementById('calc-material-text').textContent = desglose;
-            document.getElementById('calc-puntos-text').textContent = `+${puntosEstimados} pts aprox.`;
-        }
-
-        function renderClientRewards() {
-            const container = document.getElementById('client-rewards-container');
-            const publicos = rewardsList.filter(r => r.status === 'published');
-            if (publicos.length === 0) { container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No hay premios disponibles.</p>'; return; }
-
-            let puntosCliente = Number(activeClient.puntos || 0);
-            container.innerHTML = publicos.map(r => {
-                let costo = Number(r.cost);
-                let porcentaje = Math.min(100, Math.floor((puntosCliente / costo) * 100));
-                let leAlcanza = puntosCliente >= costo;
-                
-                return `
-                    <div class="glass-card">
-                        <div>
-                            <div class="titulo">${r.title}</div>
-                            <div class="descripcion">${r.desc || ''}</div>
-                        </div>
-                        <div>
-                            <div class="texto-puntos"><span>Tienes: ${puntosCliente.toLocaleString()}</span><span>Meta: ${costo.toLocaleString()}</span></div>
-                            <div class="barra-fondo"><div class="barra-llena" style="width: ${porcentaje}%;"></div></div>
-                            <button class="btn-accion ${leAlcanza ? 'success' : ''}" style="margin-top: 16px;" ${leAlcanza ? '' : 'disabled'} onclick="solicitarCanjePremio('${r.id}', '${r.title}', ${costo})">
-                                ${leAlcanza ? '¡Canjear Ahora! 🎁' : `Faltan ${(costo - puntosCliente).toLocaleString()} pts`}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function solicitarCanjePremio(idPremio, tituloPremio, costoPremio) {
-            if (!confirm(`¿Canjear "${tituloPremio}" por ${costoPremio.toLocaleString()} puntos?`)) return;
-
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ tipo: 'canjear_premio', cedula: activeClient.cedula, idPremio: idPremio }) 
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    activeClient.puntos = data.nuevosPuntos;
-                    activeClient.historial = data.historial || [];
-                    activeClient.canjes = data.canjes || activeClient.canjes;
-                    renderClientDashboard();
-                    triggerConfetti();
-                    alert(`🎉 ¡Canje exitoso!\nCódigo de Retiro en Mostrador: [ ${data.codigoCanje} ]`);
+                    showToast(`✅ ¡Venta registrada! El nuevo saldo del cliente es ${data.nuevosPuntos} pts`);
+                    document.getElementById('venta-cedula').value = '';
+                    document.getElementById('venta-monto').value = '';
+                    cargarDatosAdmin();
                 } else { showToast('❌ ' + data.message); }
-            } catch (err) { showToast('❌ Error de red.'); }
+            } catch(e) { showToast('❌ Error registrando venta.'); }
         }
 
-        function renderClientHistory() {
-            const list = document.getElementById('client-history-list');
-            const data = activeClient.historial;
-            if (!data || data.length === 0) { list.innerHTML = '<li style="color:var(--text-muted); font-size:0.85rem;">Sin movimientos.</li>'; return; }
+        async function handleValidarCanje(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('canje-codigo').value.trim();
 
-            list.innerHTML = data.map(t => `
-                <li style="padding: 12px 0; border-bottom: 1px solid #e2d9cd; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
-                        <span style="color: var(--primary-dark);">${String(t.descripcion || '').replace(/\(\$.*\)/, '')}</span>
-                        <span style="color:${String(t.puntos).includes('+') || parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${t.puntos} pts</span>
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${String(t.fecha).substring(0, 19)}</div>
-                </li>
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'validar_canje_admin', token: adminToken, codigoCanje: codigo })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    alert(data.mensaje);
+                    document.getElementById('canje-codigo').value = '';
+                    cargarDatosAdmin();
+                } else { showToast(data.message); }
+            } catch(e) { showToast('❌ Error validando código.'); }
+        }
+
+        async function handleGuardarPremio(e) {
+            e.preventDefault();
+            const titulo = document.getElementById('premio-titulo').value.trim();
+            const costo = parseInt(document.getElementById('premio-costo').value, 10);
+            const desc = document.getElementById('premio-desc').value.trim();
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'guardar_premio', token: adminToken, titulo: titulo, puntos: costo, descripcion: desc, estado: 'published' })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    showToast('🎁 Premio guardado en el catálogo.');
+                    document.getElementById('premio-titulo').value = '';
+                    document.getElementById('premio-costo').value = '';
+                    document.getElementById('premio-desc').value = '';
+                    premiosList = data.premios || premiosList;
+                    renderPremiosTable();
+                } else { showToast('❌ ' + data.message); }
+            } catch(e) { showToast('❌ Error guardando premio.'); }
+        }
+
+        async function cambiarEstadoPremio(idPremio, accion) {
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: adminToken, idPremio: idPremio, accion: accion })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    premiosList = data.premios || premiosList;
+                    renderPremiosTable();
+                }
+            } catch(e) { console.error("Error actualizando premio", e); }
+        }
+
+        async function corregirPuntosCliente(cedula, puntosActuales) {
+            const nuevoVal = prompt(`Ingresa el nuevo saldo de puntos para la cédula ${cedula}:`, puntosActuales);
+            if (nuevoVal === null) return;
+            const puntosNuevos = parseInt(nuevoVal, 10);
+            if (isNaN(puntosNuevos)) { alert("Ingresa un número válido."); return; }
+
+            const motivo = prompt("Motivo del ajuste:", "Ajuste manual administrativo");
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'corregir_puntos', token: adminToken, cedula: cedula, nuevosPuntos: puntosNuevos, motivo: motivo })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    showToast('✅ Puntos actualizados correctamente.');
+                    cargarDatosAdmin();
+                } else { showToast('❌ ' + data.message); }
+            } catch(e) { showToast('❌ Error ajustando puntos.'); }
+        }
+
+        function renderClientesTable() {
+            const body = document.getElementById('tabla-clientes-body');
+            if (clientesList.length === 0) { body.innerHTML = '<tr><td colspan="6">No hay clientes registrados.</td></tr>'; return; }
+
+            body.innerHTML = clientesList.map(c => `
+                <tr>
+                    <td><strong>${c.nombre}</strong></td>
+                    <td>${c.cedula}</td>
+                    <td>${c.telefono || '-'}</td>
+                    <td><strong style="color:var(--primary-dark);">${c.puntos.toLocaleString()} pts</strong></td>
+                    <td>
+                        ${c.bloqueado ? 
+                            '<span class="badge badge-danger">🔒 Bloqueado (24h)</span>' : 
+                            '<span class="badge badge-success">Activo</span>'}
+                    </td>
+                    <td>
+                        <button onclick="corregirPuntosCliente('${c.cedula}', ${c.puntos})" class="btn-dark" style="font-size:0.75rem; padding:4px 8px;">Ajustar Pts</button>
+                    </td>
+                </tr>
             `).join('');
         }
 
-        sincronizarPremios();
+        function renderPremiosTable() {
+            const body = document.getElementById('tabla-premios-body');
+            if (premiosList.length === 0) { body.innerHTML = '<tr><td colspan="5">No hay premios creados.</td></tr>'; return; }
+
+            body.innerHTML = premiosList.map(p => `
+                <tr>
+                    <td><code>${p.id}</code></td>
+                    <td><strong>${p.title}</strong></td>
+                    <td>${Number(p.cost).toLocaleString()} pts</td>
+                    <td><span class="badge badge-success">${p.status || 'published'}</span></td>
+                    <td>
+                        <button onclick="cambiarEstadoPremio('${p.id}', 'eliminar')" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderCanjesTable() {
+            const body = document.getElementById('tabla-canjes-body');
+            if (canjesList.length === 0) { body.innerHTML = '<tr><td colspan="6">No hay canjes registrados.</td></tr>'; return; }
+
+            body.innerHTML = canjesList.map(k => `
+                <tr>
+                    <td>${String(k.fecha).substring(0, 10)}</td>
+                    <td>${k.cedula}</td>
+                    <td>${k.cliente}</td>
+                    <td><strong>${k.premio}</strong></td>
+                    <td><code>${k.codigo}</code></td>
+                    <td>
+                        ${k.estado === 'Entregado' ? 
+                            '<span class="badge badge-success">Entregado</span>' : 
+                            '<span class="badge badge-warning">Pendiente</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function logoutAdmin() {
+            adminToken = null;
+            document.getElementById('admin-dashboard-view').classList.add('hidden');
+            document.getElementById('admin-status-bar').classList.add('hidden');
+            document.getElementById('admin-login-view').classList.remove('hidden');
+            document.getElementById('admin-pass-input').value = '';
+        }
     </script>
 </body>
 </html>
