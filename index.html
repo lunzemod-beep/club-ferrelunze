@@ -129,6 +129,26 @@
         .calc-box { background: #fdfbf7; border: 2px solid #e2d9cd; padding: 20px; border-radius: 16px; margin-bottom: 24px; }
         .legal-box { font-size: 0.75rem; color: var(--text-muted); text-align: justify; background: #f5f2eb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #dcd2c4; }
         #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; border: 1px solid #8d6e63; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* ESTILOS MÓDULO GUÍA Y LEGALES INTEGRADO */
+        .fl-tab-nav { display: flex; gap: 8px; border-bottom: 2px solid #e2d9cd; margin-bottom: 16px; flex-wrap: wrap; }
+        .fl-tab-btn { background: none; border: none; padding: 10px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .fl-tab-btn.active { color: var(--primary-dark); border-bottom-color: var(--primary); }
+        .fl-tab-content { display: none; }
+        .fl-tab-content.active { display: block; }
+
+        .fl-btn-external { background-color: #0284c7; color: #ffffff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .fl-btn-external:hover { background-color: #0369a1; }
+
+        .fl-grid-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .fl-card-step { background: #fdfbf7; border: 1px solid #e2d9cd; border-radius: 10px; padding: 14px; }
+        .fl-step-number { display: inline-block; background: var(--primary); color: #fff; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: bold; font-size: 0.75rem; margin-bottom: 8px; }
+        .fl-card-step h4 { margin-bottom: 6px; font-size: 0.9rem; color: var(--primary-dark); }
+        .fl-card-step p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+        .fl-legal-document { background: #f9f7f2; border: 1px solid #dcd2c4; padding: 16px; border-radius: 10px; max-height: 420px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; color: #3e2723; }
+        .fl-legal-document h4 { margin: 12px 0 4px; color: var(--primary); font-size: 0.88rem; }
+        .fl-legal-document ul { padding-left: 18px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -201,6 +221,84 @@
                     
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.75rem; opacity: 0.85;">
                         📅 <strong>Vencimiento de puntos:</strong> Vigencia de 12 meses a partir de la fecha de compra.
+                    </div>
+                </div>
+
+                <!-- MÓDULO INTEGRADO: GUÍA DE PUNTOS Y REGLAMENTO LEGAL -->
+                <div class="box-card" style="border-left: 5px solid #0284c7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin-bottom: 0;">ℹ️ Guía del Club y Reglas Legales</h3>
+                        <button type="button" class="fl-btn-external" onclick="abrirGuiaEnPestanaNueva()">
+                            🔗 Abrir Guía en Pestaña Nueva
+                        </button>
+                    </div>
+
+                    <div class="fl-tab-nav">
+                        <button class="fl-tab-btn active" onclick="cambiarPestanaGuia('tab-acumulacion', this)">
+                            📘 ¿Cómo Acumular y Redimir Puntos?
+                        </button>
+                        <button class="fl-tab-btn" onclick="cambiarPestanaGuia('tab-legales', this)">
+                            ⚖️ Términos y Condiciones Legales
+                        </button>
+                    </div>
+
+                    <!-- SUB-PESTAÑA 1: GUÍA PASO A PASO -->
+                    <div id="tab-acumulacion" class="fl-tab-content active">
+                        <div class="fl-grid-steps">
+                            <div class="fl-card-step">
+                                <div class="fl-step-number">1</div>
+                                <h4>Registra tu Compra</h4>
+                                <p>Dicta tu documento de identidad en caja antes de facturar tus compras de ferretería o <strong>Pinturas FerreLunze</strong>.</p>
+                            </div>
+                            <div class="fl-card-step">
+                                <div class="fl-step-number">2</div>
+                                <h4>Acumula Puntos</h4>
+                                <p>Suma puntos por cada compra. Tu nivel de cliente (Bronce, Plata, Oro, Diamante) activa multiplicadores de acumulado.</p>
+                            </div>
+                            <div class="fl-card-step">
+                                <div class="fl-step-number">3</div>
+                                <h4>Juega Raspa y Gana</h4>
+                                <p>Cada 4 compras elegibles desbloqueas un juego de <em>Raspa y Gana</em> con premios sorpresa y puntos bonificados.</p>
+                            </div>
+                            <div class="fl-card-step">
+                                <div class="fl-step-number">4</div>
+                                <h4>Redime Premios</h4>
+                                <p>Explora el catálogo, solicita tu premio digitalmente y presenta el código de retiro en el mostrador del local.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-PESTAÑA 2: REGLAMENTO Y TÉRMINOS LEGALES -->
+                    <div id="tab-legales" class="fl-tab-content">
+                        <div class="fl-legal-document">
+                            <h3 style="font-size: 0.95rem; text-align: center; margin-bottom: 4px;">REGLAMENTO Y TÉRMINOS LEGALES DEL PROGRAMA</h3>
+                            <p style="text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px;">Entrada en vigencia: 2026 | FerreLunze</p>
+                            
+                            <h4>1. Naturaleza del Programa</h4>
+                            <p>El programa <strong>Club FerreLunze</strong> es de carácter promocional, gratuito e intransferible. La participación implica la aceptación completa de este reglamento por parte del usuario registrado.</p>
+
+                            <h4>2. Acumulación y Caducidad de Puntos</h4>
+                            <ul>
+                                <li>Los puntos son no negociables, no transferibles y no poseen equivalencia en dinero en efectivo.</li>
+                                <li>Los puntos acumulados poseen una vigencia máxima de doce (12) meses calendario contados desde la fecha de su abono en cuenta. Expirado el término, vencerán automáticamente.</li>
+                            </ul>
+
+                            <h4>3. Redención y Entrega de Premios</h4>
+                            <ul>
+                                <li>Los canjes están sujetos a la verificación previa del documento de identidad del titular y a la disponibilidad de stock en tienda.</li>
+                                <li>Una vez procesado el canje y descontados los puntos, no se aceptan devoluciones ni cambios de premios.</li>
+                            </ul>
+
+                            <h4>4. Dinámica "Raspa y Gana" y Seguridad</h4>
+                            <ul>
+                                <li>El acceso a la tarjeta de raspa se otorga tras acumular 4 compras válidas registradas en el sistema.</li>
+                                <li>Los códigos de premios deberán presentarse en mostrador dentro de los 30 días posteriores a su obtención.</li>
+                                <li><strong>Invalidez técnica:</strong> FerreLunze se reserva el derecho de anular premios o accesos generados por fallas del sistema, manipulación de código, automatismos o inconsistencias en facturación.</li>
+                            </ul>
+
+                            <h4>5. Protección de Datos Personales</h4>
+                            <p>El tratamiento de datos personales se rige bajo la Ley 1581 de 2012 para la administración de beneficios del club y notificaciones informativas del establecimiento.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -333,6 +431,53 @@
         let activeClient = null;
         let rewardsList = [];
         let publicidadList = [];
+
+        /* FUNCIONES DE NAVEGACIÓN DE GUÍA Y LEGALES */
+        function cambiarPestanaGuia(tabId, btnElement) {
+            document.querySelectorAll('#client-dashboard-view .fl-tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#client-dashboard-view .fl-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        function abrirGuiaEnPestanaNueva() {
+            const contenidoGuia = document.getElementById('tab-acumulacion').innerHTML;
+            const contenidoLegales = document.getElementById('tab-legales').innerHTML;
+
+            const contenidoHTML = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Club FerreLunze - Guía y Reglamento Legal</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f2eb; color: #2c1d11; padding: 24px; margin: 0; }
+                        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #e2d9cd; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+                        h2 { color: #3e2723; border-bottom: 2px solid #8b4513; padding-bottom: 8px; margin-bottom: 20px; }
+                        .fl-grid-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+                        .fl-card-step { background: #fdfbf7; border: 1px solid #e2d9cd; border-radius: 10px; padding: 16px; }
+                        .fl-step-number { background: #8b4513; color: #fff; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
+                        .fl-legal-document { background: #f9f7f2; border: 1px solid #dcd2c4; padding: 20px; border-radius: 10px; font-size: 0.88rem; line-height: 1.6; }
+                        .fl-legal-document h4 { color: #8b4513; margin: 14px 0 6px; }
+                        ul { padding-left: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h2>🛠️ Guía del Cliente - Club FerreLunze</h2>
+                        ${contenidoGuia}
+                        <hr style="border: 0; height: 1px; background: #e2d9cd; margin: 30px 0;">
+                        <h2>⚖️ Términos y Condiciones Legales</h2>
+                        ${contenidoLegales}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const ventanaNueva = window.open('', '_blank');
+            ventanaNueva.document.write(contenidoHTML);
+            ventanaNueva.document.close();
+        }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
