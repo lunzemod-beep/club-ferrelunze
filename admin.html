@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caja & Administración | FerreLunze</title>
+    <title>Club FerreLunze | Administración y Caja</title>
+    <!-- Librería de Confeti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
     <style>
         :root {
             --primary: #8b4513;
@@ -11,500 +14,352 @@
             --bg-body: #f5f2eb;
             --text-dark: #2c1d11;
             --text-muted: #6d594b;
+            --card-bg: #ffffff;
             --accent: #d97706;
             --danger: #b91c1c;
-            --success: #2e7d32;
-            --blue: #0284c7;
+            --whatsapp: #25d366;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding: 20px; }
+        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; position: relative; }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 550px; height: 550px;
+            background-image: url('logo.png'); background-repeat: no-repeat; background-position: center; background-size: contain;
+            opacity: 0.12; pointer-events: none; z-index: 0;
+        }
+
+        header { background-color: #ffffff; border-bottom: 3px solid var(--primary); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); position: relative; z-index: 1; }
+        .brand-logo { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+        .brand-logo span { color: var(--primary); }
+
+        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
         .hidden { display: none !important; }
-        .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); max-width: 900px; margin-left: auto; margin-right: auto; }
-        .login-card { max-width: 400px; margin: 60px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; background-color: #fdfbf7; }
-        .btn-primary { width: 100%; background-color: var(--primary-dark); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .btn-primary:hover { background-color: #2c1b18; }
-        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: white; padding: 16px; border-radius: 14px; border: 1px solid #e2d9cd; text-align: center; cursor: pointer; }
-        .stat-card .val { font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: var(--primary-dark); }
-        .custom-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
-        .custom-table th, .custom-table td { padding: 10px; border-bottom: 1px solid #e2d9cd; text-align: left; }
-        .custom-table th { background: #f5f2eb; font-weight: 700; }
-        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: none; z-index: 100; }
-        
-        .client-info-box { background: #fdfbf7; border: 1px dashed #c8bba8; padding: 16px; border-radius: 12px; margin-top: 12px; position: relative; }
-        .temp-code-display { font-size: 1.6rem; font-weight: 800; letter-spacing: 4px; color: var(--primary-dark); background: #eef2ff; border: 1px solid #c7d2fe; padding: 10px; border-radius: 8px; text-align: center; margin: 10px 0; }
+        .box-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
+        .box-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--primary-dark); }
+
+        .login-card { max-width: 460px; margin: 30px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.1); text-align: center; }
+        .card-logo-img { max-width: 220px; height: auto; margin-bottom: 16px; display: inline-block; }
+        .login-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: var(--primary-dark); }
+        .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+
+        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; text-align: left; background-color: #fdfbf7; }
+        .input-field:focus { border-color: var(--primary); background-color: #ffffff; }
+
+        .btn-primary { width: 100%; background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: transform 0.1s, background 0.2s; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:hover { background-color: #6d330c; }
+        .btn-dark { background-color: var(--primary-dark); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; border: 1px solid #8d6e63; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid #e2d9cd; text-align: left; }
+        th { background: #fdfbf7; color: var(--primary-dark); font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN -->
-    <div id="admin-login-view" class="login-card">
-        <h2>🔒 Caja FerreLunze</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Ingresa la contraseña de administrador</p>
-        <form onsubmit="handleAdminLogin(event)">
-            <input type="password" id="admin-pass-input" required placeholder="Contraseña" class="input-field">
-            <button type="submit" class="btn-primary">Ingresar al Sistema</button>
-        </form>
-    </div>
+    <header>
+        <div class="brand-logo">🛠️ FerreLunze <span>Modulo Admin</span></div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Panel de Gestión de Caja</div>
+    </header>
 
-    <!-- DASHBOARD PRINCIPAL -->
-    <div id="admin-dashboard-view" class="hidden">
-        <div class="box-card" style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0;">🛠️ Panel de Caja y Mostrador - FerreLunze</h3>
-            <button onclick="logoutAdmin()" class="btn-danger">Cerrar Sesión 🚪</button>
-        </div>
+    <main>
+        <!-- LOGIN ADMIN -->
+        <div id="admin-login-view" class="login-card">
+            <img src="logo.png" alt="Logo FerreLunze" class="card-logo-img">
+            <h2>Acceso Administrativo</h2>
+            <p>Ingresa la clave maestra para gestionar puntos y entregas</p>
 
-        <!-- MÉTRICAS NIVELES DE CLIENTES -->
-        <div class="box-card">
-            <div class="stats-grid">
-                <div class="stat-card" style="border-top: 4px solid #8d4925;" onclick="showTierClientsList('bronce')"><span style="font-size:0.8rem; font-weight:700; color:#8d4925;">🥉 BRONCE</span><div class="val" id="stat-bronce">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #546e7a;" onclick="showTierClientsList('plata')"><span style="font-size:0.8rem; font-weight:700; color:#546e7a;">🥈 PLATA</span><div class="val" id="stat-plata">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #b45309;" onclick="showTierClientsList('oro')"><span style="font-size:0.8rem; font-weight:700; color:#b45309;">🥇 ORO</span><div class="val" id="stat-oro">0</div></div>
-                <div class="stat-card" style="border-top: 4px solid #0284c7;" onclick="showTierClientsList('diamante')"><span style="font-size:0.8rem; font-weight:700; color:#0284c7;">💎 DIAMANTE</span><div class="val" id="stat-diamante">0</div></div>
-            </div>
-            <div id="admin-tier-list-box" class="hidden" style="margin-top:16px; padding-top:16px; border-top:1px solid #e2d9cd;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><h4 id="tier-list-title">Clientes</h4><button onclick="hideTierClientsList()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">Cerrar ✖</button></div>
-                <div style="overflow-x: auto; max-height: 200px;"><table class="custom-table"><thead><tr><th>Nombre</th><th>Celular</th><th>Cédula</th><th>Saldo</th></tr></thead><tbody id="tier-list-table-body"></tbody></table></div>
-            </div>
-        </div>
-
-        <!-- CONSULTA DE CLIENTE Y CÓDIGO TEMPORAL -->
-        <div class="box-card" style="border-left: 5px solid var(--blue);">
-            <h3>🔍 Consultar Cliente / Generar Clave Temporal</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Busca la información del cliente por cédula y bríndale un código de acceso temporal si no puede iniciar sesión.</p>
-            
-            <form onsubmit="handleSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 12px;">
-                <input type="text" id="search-cedula-input" required placeholder="Número de Cédula" class="input-field" style="margin-bottom:0;">
-                <button type="submit" class="btn-primary" style="background:var(--blue); width: auto; white-space:nowrap;">Buscar Cliente</button>
-                <button type="button" onclick="clearClientSearch()" style="background:#6c757d; color:white; border:none; padding:0 14px; border-radius:10px; font-weight:bold; cursor:pointer;" title="Limpiar consulta">Limpiar 🧹</button>
-            </form>
-
-            <div id="client-detail-card" class="client-info-box hidden">
-                <button type="button" onclick="hideClientSearchCard()" style="position:absolute; top:10px; right:10px; background:none; border:none; color:var(--danger); font-weight:bold; font-size:1.1rem; cursor:pointer;" title="Cerrar vista">✖</button>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-right:24px;">
-                    <div>
-                        <h4 id="detail-client-name" style="color:var(--primary-dark); font-size:1.1rem;">-</h4>
-                        <p style="font-size:0.85rem; color:var(--text-muted);">Cédula: <strong id="detail-client-cedula">-</strong> | Tel: <span id="detail-client-phone">-</span></p>
-                    </div>
-                    <div style="text-align:right;">
-                        <span id="detail-client-tier" style="font-size:0.75rem; font-weight:bold; padding:3px 8px; border-radius:6px; background:#e2d9cd;">-</span>
-                        <div style="font-size:1.2rem; font-weight:800; color:var(--accent); margin-top:4px;" id="detail-client-pts">0 pts</div>
-                    </div>
-                </div>
-
-                <hr style="border:none; border-top:1px solid #e2d9cd; margin:14px 0;">
-
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <button type="button" onclick="generateTempCode()" style="background:var(--primary-dark); color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.85rem;">🔑 Generar Código Temporal</button>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">Válido para acceder a la aplicación.</span>
-                </div>
-
-                <div id="temp-code-container" class="hidden">
-                    <div class="temp-code-display" id="temp-code-val">------</div>
-                    <p style="font-size:0.75rem; text-align:center; color:var(--text-muted);">Indícale este código al cliente para que pueda ingresar a su cuenta.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- AJUSTE / CORRECCIÓN DE PUNTOS CON CAUSAL -->
-        <div class="box-card" style="border-left: 5px solid var(--accent);">
-            <h3>⚖️ Ajustar / Corregir Puntos con Causal</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Modifica el saldo de puntos de un cliente con justificación obligatoria para auditoría de caja.</p>
-
-            <form onsubmit="handleAdjustPoints(event)">
-                <div class="grid-2">
-                    <div>
-                        <input type="text" id="adjust-cedula-input" required placeholder="Cédula del cliente" class="input-field">
-                        <select id="adjust-type-input" class="input-field">
-                            <option value="sumar">➕ Sumar Puntos</option>
-                            <option value="restar">➖ Restar Puntos</option>
-                        </select>
-                        <input type="number" id="adjust-pts-input" required min="1" placeholder="Cantidad de puntos a ajustar" class="input-field">
-                    </div>
-                    <div>
-                        <select id="adjust-causal-input" class="input-field" required>
-                            <option value="">-- Selecciona la Causal u Origen --</option>
-                            <option value="Devolución de mercancía">Devolución de mercancía</option>
-                            <option value="Error de digitación en venta previa">Error de digitación en venta previa</option>
-                            <option value="Promoción / Bonificación especial">Promoción / Bonificación especial</option>
-                            <option value="Compensación por servicio al cliente">Compensación por servicio al cliente</option>
-                            <option value="Ajuste administrativo por auditoría">Ajuste administrativo por auditoría</option>
-                            <option value="Otro motivo">Otro motivo (especificar en nota)</option>
-                        </select>
-                        <input type="text" id="adjust-note-input" required placeholder="Nota u observación del ajuste" class="input-field">
-                        <button type="submit" class="btn-primary" style="background:var(--accent);">Aplicar Ajuste de Puntos</button>
-                    </div>
-                </div>
+            <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
+                <input type="password" id="admin-pass-input" required placeholder="Contraseña de Administrador" class="input-field">
+                <button type="submit" id="btn-login-admin" class="btn-primary">Ingresar al Panel</button>
             </form>
         </div>
 
-        <!-- VALIDAR CANJE -->
-        <div class="box-card" style="border-left: 5px solid #2e7d32;">
-            <h3>🎁 Validar Código de Canje / Raspa y Gana</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa el código de 4 dígitos que trae el cliente y verifica su cédula antes de entregar el premio.</p>
-            <form onsubmit="handleAdminValidateCanje(event)" style="display: flex; gap: 10px;">
-                <input type="text" id="admin-codigo-canje-input" required maxlength="4" placeholder="Código de 4 dígitos" class="input-field" style="margin-bottom:0; max-width: 220px;">
-                <button type="submit" class="btn-primary" style="background:#2e7d32; width: auto; white-space:nowrap;">Validar y Entregar</button>
-            </form>
-        </div>
-
-        <!-- REGISTRO DE CANJES -->
-        <div class="box-card" style="border-left: 5px solid #d97706;">
-            <h3>🏆 Canjes Registrados</h3>
-            <div style="overflow-x: auto; max-height: 220px;">
-                <table class="custom-table">
-                    <thead><tr><th>Fecha</th><th>Cédula</th><th>Cliente</th><th>Premio</th><th>Código</th><th>Estado</th></tr></thead>
-                    <tbody id="admin-global-canjes-tbody"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
-                </table>
+        <!-- DASHBOARD ADMIN -->
+        <div id="admin-dashboard-view" class="hidden">
+            <div class="box-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Panel de Control General</h2>
+                <button onclick="logoutAdmin()" class="btn-dark">Cerrar Sesión 🚪</button>
             </div>
-        </div>
 
-        <!-- FORMULARIOS: VENTA Y GESTOR DE PREMIOS -->
-        <div class="grid-2">
-            <!-- ACREDITAR COMPRA -->
-            <div class="box-card">
-                <h3>Acreditar Compra en Mostrador</h3>
-                <form onsubmit="handleAdminAddSale(event)">
-                    <input type="text" id="admin-sale-cedula" required placeholder="Cédula del Cliente" class="input-field">
-                    <input type="text" id="admin-sale-amount" required placeholder="Monto total ($ COP) - Ej: 150,000" class="input-field" oninput="formatCurrencyInput(this)">
-                    <button type="submit" class="btn-primary">Acreditar Compra</button>
+            <!-- MÓDULO: REGISTRO RÁPIDO DE VENTAS Y PUNTOS -->
+            <div class="box-card" style="border-left: 5px solid #22c55e;">
+                <h3>💵 Acreditar Puntos por Compra en Caja</h3>
+                <form onsubmit="handleRegistrarVentaAdmin(event)" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; align-items:end;">
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:700;">Cédula del Cliente:</label>
+                        <input type="text" id="venta-cedula" required placeholder="Ej: 1144000111" class="input-field" style="margin-bottom:0;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:700;">Monto de Venta ($ COP):</label>
+                        <input type="number" id="venta-monto" required min="1000" placeholder="Ej: 50000" oninput="calcularPuntosGanadosVenta()" class="input-field" style="margin-bottom:0;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:700;">Puntos a Acreditar:</label>
+                        <input type="text" id="venta-puntos-preview" readonly value="0 pts" class="input-field" style="margin-bottom:0; background:#f0fdf4; font-weight:bold; color:#15803d;">
+                    </div>
+                    <button type="submit" class="btn-primary" style="background:#16a34a;">Registrar y Acreditar</button>
                 </form>
             </div>
 
-            <!-- CREAR PREMIO -->
-            <div class="box-card">
-                <h3>Gestor de Premios</h3>
-                <form onsubmit="handleAdminAddReward(event)">
-                    <input type="text" id="reward-title-input" required placeholder="Título del premio" class="input-field">
-                    <input type="number" id="reward-cost-input" required min="1" placeholder="Puntos requeridos" class="input-field">
-                    <input type="text" id="reward-desc-input" placeholder="Descripción corta" class="input-field">
-                    
-                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Estado de Publicación:</label>
-                    <select id="reward-status-input" class="input-field" style="margin-bottom:14px;">
-                        <option value="draft">📝 Guardar como Borrador</option>
-                        <option value="published">🟢 Publicar de Inmediato</option>
-                    </select>
-
-                    <button type="submit" class="btn-primary" style="background:#2e7d32;">Guardar Premio</button>
+            <!-- MÓDULO: VALIDACIÓN DE CÓDIGOS DE CANJE EN CAJA -->
+            <div class="box-card" style="border-left: 5px solid #0284c7;">
+                <h3>🎟️ Validar y Entregar Premio por Código (4 dígitos)</h3>
+                <form onsubmit="handleValidarCodigoCanjeAdmin(event)" style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <input type="text" id="validar-codigo-input" maxlength="4" required placeholder="Código de 4 dígitos" class="input-field" style="flex:1; margin-bottom:0;">
+                    <button type="submit" class="btn-primary" style="flex:auto; width:auto; background:#0284c7;">Validar Código en Caja</button>
                 </form>
             </div>
-        </div>
 
-        <!-- CATÁLOGO DE PREMIOS ORDENADO -->
-        <div class="box-card">
-            <h3>Catálogo de Premios (Mayor a Menor Puntos)</h3>
-            <div id="admin-rewards-container" class="rewards-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px; margin-top:12px;"></div>
+            <!-- MÓDULO: BÚSQUEDA Y CORRECCIÓN DE CLIENTES -->
+            <div class="box-card">
+                <h3>🔍 Consulta y Ajustes de Puntos por Cliente</h3>
+                <form onsubmit="handleBuscarClienteAdmin(event)" style="display:flex; gap:10px; margin-bottom:16px;">
+                    <input type="text" id="admin-search-cedula" required placeholder="Ingresa Cédula o NIT" class="input-field" style="margin-bottom:0;">
+                    <button type="submit" class="btn-dark" style="width:auto;">Buscar</button>
+                </form>
+
+                <div id="admin-client-detail-box" class="hidden" style="background:#fdfbf7; padding:16px; border-radius:12px; border:1px solid #e2d9cd;">
+                    <h4>Cliente: <span id="detail-name" style="color:var(--primary);">--</span></h4>
+                    <p style="font-size:0.85rem; margin-bottom:12px;">Puntos Actuales: <strong id="detail-points" style="font-size:1.1rem; color:#d97706;">0</strong> pts</p>
+
+                    <form onsubmit="handleAjustarPuntosAdmin(event)" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+                        <select id="ajuste-operacion" class="input-field" style="margin-bottom:0;">
+                            <option value="sumar">Sumar Puntos (+)</option>
+                            <option value="restar">Restar Puntos (-)</option>
+                        </select>
+                        <input type="number" id="ajuste-puntos" required min="1" placeholder="Cantidad de Puntos" class="input-field" style="margin-bottom:0;">
+                        <input type="text" id="ajuste-causal" required placeholder="Causal (Ej: Error en Factura)" class="input-field" style="margin-bottom:0;">
+                        <input type="text" id="ajuste-observacion" required placeholder="Observaciones" class="input-field" style="margin-bottom:0;">
+                        <button type="submit" class="btn-primary" style="grid-column: 1 / -1;">Aplicar Ajuste</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LISTADO GLOBAL DE CANJES -->
+            <div class="box-card">
+                <h3>📋 Registro Global de Canjes en Tienda</h3>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cédula</th>
+                                <th>Cliente</th>
+                                <th>Premio</th>
+                                <th>Código</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-canjes-global"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <div id="toast"></div>
 
     <script>
-        // NUEVA URL DEL ENDPOINT GOOGLE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz5FAUvTrGWNLfVIDETz9--JgzGyGEX6tDOOjId_TslvGZ-i_1P2YDyIFZtTox_jwkJxQ/exec';
+        // 🛡️ SEGURIDAD: URL actualizada de Apps Script de Producción
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyjTH2tMTkGzdK0fmK7V7ihw5YQCsivzgpt0miXd-a6X2WDgd_DMKUTcde9FUoQ92V3-w/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
-        let allClientsCache = [];
-        let rewardsList = [];
-        let globalCanjesCache = [];
-        let activeSelectedClient = null;
+        let adminToken = sessionStorage.getItem('ADMIN_TOKEN') || null;
+        let selectedClientCedula = null;
+
+        function escapeHTML(str) {
+            if(!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.textContent = msg; toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 4000);
-        }
-
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value === '') { input.value = ''; return; }
-            input.value = Number(value).toLocaleString('en-US');
-        }
-
-        if (sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN")) {
-            document.getElementById('admin-login-view').classList.add('hidden');
-            document.getElementById('admin-dashboard-view').classList.remove('hidden');
-            loadAdminData();
+            if(!toast) { alert(msg); return; }
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 4500);
         }
 
         async function handleAdminLogin(e) {
             e.preventDefault();
-            const passVal = document.getElementById('admin-pass-input').value;
+            const btn = document.getElementById('btn-login-admin');
+            const pass = document.getElementById('admin-pass-input').value.trim();
+
             try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'login_admin', password: passVal }) });
+                btn.disabled = true; btn.innerText = "Ingresando...";
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'login_admin', password: pass })
+                });
                 const data = await res.json();
+
                 if (data.status === "success") {
-                    sessionStorage.setItem("FERRELUNZE_ADMIN_TOKEN", data.token);
+                    adminToken = data.token;
+                    sessionStorage.setItem('ADMIN_TOKEN', adminToken);
                     document.getElementById('admin-login-view').classList.add('hidden');
                     document.getElementById('admin-dashboard-view').classList.remove('hidden');
-                    loadAdminData();
-                } else { showToast('❌ Contraseña incorrecta'); }
-            } catch(err) { showToast('❌ Error de red.'); }
+                    renderCanjesGlobales(data.canjesGlobales || []);
+                    showToast('✅ Sesión administrativa iniciada.');
+                } else { showToast('❌ ' + data.message); }
+            } catch(err) { showToast('❌ Error de conexión.'); }
+            finally { btn.disabled = false; btn.innerText = "Ingresar al Panel"; }
         }
 
         function logoutAdmin() {
-            sessionStorage.removeItem("FERRELUNZE_ADMIN_TOKEN");
+            adminToken = null;
+            sessionStorage.removeItem('ADMIN_TOKEN');
             document.getElementById('admin-dashboard-view').classList.add('hidden');
             document.getElementById('admin-login-view').classList.remove('hidden');
         }
 
-        function calculateTier(pts) {
-            const p = Number(pts || 0);
-            if (p >= 1000) return { name: 'DIAMANTE' };
-            if (p >= 500) return { name: 'ORO' };
-            if (p >= 100) return { name: 'PLATA' };
-            return { name: 'BRONCE' };
+        function calcularPuntosGanadosVenta() {
+            const monto = parseFloat(document.getElementById('venta-monto').value) || 0;
+            const puntos = Math.floor(monto / 10000);
+            document.getElementById('venta-puntos-preview').value = `+${puntos} pts`;
         }
 
-        async function loadAdminData() {
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN") }) });
-                const data = await res.json();
-                if (data.status === "success") {
-                    allClientsCache = data.clientes || [];
-                    rewardsList = data.premios || [];
-                    globalCanjesCache = data.canjesGlobales || [];
-
-                    let stats = { bronce: 0, plata: 0, oro: 0, diamante: 0 };
-                    allClientsCache.forEach(c => { const t = calculateTier(c.puntos); stats[t.name.toLowerCase()]++; });
-                    document.getElementById('stat-bronce').textContent = stats.bronce;
-                    document.getElementById('stat-plata').textContent = stats.plata;
-                    document.getElementById('stat-oro').textContent = stats.oro;
-                    document.getElementById('stat-diamante').textContent = stats.diamante;
-
-                    renderGlobalCanjes();
-                    renderAdminRewards();
-
-                    if(activeSelectedClient) {
-                        const updated = allClientsCache.find(c => String(c.cedula) === String(activeSelectedClient.cedula));
-                        if(updated) displayClientDetail(updated);
-                    }
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        // ==========================================
-        // CONSULTA DE CLIENTE, CÓDIGO TEMPORAL Y LIMPIEZA
-        // ==========================================
-        function handleSearchClient(e) {
+        async function handleRegistrarVentaAdmin(e) {
             e.preventDefault();
-            const cedulaBusqueda = document.getElementById('search-cedula-input').value.trim();
-            const clienteEncontrado = allClientsCache.find(c => String(c.cedula) === String(cedulaBusqueda));
+            const cedula = document.getElementById('venta-cedula').value.trim();
+            const monto = parseFloat(document.getElementById('venta-monto').value) || 0;
+            const puntosGanados = Math.floor(monto / 10000);
 
-            if (!clienteEncontrado) {
-                showToast('❌ Cliente no encontrado con esa cédula');
-                hideClientSearchCard();
-                return;
-            }
-
-            activeSelectedClient = clienteEncontrado;
-            displayClientDetail(clienteEncontrado);
-        }
-
-        function displayClientDetail(cliente) {
-            document.getElementById('detail-client-name').textContent = cliente.nombre || 'Sin nombre';
-            document.getElementById('detail-client-cedula').textContent = cliente.cedula;
-            document.getElementById('detail-client-phone').textContent = cliente.telefono || 'N/A';
-            document.getElementById('detail-client-pts').textContent = `${Number(cliente.puntos || 0).toLocaleString()} pts`;
-
-            const tier = calculateTier(cliente.puntos);
-            document.getElementById('detail-client-tier').textContent = `NIVEL ${tier.name}`;
-            
-            document.getElementById('temp-code-container').classList.add('hidden');
-            document.getElementById('client-detail-card').classList.remove('hidden');
-
-            document.getElementById('adjust-cedula-input').value = cliente.cedula;
-        }
-
-        function clearClientSearch() {
-            document.getElementById('search-cedula-input').value = '';
-            hideClientSearchCard();
-        }
-
-        function hideClientSearchCard() {
-            document.getElementById('client-detail-card').classList.add('hidden');
-            activeSelectedClient = null;
-        }
-
-        async function generateTempCode() {
-            if (!activeSelectedClient) return;
+            if (puntosGanados <= 0) { showToast('⚠️ El monto debe otorgar al menos 1 punto ($10,000 COP)'); return; }
 
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        tipo: 'generar_codigo_temporal',
-                        token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"),
-                        cedula: activeSelectedClient.cedula
-                    })
+                    body: JSON.stringify({ tipo: 'venta', token: adminToken, cedula: cedula, monto: monto, puntosGanados: puntosGanados })
                 });
                 const data = await res.json();
-
                 if (data.status === "success") {
-                    document.getElementById('temp-code-val').textContent = data.codigoTemporal;
-                    document.getElementById('temp-code-container').classList.remove('hidden');
-                    showToast('🔑 Código temporal generado');
-                } else {
-                    showToast('❌ ' + (data.message || 'Error al generar el código temporal'));
-                }
-            } catch(err) {
-                showToast('❌ Error de red al generar el código temporal');
-            }
+                    showToast(`✅ Venta registrada. Nuevos puntos del cliente: ${data.nuevosPuntos}`);
+                    document.getElementById('venta-cedula').value = '';
+                    document.getElementById('venta-monto').value = '';
+                    document.getElementById('venta-puntos-preview').value = '0 pts';
+                } else { showToast('❌ ' + data.message); }
+            } catch(e) { showToast('❌ Error procesando venta.'); }
         }
 
-        // ==========================================
-        // AJUSTAR / CORREGIR PUNTOS CON CAUSAL
-        // ==========================================
-        async function handleAdjustPoints(e) {
+        async function handleValidarCodigoCanjeAdmin(e) {
             e.preventDefault();
-            const cedula = document.getElementById('adjust-cedula-input').value.trim();
-            const tipoAjuste = document.getElementById('adjust-type-input').value;
-            const puntosAjuste = parseInt(document.getElementById('adjust-pts-input').value, 10);
-            const causal = document.getElementById('adjust-causal-input').value;
-            const nota = document.getElementById('adjust-note-input').value.trim();
-
-            if (!cedula || isNaN(puntosAjuste) || puntosAjuste <= 0 || !causal || !nota) {
-                showToast('❌ Completa todos los campos obligatorios');
-                return;
-            }
+            const codigo = document.getElementById('validar-codigo-input').value.trim();
 
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        tipo: 'ajustar_puntos_admin',
-                        token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"),
-                        cedula: cedula,
-                        operacion: tipoAjuste,
-                        puntos: puntosAjuste,
-                        causal: causal,
-                        observacion: nota
+                    body: JSON.stringify({ tipo: 'validar_canje_admin', token: adminToken, codigoCanje: codigo })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    alert(data.mensaje);
+                    document.getElementById('validar-codigo-input').value = '';
+                    cargarCanjesGlobales();
+                } else { showToast(data.message); }
+            } catch(e) { showToast('❌ Error validando el código.'); }
+        }
+
+        async function handleBuscarClienteAdmin(e) {
+            e.preventDefault();
+            const cedula = document.getElementById('admin-search-cedula').value.trim();
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'consultar_cliente', cedula: cedula })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    selectedClientCedula = cedula;
+                    document.getElementById('detail-name').textContent = data.nombre;
+                    document.getElementById('detail-points').textContent = data.puntos;
+                    document.getElementById('admin-client-detail-box').classList.remove('hidden');
+                } else { showToast('❌ ' + data.message); }
+            } catch(e) { showToast('❌ Error consultando cliente.'); }
+        }
+
+        async function handleAjustarPuntosAdmin(e) {
+            e.preventDefault();
+            if(!selectedClientCedula) return;
+
+            const operacion = document.getElementById('ajuste-operacion').value;
+            const puntos = Number(document.getElementById('ajuste-puntos').value);
+            const causal = document.getElementById('ajuste-causal').value.trim();
+            const observacion = document.getElementById('ajuste-observacion').value.trim();
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        tipo: 'ajustar_puntos_admin', 
+                        token: adminToken, 
+                        cedula: selectedClientCedula, 
+                        operacion: operacion, 
+                        puntos: puntos, 
+                        causal: causal, 
+                        observacion: observacion 
                     })
                 });
                 const data = await res.json();
-
                 if (data.status === "success") {
-                    showToast(`✅ Puntos ajustados. Nuevo saldo: ${data.nuevosPuntos} pts`);
-                    document.getElementById('adjust-pts-input').value = '';
-                    document.getElementById('adjust-note-input').value = '';
-                    loadAdminData();
-                } else {
-                    showToast('❌ ' + (data.message || 'Error al aplicar el ajuste'));
-                }
-            } catch(err) {
-                showToast('❌ Error de red al aplicar el ajuste');
-            }
+                    showToast('✅ Ajuste realizado correctamente.');
+                    document.getElementById('detail-points').textContent = data.nuevosPuntos;
+                    document.getElementById('ajuste-puntos').value = '';
+                    document.getElementById('ajuste-causal').value = '';
+                    document.getElementById('ajuste-observacion').value = '';
+                } else { showToast('❌ ' + data.message); }
+            } catch(e) { showToast('❌ Error aplicando ajuste.'); }
         }
 
-        // ==========================================
-        // FUNCIONES EXISTENTES
-        // ==========================================
-        function renderGlobalCanjes() {
-            const tbody = document.getElementById('admin-global-canjes-tbody');
-            if(!globalCanjesCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; return; }
-            tbody.innerHTML = globalCanjesCache.map(c => `
+        async function cargarCanjesGlobales() {
+            if(!adminToken) return;
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: adminToken })
+                });
+                const data = await res.json();
+                if(data.status === "success") {
+                    renderCanjesGlobales(data.canjesGlobales || []);
+                }
+            } catch(e) { console.error("Error cargando canjes", e); }
+        }
+
+        function renderCanjesGlobales(list) {
+            const tbody = document.getElementById('table-canjes-global');
+            if(list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin premios canjeados aún.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = list.map(c => `
                 <tr>
-                    <td>${String(c.fecha).substring(0, 10)}</td>
-                    <td>${c.cedula}</td>
-                    <td><strong>${c.cliente}</strong></td>
-                    <td>${c.premio}</td>
-                    <td><code>${c.codigo}</code></td>
-                    <td><span style="padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; background:${c.estado === 'Entregado' ? '#dcfce7' : '#fef3c7'}; color:${c.estado === 'Entregado' ? '#166534' : '#b45309'};">${c.estado}</span></td>
+                    <td>${escapeHTML(String(c.fecha).substring(0, 10))}</td>
+                    <td>${escapeHTML(c.cedula)}</td>
+                    <td>${escapeHTML(c.cliente)}</td>
+                    <td>${escapeHTML(c.premio)}</td>
+                    <td><strong>${escapeHTML(c.codigo)}</strong></td>
+                    <td><span style="color:${c.estado === 'Entregado' ? '#16a34a' : '#d97706'}; font-weight:bold;">${escapeHTML(c.estado)}</span></td>
                 </tr>
             `).join('');
         }
 
-        function showTierClientsList(tierKey) {
-            const filtered = allClientsCache.filter(c => calculateTier(c.puntos).name.toLowerCase() === tierKey).sort((a, b) => b.puntos - a.puntos);
-            document.getElementById('tier-list-title').textContent = `Clientes Categoría ${tierKey.toUpperCase()}`;
-            document.getElementById('tier-list-table-body').innerHTML = filtered.map(c => `<tr><td><strong>${c.nombre}</strong></td><td>${c.telefono}</td><td>${c.cedula}</td><td style="color:var(--primary); font-weight:bold;">${c.puntos} pts</td></tr>`).join('');
-            document.getElementById('admin-tier-list-box').classList.remove('hidden');
-        }
-        function hideTierClientsList() { document.getElementById('admin-tier-list-box').classList.add('hidden'); }
-
-        async function handleAdminValidateCanje(e) {
-            e.preventDefault();
-            const codigo = document.getElementById('admin-codigo-canje-input').value.trim();
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'validar_canje_admin', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), codigoCanje: codigo }) });
-                const data = await res.json();
-                if(data.status === "success") { alert(data.mensaje); document.getElementById('admin-codigo-canje-input').value = ''; loadAdminData(); }
-                else { alert(data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        async function handleAdminAddSale(e) {
-            e.preventDefault();
-            const rawAmount = document.getElementById('admin-sale-amount').value.replace(/,/g, '');
-            const amountInput = parseInt(rawAmount, 10);
-            if (isNaN(amountInput) || amountInput <= 0) { showToast('❌ Monto inválido'); return; }
-
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'venta', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), cedula: document.getElementById('admin-sale-cedula').value.trim(), puntosGanados: Math.floor(amountInput / 10000), monto: amountInput }) });
-                const data = await res.json();
-                if (data.status === "success") { showToast(`✅ Venta acreditada. Saldo: ${data.nuevosPuntos} pts`); document.getElementById('admin-sale-cedula').value = ''; document.getElementById('admin-sale-amount').value = ''; loadAdminData(); }
-                else { showToast('❌ ' + data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        async function handleAdminAddReward(e) {
-            e.preventDefault();
-            const titulo = document.getElementById('reward-title-input').value.trim();
-            const puntos = parseInt(document.getElementById('reward-cost-input').value, 10);
-            const descripcion = document.getElementById('reward-desc-input').value.trim();
-            const estado = document.getElementById('reward-status-input').value;
-
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'guardar_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), titulo, puntos, descripcion, estado }) });
-                const data = await res.json();
-                if(data.status === "success") { showToast('✅ Premio guardado con éxito'); e.target.reset(); loadAdminData(); }
-                else { showToast('❌ ' + data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        async function cambiarEstadoPremio(idPremio, accion) {
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }) });
-                const data = await res.json();
-                if(data.status === "success") { showToast('✅ Estado actualizado'); loadAdminData(); }
-                else { showToast('❌ ' + data.message); }
-            } catch(err) { showToast('❌ Error de red.'); }
-        }
-
-        function renderAdminRewards() {
-            const container = document.getElementById('admin-rewards-container');
-            if(!rewardsList.length) { container.innerHTML = '<p style="color:var(--text-muted);">Sin premios registrados en el catálogo.</p>'; return; }
-            
-            const sortedRewards = [...rewardsList].sort((a, b) => Number(b.cost || b.puntos || 0) - Number(a.cost || a.puntos || 0));
-
-            container.innerHTML = sortedRewards.map(r => {
-                const isDraft = r.status === 'draft';
-                return `
-                    <div style="background:white; border:1px solid #e2d9cd; padding:12px; border-radius:10px; display:flex; flex-direction:column; justify-content:space-between;">
-                        <div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                <span style="font-size:0.65rem; font-weight:bold; padding:2px 6px; background:${isDraft ? '#fef3c7' : '#dcfce7'}; color:${isDraft ? '#b45309' : '#166534'}; border-radius:4px;">
-                                    ${isDraft ? '📝 BORRADOR' : '🟢 PUBLICADO'}
-                                </span>
-                                <strong style="color:var(--accent); font-size:0.9rem;">${Number(r.cost || r.puntos).toLocaleString()} pts</strong>
-                            </div>
-                            <h4 style="margin:4px 0; font-size:0.95rem; color:var(--primary-dark);">${r.title || r.titulo}</h4>
-                            ${r.description || r.descripcion ? `<p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">${r.description || r.descripcion}</p>` : ''}
-                        </div>
-                        <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:10px; border-top:1px solid #f5f2eb; padding-top:8px;">
-                            ${isDraft 
-                                ? `<button onclick="cambiarEstadoPremio('${r.id}', 'publicar')" style="background:#2e7d32; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Publicar 🟢</button>` 
-                                : `<button onclick="cambiarEstadoPremio('${r.id}', 'despublicar')" style="background:#d97706; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Despublicar 📝</button>`
-                            }
-                            <button onclick="cambiarEstadoPremio('${r.id}', 'eliminar')" style="background:#b91c1c; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Eliminar 🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        if(adminToken) {
+            document.getElementById('admin-login-view').classList.add('hidden');
+            document.getElementById('admin-dashboard-view').classList.remove('hidden');
+            cargarCanjesGlobales();
         }
     </script>
 </body>
