@@ -32,7 +32,7 @@
             opacity: 0.12; pointer-events: none; z-index: 0;
         }
 
-        /* LAYOUT PUBLICITARIO LATERAL DINOÁMICO */
+        /* LAYOUT PUBLICITARIO LATERAL DINÁMICO */
         @media (min-width: 1200px) {
             body { display: flex; flex-direction: column; align-items: center; }
             header { width: 100%; }
@@ -449,13 +449,24 @@
     <div id="toast"></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxeNuKLgKMv4ivzSHMVCpqChIOKbtJlgWNXMbyUzrrZLjPRX5TGGWJ5_Zk-zAZMo8j44A/exec';
+        // 🛡️ SEGURIDAD: URL actualizada de Apps Script de Producción
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyjTH2tMTkGzdK0fmK7V7ihw5YQCsivzgpt0miXd-a6X2WDgd_DMKUTcde9FUoQ92V3-w/exec';
         const ORIGIN_URL = 'https://lunzemod-beep.github.io';
 
         let activeClient = null;
         let clientPendingLogin = null;
         let rewardsList = [];
         let publicidadList = [];
+
+        function escapeHTML(str) {
+            if(!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         function cambiarPestanaGuia(tabId, btnElement) {
             document.querySelectorAll('#client-dashboard-view .fl-tab-content').forEach(tab => tab.classList.remove('active'));
@@ -546,7 +557,6 @@
             const adsIzquierda = publicidadList.filter(p => p.sector && p.sector.toString().toLowerCase().includes('izquierd'));
             const adsDerecha = publicidadList.filter(p => p.sector && p.sector.toString().toLowerCase().includes('derech'));
 
-            // PANEL IZQUIERDO: Genera múltiples tarjetas y rota si hay más de 3
             if (adsIzquierda.length > 0) {
                 let seleccionIzq = [...adsIzquierda];
                 if (seleccionIzq.length > 3) {
@@ -556,9 +566,9 @@
 
                 containerLeft.innerHTML = seleccionIzq.map((pub, idx) => `
                     <div class="ad-card-item" style="margin-bottom: ${idx === seleccionIzq.length - 1 ? '0' : '16px'}; padding-bottom: ${idx === seleccionIzq.length - 1 ? '0' : '12px'}; border-bottom: ${idx === seleccionIzq.length - 1 ? 'none' : '1px dashed #e2d9cd'};">
-                        <img src="${pub.imagen}" class="side-ad-img" alt="${pub.titulo}" style="width:100%; height:auto; border-radius:10px; margin-bottom:8px; object-fit:cover;">
-                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px; font-weight:700;">${pub.titulo}</h4>
-                        <p style="font-size:0.75rem; color:var(--text-muted); font-weight:normal; line-height:1.3;">${pub.texto}</p>
+                        <img src="${escapeHTML(pub.imagen)}" class="side-ad-img" alt="${escapeHTML(pub.titulo)}" style="width:100%; height:auto; border-radius:10px; margin-bottom:8px; object-fit:cover;">
+                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px; font-weight:700;">${escapeHTML(pub.titulo)}</h4>
+                        <p style="font-size:0.75rem; color:var(--text-muted); font-weight:normal; line-height:1.3;">${escapeHTML(pub.texto)}</p>
                     </div>
                 `).join('');
 
@@ -567,7 +577,6 @@
                 containerLeft.classList.add('hidden');
             }
 
-            // PANEL DERECHO: Genera múltiples tarjetas y rota si hay más de 3
             if (adsDerecha.length > 0) {
                 let seleccionDer = [...adsDerecha];
                 if (seleccionDer.length > 3) {
@@ -577,9 +586,9 @@
 
                 containerRight.innerHTML = seleccionDer.map((pub, idx) => `
                     <div class="ad-card-item" style="margin-bottom: ${idx === seleccionDer.length - 1 ? '0' : '16px'}; padding-bottom: ${idx === seleccionDer.length - 1 ? '0' : '12px'}; border-bottom: ${idx === seleccionDer.length - 1 ? 'none' : '1px dashed #e2d9cd'};">
-                        <img src="${pub.imagen}" class="side-ad-img" alt="${pub.titulo}" style="width:100%; height:auto; border-radius:10px; margin-bottom:8px; object-fit:cover;">
-                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px; font-weight:700;">${pub.titulo}</h4>
-                        <p style="font-size:0.75rem; color:var(--text-muted); font-weight:normal; line-height:1.3;">${pub.texto}</p>
+                        <img src="${escapeHTML(pub.imagen)}" class="side-ad-img" alt="${escapeHTML(pub.titulo)}" style="width:100%; height:auto; border-radius:10px; margin-bottom:8px; object-fit:cover;">
+                        <h4 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:4px; font-weight:700;">${escapeHTML(pub.titulo)}</h4>
+                        <p style="font-size:0.75rem; color:var(--text-muted); font-weight:normal; line-height:1.3;">${escapeHTML(pub.texto)}</p>
                     </div>
                 `).join('');
 
@@ -750,7 +759,7 @@
                     document.getElementById('raspa-claimed-code-box').innerHTML = '<span style="color:#4ade80;">Estado: Entregado en Mostrador ✅</span>';
                 } else {
                     document.getElementById('raspa-claimed-subtitle').textContent = "¡Premio Sorpresa Obtenido!";
-                    document.getElementById('raspa-claimed-title').textContent = registroRaspaEnHistorial.descripcion.replace(/\[.*\]/, '');
+                    document.getElementById('raspa-claimed-title').textContent = escapeHTML(registroRaspaEnHistorial.descripcion.replace(/\[.*\]/, ''));
                     const codigoEncontrado = String(registroRaspaEnHistorial.descripcion).match(/CÓDIGO: (\d{4})/);
                     const codigoMostrado = codigoEncontrado ? codigoEncontrado[1] : 'REGISTRADO';
                     document.getElementById('raspa-claimed-code-box').innerHTML = `Dicta tu Código en Caja: <span id="raspa-claimed-code" style="color:#4ade80;">${codigoMostrado}</span>`;
@@ -881,8 +890,8 @@
                 return `
                     <div class="glass-card">
                         <div>
-                            <div class="titulo">${r.title}</div>
-                            <div class="descripcion">${r.desc || ''}</div>
+                            <div class="titulo">${escapeHTML(r.title)}</div>
+                            <div class="descripcion">${escapeHTML(r.desc || '')}</div>
                         </div>
                         <div>
                             <div class="texto-puntos"><span>Tienes: ${puntosCliente.toLocaleString()}</span><span>Meta: ${costo.toLocaleString()}</span></div>
@@ -924,10 +933,10 @@
             list.innerHTML = data.map(t => `
                 <li style="padding: 12px 0; border-bottom: 1px solid #e2d9cd; font-size: 0.85rem;">
                     <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
-                        <span style="color: var(--primary-dark);">${String(t.descripcion || '').replace(/\(\$.*\)/, '')}</span>
-                        <span style="color:${String(t.puntos).includes('+') || parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${t.puntos} pts</span>
+                        <span style="color: var(--primary-dark);">${escapeHTML(String(t.descripcion || '').replace(/\(\$.*\)/, ''))}</span>
+                        <span style="color:${String(t.puntos).includes('+') || parseInt(t.puntos) >= 0 ? '#2e7d32' : '#b91c1c'}; font-weight: bold;">${escapeHTML(String(t.puntos))} pts</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${String(t.fecha).substring(0, 19)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">🕒 ${escapeHTML(String(t.fecha).substring(0, 19))}</div>
                 </li>
             `).join('');
         }
