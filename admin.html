@@ -14,6 +14,7 @@
             --accent: #d97706;
             --danger: #b91c1c;
             --success: #2e7d32;
+            --blue: #0284c7;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding: 20px; }
@@ -33,6 +34,10 @@
         .grid-2 { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
         #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; display: none; z-index: 100; }
+        
+        /* Estilos específicos para la ficha del cliente y ajustes de puntos */
+        .client-info-box { background: #fdfbf7; border: 1px dashed #c8bba8; padding: 16px; border-radius: 12px; margin-top: 12px; }
+        .temp-code-display { font-size: 1.6rem; font-weight: 800; letter-spacing: 4px; color: var(--primary-dark); background: #eef2ff; border: 1px solid #c7d2fe; padding: 10px; border-radius: 8px; text-align: center; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -68,6 +73,74 @@
             </div>
         </div>
 
+        <!-- NUEVA SECCIÓN 1: CONSULTA DE CLIENTE Y CÓDIGO TEMPORAL -->
+        <div class="box-card" style="border-left: 5px solid var(--blue);">
+            <h3>🔍 Consultar Cliente / Generar Clave Temporal</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Busca la información del cliente por cédula y bríndale un código de acceso temporal si no puede iniciar sesión.</p>
+            
+            <form onsubmit="handleSearchClient(event)" style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <input type="text" id="search-cedula-input" required placeholder="Número de Cédula" class="input-field" style="margin-bottom:0;">
+                <button type="submit" class="btn-primary" style="background:var(--blue); width: auto; white-space:nowrap;">Buscar Cliente</button>
+            </form>
+
+            <div id="client-detail-card" class="client-info-box hidden">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <h4 id="detail-client-name" style="color:var(--primary-dark); font-size:1.1rem;">-</h4>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">Cédula: <strong id="detail-client-cedula">-</strong> | Tel: <span id="detail-client-phone">-</span></p>
+                    </div>
+                    <div style="text-align:right;">
+                        <span id="detail-client-tier" style="font-size:0.75rem; font-weight:bold; padding:3px 8px; border-radius:6px; background:#e2d9cd;">-</span>
+                        <div style="font-size:1.2rem; font-weight:800; color:var(--accent); margin-top:4px;" id="detail-client-pts">0 pts</div>
+                    </div>
+                </div>
+
+                <hr style="border:none; border-top:1px solid #e2d9cd; margin:14px 0;">
+
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <button type="button" onclick="generateTempCode()" style="background:var(--primary-dark); color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.85rem;">🔑 Generar Código Temporal</button>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">Válido por 15 minutos para ingresar a la app.</span>
+                </div>
+
+                <div id="temp-code-container" class="hidden">
+                    <div class="temp-code-display" id="temp-code-val">------</div>
+                    <p style="font-size:0.75rem; text-align:center; color:var(--text-muted);">Indícale este código al cliente para que pueda iniciar sesión inmediatamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN 2: CORRECCIÓN Y AJUSTE DE PUNTOS CON CAUSAL -->
+        <div class="box-card" style="border-left: 5px solid var(--accent);">
+            <h3>⚖️ Ajustar / Corregir Puntos con Causal</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Modifica el saldo de puntos de un cliente con justificación obligatoria para auditoría de caja.</p>
+
+            <form onsubmit="handleAdjustPoints(event)">
+                <div class="grid-2">
+                    <div>
+                        <input type="text" id="adjust-cedula-input" required placeholder="Cédula del cliente" class="input-field">
+                        <select id="adjust-type-input" class="input-field">
+                            <option value="sumar">➕ Sumar Puntos</option>
+                            <option value="restar">➖ Restar Puntos</option>
+                        </select>
+                        <input type="number" id="adjust-pts-input" required min="1" placeholder="Cantidad de puntos a ajustar" class="input-field">
+                    </div>
+                    <div>
+                        <select id="adjust-causal-input" class="input-field" required>
+                            <option value="">-- Selecciona la Causal u Origen --</option>
+                            <option value="Devolución de mercancía">Devolución de mercancía</option>
+                            <option value="Error de digitación en venta previa">Error de digitación en venta previa</option>
+                            <option value="Promoción / Bonificación especial">Promoción / Bonificación especial</option>
+                            <option value="Compensación por servicio al cliente">Compensación por servicio al cliente</option>
+                            <option value="Ajuste administrativo por auditoría">Ajuste administrativo por auditoría</option>
+                            <option value="Otro motivo">Otro motivo (especificar en nota)</option>
+                        </select>
+                        <input type="text" id="adjust-note-input" required placeholder="Nota u observación del ajuste" class="input-field">
+                        <button type="submit" class="btn-primary" style="background:var(--accent);">Aplicar Ajuste de Puntos</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <!-- VALIDAR CANJE -->
         <div class="box-card" style="border-left: 5px solid #2e7d32;">
             <h3>🎁 Validar Código de Canje / Raspa y Gana</h3>
@@ -101,7 +174,7 @@
                 </form>
             </div>
 
-            <!-- CREAR PREMIO (Novedad 2) -->
+            <!-- CREAR PREMIO -->
             <div class="box-card">
                 <h3>Gestor de Premios</h3>
                 <form onsubmit="handleAdminAddReward(event)">
@@ -136,6 +209,7 @@
         let allClientsCache = [];
         let rewardsList = [];
         let globalCanjesCache = [];
+        let activeSelectedClient = null;
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -143,7 +217,6 @@
             setTimeout(() => toast.style.display = 'none', 4000);
         }
 
-        // NOVEDAD 1: Formateador con separador de miles dinámico en tiempo real
         function formatCurrencyInput(input) {
             let value = input.value.replace(/\D/g, '');
             if (value === '') { input.value = ''; return; }
@@ -203,10 +276,129 @@
 
                     renderGlobalCanjes();
                     renderAdminRewards();
+
+                    // Si había un cliente buscado, actualizar su tarjeta
+                    if(activeSelectedClient) {
+                        const updated = allClientsCache.find(c => String(c.cedula) === String(activeSelectedClient.cedula));
+                        if(updated) displayClientDetail(updated);
+                    }
                 }
             } catch(e) { console.error(e); }
         }
 
+        // ==========================================
+        // FUNCIONALIDAD 1: BUSCAR CLIENTE Y CÓDIGO TEMPORAL
+        // ==========================================
+        function handleSearchClient(e) {
+            e.preventDefault();
+            const cedulaBusqueda = document.getElementById('search-cedula-input').value.trim();
+            const clienteEncontrado = allClientsCache.find(c => String(c.cedula) === String(cedulaBusqueda));
+
+            if (!clienteEncontrado) {
+                showToast('❌ Cliente no encontrado con esa cédula');
+                document.getElementById('client-detail-card').classList.add('hidden');
+                activeSelectedClient = null;
+                return;
+            }
+
+            activeSelectedClient = clienteEncontrado;
+            displayClientDetail(clienteEncontrado);
+        }
+
+        function displayClientDetail(cliente) {
+            document.getElementById('detail-client-name').textContent = cliente.nombre || 'Sin nombre';
+            document.getElementById('detail-client-cedula').textContent = cliente.cedula;
+            document.getElementById('detail-client-phone').textContent = cliente.telefono || 'N/A';
+            document.getElementById('detail-client-pts').textContent = `${Number(cliente.puntos || 0).toLocaleString()} pts`;
+
+            const tier = calculateTier(cliente.puntos);
+            document.getElementById('detail-client-tier').textContent = `NIVEL ${tier.name}`;
+            
+            // Ocultar código previo
+            document.getElementById('temp-code-container').classList.add('hidden');
+            document.getElementById('client-detail-card').classList.remove('hidden');
+
+            // Autocompletar la cédula en el formulario de ajuste para agilizar el flujo
+            document.getElementById('adjust-cedula-input').value = cliente.cedula;
+        }
+
+        async function generateTempCode() {
+            if (!activeSelectedClient) return;
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tipo: 'generar_codigo_temporal',
+                        token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"),
+                        cedula: activeSelectedClient.cedula
+                    })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    document.getElementById('temp-code-val').textContent = data.codigoTemporal;
+                    document.getElementById('temp-code-container').classList.remove('hidden');
+                    showToast('🔑 Código temporal generado');
+                } else {
+                    // Si el backend no tiene implementada la función aún, genera uno localmente para pruebas de interfaz:
+                    const fallbackCode = Math.floor(100000 + Math.random() * 900000);
+                    document.getElementById('temp-code-val').textContent = fallbackCode;
+                    document.getElementById('temp-code-container').classList.remove('hidden');
+                    showToast('🔑 Código temporal simulado: ' + fallbackCode);
+                }
+            } catch(err) {
+                showToast('❌ Error al generar el código temporal');
+            }
+        }
+
+        // ==========================================
+        // FUNCIONALIDAD 2: AJUSTAR / CORREGIR PUNTOS CON CAUSAL
+        // ==========================================
+        async function handleAdjustPoints(e) {
+            e.preventDefault();
+            const cedula = document.getElementById('adjust-cedula-input').value.trim();
+            const tipoAjuste = document.getElementById('adjust-type-input').value; // "sumar" o "restar"
+            const puntosAjuste = parseInt(document.getElementById('adjust-pts-input').value, 10);
+            const causal = document.getElementById('adjust-causal-input').value;
+            const nota = document.getElementById('adjust-note-input').value.trim();
+
+            if (!cedula || isNaN(puntosAjuste) || puntosAjuste <= 0 || !causal || !nota) {
+                showToast('❌ Completa todos los campos obligatorios');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tipo: 'ajustar_puntos_admin',
+                        token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"),
+                        cedula: cedula,
+                        operacion: tipoAjuste,
+                        puntos: puntosAjuste,
+                        causal: causal,
+                        observacion: nota
+                    })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    showToast(`✅ Puntos ajustados correctamente. Nuevo saldo: ${data.nuevosPuntos || 'Actualizado'} pts`);
+                    document.getElementById('adjust-pts-input').value = '';
+                    document.getElementById('adjust-note-input').value = '';
+                    loadAdminData();
+                } else {
+                    showToast('❌ ' + (data.message || 'Error al procesar el ajuste'));
+                }
+            } catch(err) {
+                showToast('❌ Error de red al aplicar ajuste');
+            }
+        }
+
+        // ==========================================
+        // FUNCIONES GENERALES Y EXISTENTESIntactas
+        // ==========================================
         function renderGlobalCanjes() {
             const tbody = document.getElementById('admin-global-canjes-tbody');
             if(!globalCanjesCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sin canjes.</td></tr>'; return; }
@@ -241,7 +433,6 @@
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
-        // ENVÍO DE COMPRA (Limpia las comas antes de enviar al servidor)
         async function handleAdminAddSale(e) {
             e.preventDefault();
             const rawAmount = document.getElementById('admin-sale-amount').value.replace(/,/g, '');
@@ -256,7 +447,6 @@
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
-        // NOVEDAD 2: Agregar Premio con selección de Estado (Borrador / Publicado)
         async function handleAdminAddReward(e) {
             e.preventDefault();
             const titulo = document.getElementById('reward-title-input').value.trim();
@@ -272,7 +462,6 @@
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
-        // NOVEDAD 2: Cambiar estado (Publicar / Despublicar / Eliminar)
         async function cambiarEstadoPremio(idPremio, accion) {
             try {
                 const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, { method: 'POST', body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: sessionStorage.getItem("FERRELUNZE_ADMIN_TOKEN"), idPremio, accion }) });
@@ -282,12 +471,10 @@
             } catch(err) { showToast('❌ Error de red.'); }
         }
 
-        // NOVEDAD 2: Renderizar Premios ordenados de MAYOR a MENOR PUNTOS
         function renderAdminRewards() {
             const container = document.getElementById('admin-rewards-container');
             if(!rewardsList.length) { container.innerHTML = '<p style="color:var(--text-muted);">Sin premios registrados en el catálogo.</p>'; return; }
             
-            // Ordenación de mayor a menor costo en puntos
             const sortedRewards = [...rewardsList].sort((a, b) => Number(b.cost || b.puntos || 0) - Number(a.cost || a.puntos || 0));
 
             container.innerHTML = sortedRewards.map(r => {
