@@ -1,421 +1,323 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club FerreLunze | Panel de Administración</title>
-    <style>
-        :root {
-            --primary: #8b4513;
-            --primary-dark: #3e2723;
-            --bg-body: #f5f2eb;
-            --text-dark: #2c1d11;
-            --text-muted: #6d594b;
-            --card-bg: #ffffff;
-            --accent: #d97706;
-            --danger: #b91c1c;
-            --success: #15803d;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - Club de Lealtad FerreLunze</title>
+  <style>
+    :root {
+      --primary: #004481;
+      --secondary: #d9241b;
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --gray: #666666;
+      --border: #dddddd;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; padding-bottom: 40px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
 
-        header { background-color: #ffffff; border-bottom: 3px solid var(--primary-dark); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08); }
-        .brand-logo { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
-        .brand-logo span { color: var(--primary); }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
 
-        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .hidden { display: none !important; }
+    h1, h2, h3 {
+      color: var(--primary);
+    }
 
-        .login-card { max-width: 420px; margin: 60px auto; background: white; padding: 32px; border-radius: 20px; border: 1px solid #e2d9cd; box-shadow: 0 10px 25px -5px rgba(62, 39, 35, 0.1); text-align: center; }
-        .login-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: var(--primary-dark); }
-        .login-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
 
-        .box-card { background: white; padding: 24px; border-radius: 16px; border: 1px solid #e2d9cd; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(62, 39, 35, 0.04); }
-        .box-card h3 { font-size: 1.15rem; margin-bottom: 16px; color: var(--primary-dark); border-bottom: 2px solid #f0eaf1; padding-bottom: 8px; }
+    .form-group {
+      margin-bottom: 15px;
+    }
 
-        .input-field { width: 100%; padding: 12px 16px; border: 1px solid #c8bba8; border-radius: 10px; font-size: 0.95rem; outline: none; margin-bottom: 12px; background-color: #fdfbf7; }
-        .input-field:focus { border-color: var(--primary); background-color: #ffffff; }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
 
-        .btn-primary { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .btn-primary:hover { background-color: #6d330c; }
-        .btn-dark { background-color: var(--primary-dark); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
 
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
-        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2d9cd; }
-        th { background-color: #f9f6f0; color: var(--primary-dark); font-weight: 700; }
-        tr:hover { background-color: #fcfbfa; }
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
 
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-        .badge-success { background-color: #dcfce7; color: #15803d; }
-        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
-        .badge-warning { background-color: #fef3c7; color: #b45309; }
+    button:hover {
+      background-color: #003366;
+    }
 
-        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary-dark); color: white; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    </style>
+    button.btn-secondary {
+      background-color: #6c757d;
+    }
+
+    button.btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    button.btn-danger {
+      background-color: var(--secondary);
+    }
+
+    button.btn-danger:hover {
+      background-color: #b01b13;
+    }
+
+    /* Tabla de premios */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .badge-draft {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .badge-published {
+      background-color: #28a745;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand-logo">🛠️ FerreLunze <span>Panel Admin</span></div>
-        <div id="admin-status-bar" class="hidden" style="font-size: 0.85rem; display:flex; align-items:center; gap:12px;">
-            <span style="color: var(--primary-dark); font-weight: 700;">Sesión de Administrador</span>
-            <button onclick="logoutAdmin()" class="btn-dark" style="font-size: 0.75rem; padding: 6px 12px;">Cerrar Sesión 🚪</button>
-        </div>
-    </header>
+<div class="container">
+  <h1>Panel de Administración - FerreLunze</h1>
 
-    <main>
-        <!-- VISTA DE LOGIN ADMIN -->
-        <div id="admin-login-view" class="login-card">
-            <h2>Acceso Administrativo</h2>
-            <p>Ingresa la contraseña maestra para administrar el club</p>
-            <form onsubmit="handleAdminLogin(event)">
-                <input type="password" id="admin-pass-input" required placeholder="Contraseña de Administrador" class="input-field">
-                <button type="submit" id="btn-login-admin" class="btn-primary" style="width: 100%;">Ingresar al Panel</button>
-            </form>
-        </div>
+  <!-- NOVEDAD 1: REGISTRAR VENTA Y SUMAR PUNTOS CON SEPARADOR DE MILES -->
+  <div class="card">
+    <h2>Registrar Venta y Acumular Puntos</h2>
+    <form id="formVenta">
+      <div class="form-group">
+        <label for="clienteId">Documento / Teléfono del Cliente:</label>
+        <input type="text" id="clienteId" placeholder="Ej: 123456789" required>
+      </div>
 
-        <!-- DASHBOARD ADMIN -->
-        <div id="admin-dashboard-view" class="hidden">
-            
-            <div class="grid-2">
-                <!-- REGISTRAR VENTA / SUMAR PUNTOS -->
-                <div class="box-card">
-                    <h3>🛒 Registrar Venta y Sumar Puntos</h3>
-                    <form onsubmit="handleRegistrarVenta(event)">
-                        <input type="text" id="venta-cedula" required placeholder="Cédula del Cliente" class="input-field">
-                        <input type="number" id="venta-monto" required min="1" placeholder="Monto Total de Compra ($ COP)" class="input-field">
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Se otorgará 1 punto por cada $10.000 COP en compra.</p>
-                        <button type="submit" class="btn-primary" style="width: 100%;">Registrar y Abonar Puntos</button>
-                    </form>
-                </div>
+      <div class="form-group">
+        <label for="montoVenta">Monto Total de Compra ($):</label>
+        <!-- Usamos type="text" para permitir la visualización con puntos de miles -->
+        <input type="text" id="montoVenta" placeholder="Ej: 150.000" required>
+      </div>
 
-                <!-- VALIDAR ENTREGAS DE PREMIOS -->
-                <div class="box-card">
-                    <h3>🎁 Validar Retiro de Premio en Mostrador</h3>
-                    <form onsubmit="handleValidarCanje(event)">
-                        <input type="text" id="canje-codigo" maxlength="4" required placeholder="Código de 4 dígitos presentado por el cliente" class="input-field">
-                        <button type="submit" class="btn-primary" style="width: 100%; background-color: var(--accent);">Validar y Entregar Premio</button>
-                    </form>
-                </div>
-            </div>
+      <button type="submit">Acumular Puntos</button>
+    </form>
+  </div>
 
-            <!-- GESTIÓN DE PREMIOS EN CATÁLOGO -->
-            <div class="box-card">
-                <h3>📦 Crear Nuevo Premio para el Catálogo</h3>
-                <form onsubmit="handleGuardarPremio(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-                    <input type="text" id="premio-titulo" required placeholder="Título del Premio (ej. Brocha 3 Rollo)" class="input-field" style="margin:0;">
-                    <input type="number" id="premio-costo" required min="1" placeholder="Costo en Puntos" class="input-field" style="margin:0;">
-                    <input type="text" id="premio-desc" placeholder="Descripción breve" class="input-field" style="margin:0;">
-                    <button type="submit" class="btn-primary" style="margin:0;">Guardar Premio</button>
-                </form>
+  <!-- NOVEDAD 2: CREAR Y GESTIONAR PREMIOS (BORRADOR, PUBLICADO Y ORDENACIÓN) -->
+  <div class="card">
+    <h2>Crear / Editar Premio para el Catálogo</h2>
+    <form id="formPremio">
+      <input type="hidden" id="premioIndex" value="-1">
+      
+      <div class="form-group">
+        <label for="nombrePremio">Nombre del Premio:</label>
+        <input type="text" id="nombrePremio" placeholder="Ej: Taladro Percutor 1/2" required>
+      </div>
 
-                <h4 style="margin-top: 20px; font-size: 0.95rem; color: var(--primary-dark);">Catálogo Actual de Premios</h4>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Premio</th>
-                                <th>Costo Puntos</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-premios-body"></tbody>
-                    </table>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="puntosPremio">Puntos Requeridos:</label>
+        <input type="number" id="puntosPremio" placeholder="Ej: 2500" min="1" required>
+      </div>
 
-            <!-- LISTADO DE CLIENTES Y BLOQUEOS -->
-            <div class="box-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3>👥 Clientes Registrados</h3>
-                    <button onclick="cargarDatosAdmin()" class="btn-dark" style="font-size: 0.75rem;">🔄 Actualizar Lista</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Cédula</th>
-                                <th>Teléfono</th>
-                                <th>Puntos Saldo</th>
-                                <th>Estado Cuenta</th>
-                                <th>Ajuste Manual</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-clientes-body"></tbody>
-                    </table>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="estadoPremio">Estado del Producto:</label>
+        <select id="estadoPremio">
+          <option value="Borrador">Borrador</option>
+          <option value="Publicado">Publicado</option>
+        </select>
+      </div>
 
-            <!-- HISTORIAL GLOBAL DE CANJES -->
-            <div class="box-card">
-                <h3>📜 Registro Global de Premios Canjeados</h3>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cédula</th>
-                                <th>Cliente</th>
-                                <th>Premio</th>
-                                <th>Código</th>
-                                <th>Estado Entrega</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-canjes-body"></tbody>
-                    </table>
-                </div>
-            </div>
+      <button type="submit" id="btnGuardarPremio">Guardar Premio</button>
+      <button type="button" class="btn-secondary" id="btnCancelarEdicion" style="display:none;" onclick="resetFormPremio()">Cancelar Edición</button>
+    </form>
 
-        </div>
-    </main>
+    <h3 style="margin-top: 30px;">Catálogo de Premios (Ordenado de Mayor a Menor Puntos)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Premio</th>
+          <th>Puntos</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaPremios">
+        <!-- Se genera dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+</div>
 
-    <div id="toast"></div>
+<script>
+  // ==========================================
+  // NOVEDAD 1: SEPARADOR DE MILES EN MONTO
+  // ==========================================
+  const inputMonto = document.getElementById('montoVenta');
 
-    <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxeNuKLgKMv4ivzSHMVCpqChIOKbtJlgWNXMbyUzrrZLjPRX5TGGWJ5_Zk-zAZMo8j44A/exec';
-        const ORIGIN_URL = 'https://lunzemod-beep.github.io';
+  inputMonto.addEventListener('input', function(e) {
+    // 1. Quitar todo lo que no sea número
+    let valor = e.target.value.replace(/\D/g, '');
+    
+    // 2. Formatear con puntos como separadores de miles (estándar CO)
+    if (valor) {
+      valor = parseInt(valor, 10).toLocaleString('es-CO');
+    }
+    
+    e.target.value = valor;
+  });
 
-        let adminToken = null;
-        let premiosList = [];
-        let clientesList = [];
-        let canjesList = [];
+  document.getElementById('formVenta').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const cliente = document.getElementById('clienteId').value;
+    // Extraer únicamente los dígitos numéricos para procesar
+    const montoLimpio = parseInt(inputMonto.value.replace(/\./g, ''), 10);
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            if(!toast) { alert(msg); return; }
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 4500);
-        }
+    if (isNaN(montoLimpio) || montoLimpio <= 0) {
+      alert('Por favor ingrese un monto válido.');
+      return;
+    }
 
-        async function handleAdminLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-login-admin');
-            const pass = document.getElementById('admin-pass-input').value.trim();
+    alert(`Venta registrada con éxito:\nCliente: ${cliente}\nMonto: $${inputMonto.value}`);
+    // Aquí puedes invocar tu función backend / Google Apps Script pasando `montoLimpio`
+    this.reset();
+  });
 
-            try {
-                btn.disabled = true; btn.innerText = "Ingresando...";
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'login_admin', password: pass })
-                });
-                const data = await res.json();
 
-                if (data.status === "success") {
-                    adminToken = data.token;
-                    premiosList = data.premios || [];
-                    canjesList = data.canjesGlobales || [];
-                    
-                    document.getElementById('admin-login-view').classList.add('hidden');
-                    document.getElementById('admin-dashboard-view').classList.remove('hidden');
-                    document.getElementById('admin-status-bar').classList.remove('hidden');
-                    
-                    cargarDatosAdmin();
-                    showToast('✅ Sesión administrativa iniciada');
-                } else {
-                    showToast('❌ ' + data.message);
-                }
-            } catch(err) {
-                showToast('❌ Error de conexión con el servidor.');
-            } finally {
-                btn.disabled = false; btn.innerText = "Ingresar al Panel";
-            }
-        }
+  // ==========================================
+  // NOVEDAD 2: GESTIÓN DE PREMIOS (BORRADOR/PUBLICADO Y ORDENACIÓN)
+  // ==========================================
+  
+  // Estado inicial simulado de premios
+  let premios = [
+    { id: 1, nombre: 'Kit de Herramientas 50 pcs', puntos: 3500, estado: 'Publicado' },
+    { id: 2, nombre: 'Pintura Vinilo Blanco Cuñete', puntos: 1200, estado: 'Borrador' },
+    { id: 3, nombre: 'Esmeriladora Angular 4-1/2"', puntos: 5000, estado: 'Publicado' }
+  ];
 
-        async function cargarDatosAdmin() {
-            if (!adminToken) return;
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'obtener_clientes_admin', token: adminToken })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    clientesList = data.clientes || [];
-                    premiosList = data.premios || premiosList;
-                    canjesList = data.canjesGlobales || canjesList;
+  function renderizarPremios() {
+    const tbody = document.getElementById('tablaPremios');
+    tbody.innerHTML = '';
 
-                    renderClientesTable();
-                    renderPremiosTable();
-                    renderCanjesTable();
-                }
-            } catch(e) { console.error("Error cargando datos admin", e); }
-        }
+    // ORDENAR DE MAYOR A MENOR SEGÚN PUNTOS
+    premios.sort((a, b) => b.puntos - a.puntos);
 
-        async function handleRegistrarVenta(e) {
-            e.preventDefault();
-            const cedula = document.getElementById('venta-cedula').value.trim();
-            const monto = parseFloat(document.getElementById('venta-monto').value) || 0;
-            const puntosGanados = Math.floor(monto / 10000);
+    premios.forEach((item, index) => {
+      const tr = document.createElement('tr');
 
-            if (puntosGanados <= 0) {
-                showToast('El monto debe ser de al menos $10.000 COP para otorgar puntos.');
-                return;
-            }
+      const badgeClass = item.estado === 'Publicado' ? 'badge-published' : 'badge-draft';
 
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'venta', token: adminToken, cedula: cedula, monto: monto, puntosGanados: puntosGanados })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    showToast(`✅ ¡Venta registrada! El nuevo saldo del cliente es ${data.nuevosPuntos} pts`);
-                    document.getElementById('venta-cedula').value = '';
-                    document.getElementById('venta-monto').value = '';
-                    cargarDatosAdmin();
-                } else { showToast('❌ ' + data.message); }
-            } catch(e) { showToast('❌ Error registrando venta.'); }
-        }
+      tr.innerHTML = `
+        <td>${item.nombre}</td>
+        <td><strong>${item.puntos.toLocaleString('es-CO')} pts</strong></td>
+        <td><span class="badge ${badgeClass}">${item.estado}</span></td>
+        <td class="actions-cell">
+          <button class="btn-secondary" onclick="cambiarEstado(${index})">
+            ${item.estado === 'Publicado' ? 'Pasar a Borrador' : 'Publicar'}
+          </button>
+          <button class="btn-danger" onclick="eliminarPremio(${index})">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-        async function handleValidarCanje(e) {
-            e.preventDefault();
-            const codigo = document.getElementById('canje-codigo').value.trim();
+  document.getElementById('formPremio').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const nombre = document.getElementById('nombrePremio').value.trim();
+    const puntos = parseInt(document.getElementById('puntosPremio').value, 10);
+    const estado = document.getElementById('estadoPremio').value;
 
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'validar_canje_admin', token: adminToken, codigoCanje: codigo })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    alert(data.mensaje);
-                    document.getElementById('canje-codigo').value = '';
-                    cargarDatosAdmin();
-                } else { showToast(data.message); }
-            } catch(e) { showToast('❌ Error validando código.'); }
-        }
+    if (!nombre || isNaN(puntos)) return;
 
-        async function handleGuardarPremio(e) {
-            e.preventDefault();
-            const titulo = document.getElementById('premio-titulo').value.trim();
-            const costo = parseInt(document.getElementById('premio-costo').value, 10);
-            const desc = document.getElementById('premio-desc').value.trim();
+    // Agregar nuevo premio
+    premios.push({
+      id: Date.now(),
+      nombre: nombre,
+      puntos: puntos,
+      estado: estado
+    });
 
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'guardar_premio', token: adminToken, titulo: titulo, puntos: costo, descripcion: desc, estado: 'published' })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    showToast('🎁 Premio guardado en el catálogo.');
-                    document.getElementById('premio-titulo').value = '';
-                    document.getElementById('premio-costo').value = '';
-                    document.getElementById('premio-desc').value = '';
-                    premiosList = data.premios || premiosList;
-                    renderPremiosTable();
-                } else { showToast('❌ ' + data.message); }
-            } catch(e) { showToast('❌ Error guardando premio.'); }
-        }
+    resetFormPremio();
+    renderizarPremios();
+  });
 
-        async function cambiarEstadoPremio(idPremio, accion) {
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'actualizar_estado_premio', token: adminToken, idPremio: idPremio, accion: accion })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    premiosList = data.premios || premiosList;
-                    renderPremiosTable();
-                }
-            } catch(e) { console.error("Error actualizando premio", e); }
-        }
+  function cambiarEstado(index) {
+    premios[index].estado = premios[index].estado === 'Publicado' ? 'Borrador' : 'Publicado';
+    renderizarPremios();
+  }
 
-        async function corregirPuntosCliente(cedula, puntosActuales) {
-            const nuevoVal = prompt(`Ingresa el nuevo saldo de puntos para la cédula ${cedula}:`, puntosActuales);
-            if (nuevoVal === null) return;
-            const puntosNuevos = parseInt(nuevoVal, 10);
-            if (isNaN(puntosNuevos)) { alert("Ingresa un número válido."); return; }
+  function eliminarPremio(index) {
+    if (confirm(`¿Estás seguro de eliminar "${premios[index].nombre}"?`)) {
+      premios.splice(index, 1);
+      renderizarPremios();
+    }
+  }
 
-            const motivo = prompt("Motivo del ajuste:", "Ajuste manual administrativo");
+  function resetFormPremio() {
+    document.getElementById('formPremio').reset();
+    document.getElementById('premioIndex').value = '-1';
+  }
 
-            try {
-                const res = await fetch(`${API_URL}?origin=${encodeURIComponent(ORIGIN_URL)}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ tipo: 'corregir_puntos', token: adminToken, cedula: cedula, nuevosPuntos: puntosNuevos, motivo: motivo })
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                    showToast('✅ Puntos actualizados correctamente.');
-                    cargarDatosAdmin();
-                } else { showToast('❌ ' + data.message); }
-            } catch(e) { showToast('❌ Error ajustando puntos.'); }
-        }
+  // Carga inicial al abrir la página
+  renderizarPremios();
+</script>
 
-        function renderClientesTable() {
-            const body = document.getElementById('tabla-clientes-body');
-            if (clientesList.length === 0) { body.innerHTML = '<tr><td colspan="6">No hay clientes registrados.</td></tr>'; return; }
-
-            body.innerHTML = clientesList.map(c => `
-                <tr>
-                    <td><strong>${c.nombre}</strong></td>
-                    <td>${c.cedula}</td>
-                    <td>${c.telefono || '-'}</td>
-                    <td><strong style="color:var(--primary-dark);">${c.puntos.toLocaleString()} pts</strong></td>
-                    <td>
-                        ${c.bloqueado ? 
-                            '<span class="badge badge-danger">🔒 Bloqueado (24h)</span>' : 
-                            '<span class="badge badge-success">Activo</span>'}
-                    </td>
-                    <td>
-                        <button onclick="corregirPuntosCliente('${c.cedula}', ${c.puntos})" class="btn-dark" style="font-size:0.75rem; padding:4px 8px;">Ajustar Pts</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderPremiosTable() {
-            const body = document.getElementById('tabla-premios-body');
-            if (premiosList.length === 0) { body.innerHTML = '<tr><td colspan="5">No hay premios creados.</td></tr>'; return; }
-
-            body.innerHTML = premiosList.map(p => `
-                <tr>
-                    <td><code>${p.id}</code></td>
-                    <td><strong>${p.title}</strong></td>
-                    <td>${Number(p.cost).toLocaleString()} pts</td>
-                    <td><span class="badge badge-success">${p.status || 'published'}</span></td>
-                    <td>
-                        <button onclick="cambiarEstadoPremio('${p.id}', 'eliminar')" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:6px; font-size:0.75rem; cursor:pointer;">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderCanjesTable() {
-            const body = document.getElementById('tabla-canjes-body');
-            if (canjesList.length === 0) { body.innerHTML = '<tr><td colspan="6">No hay canjes registrados.</td></tr>'; return; }
-
-            body.innerHTML = canjesList.map(k => `
-                <tr>
-                    <td>${String(k.fecha).substring(0, 10)}</td>
-                    <td>${k.cedula}</td>
-                    <td>${k.cliente}</td>
-                    <td><strong>${k.premio}</strong></td>
-                    <td><code>${k.codigo}</code></td>
-                    <td>
-                        ${k.estado === 'Entregado' ? 
-                            '<span class="badge badge-success">Entregado</span>' : 
-                            '<span class="badge badge-warning">Pendiente</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function logoutAdmin() {
-            adminToken = null;
-            document.getElementById('admin-dashboard-view').classList.add('hidden');
-            document.getElementById('admin-status-bar').classList.add('hidden');
-            document.getElementById('admin-login-view').classList.remove('hidden');
-            document.getElementById('admin-pass-input').value = '';
-        }
-    </script>
 </body>
 </html>
